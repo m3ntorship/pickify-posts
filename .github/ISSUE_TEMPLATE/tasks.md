@@ -10,7 +10,7 @@ assignees: ''
 ### Story
 - [ ]
 
-### prerequisites
+### Prerequisites
 - [ ]
 
 ### Tasks
