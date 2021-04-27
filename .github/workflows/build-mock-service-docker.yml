@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - development
-    paths:
-      - "/openAPI/**"
+    # paths:
+    #   - "/openAPI/**"
 
 jobs:
   prepare:
