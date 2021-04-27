@@ -2,8 +2,8 @@ name: build-mocked-service-docker-image
 
 on:
   push:
-    # branches:
-    #   - development
+    branches:
+      - development
     paths:
       - "openAPI/*"
 
@@ -14,7 +14,7 @@ jobs:
       sha: ${{ steps.prepare.outputs.sha }}
       version: ${{ steps.prepare.outputs.version }}
       image: m3ntorshipci/pickly-v2-posts-mock
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-mock
     steps:
       - uses: actions/checkout@v2
       - id: prepare
@@ -35,6 +35,7 @@ jobs:
     needs: [prepare]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Build and push Docker image
         uses: docker/build-push-action@v1
         with:
