@@ -2,10 +2,10 @@ name: build-mocked-service-docker-image
 
 on:
   push:
-    branches:
-      - development
-    # paths:
-    #   - "/openAPI/**"
+    # branches:
+    #   - development
+    paths:
+      - "openAPI/**"
 
 jobs:
   prepare:
