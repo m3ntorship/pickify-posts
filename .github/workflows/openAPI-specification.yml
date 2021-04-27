@@ -1,0 +1,46 @@
+name: update mocked service docker image
+
+on:
+  push:
+    # branches:
+    #   - development
+    paths:
+      - "./openAPI/post.openAPI.yml"
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.prepare.outputs.sha }}
+      version: ${{ steps.prepare.outputs.version }}
+      image: m3ntorshipci/pickly-v2-posts-mock
+      dockerfile: Dockerfile-mock
+    steps:
+      - uses: actions/checkout@v2
+      - id: prepare
+        run: |
+          echo "::set-output name=sha::$(git rev-parse HEAD)"
+          echo "::set-output name=version::$(git rev-parse --short=4 HEAD)"
+  ensure:
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - id: sha
+        name: sha
+        run: echo "sha ${{needs.prepare.outputs.sha}}"
+      - run: echo "version ${{needs.prepare.outputs.version}}"
+      - run: echo "image ${{needs.prepare.outputs.image}}"
+      - run: echo "dockerfile ${{needs.prepare.outputs.dockerfile}}"
+  build-and-push-app:
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{needs.prepare.outputs.image}}
+          dockerfile: ${{needs.prepare.outputs.dockerfile}}
+          tags: ${{needs.prepare.outputs.version}}
+ 
