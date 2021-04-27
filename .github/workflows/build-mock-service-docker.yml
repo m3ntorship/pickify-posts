@@ -5,7 +5,7 @@ on:
     # branches:
     #   - development
     paths:
-      - "openAPI/**"
+      - "openAPI/*"
 
 jobs:
   prepare:
