@@ -1,4 +1,4 @@
-name: update mocked service docker image
+name: build-mocked-service-docker-image
 
 on:
   push:
