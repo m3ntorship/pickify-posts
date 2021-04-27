@@ -1,0 +1,12 @@
+FROM node:15.13.0-alpine3.10
+
+WORKDIR /pickly-v2-posts-mock
+
+COPY openAPI/post.openAPI.yml ./
+
+RUN yarn init -y
+
+RUN yarn global add @stoplight/prism-cli
+RUN yarn add faker
+
+CMD prism mock -d -h 0.0.0.0 ./post.openAPI.yml 
