@@ -31,6 +31,11 @@ jobs:
       - run: echo "version ${{needs.prepare.outputs.version}}"
       - run: echo "image ${{needs.prepare.outputs.image}}"
       - run: echo "dockerfile ${{needs.prepare.outputs.dockerfile}}"
+      - run: ls -a
+      - run: ls -a /github/workspace
+      - run: echo $(ls -a)
+      - run: echo $(ls -a /github/workspace)
+      - run: echo "Amr"
   build-and-push-app:
     needs: [prepare]
     runs-on: ubuntu-latest
