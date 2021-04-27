@@ -5,7 +5,7 @@ on:
     branches:
       - development
     paths:
-      - "./openAPI/post.openAPI.yml"
+      - "/openAPI/**"
 
 jobs:
   prepare:
