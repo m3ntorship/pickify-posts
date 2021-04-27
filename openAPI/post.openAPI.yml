@@ -433,10 +433,6 @@ components:
         status_code:
           type: number
           default: 123
-  securitySchemes:
-    firebaseAuth:
-      type: http
-      scheme: bearer
   responses:
     created_options_group:
       description: Group created successfully
