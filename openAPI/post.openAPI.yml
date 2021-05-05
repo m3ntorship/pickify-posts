@@ -31,7 +31,7 @@ paths:
           $ref: "#/components/responses/error_bad_request"
         401:
           description: Unauthorized.
-          $ref: "#/components/responses/error_unauthorized" 
+          $ref: "#/components/responses/error_unauthorized"
     get:
       tags:
         - "posts"
@@ -48,7 +48,6 @@ paths:
           schema:
             type: number
           description: The numbers of items to return
-
       responses:
         200:
           description: Get all posts
@@ -257,7 +256,7 @@ components:
         name:
           type: string
           x-faker: name.findName
-        image_url:
+        media:
           type: array
           items:
             type: object
@@ -296,10 +295,13 @@ components:
         id:
           type: string
           x-faker: random.uuid
+        votes_count:
+          type: number
+          x-faker: random.number
         body:
           type: string
           x-faker: random.words
-        image_url:
+        media:
           type: array
           items:
             type: object
@@ -394,13 +396,14 @@ components:
           x-faker: random.boolean
         created_at:
           type: string
-          example: "2021-04-20T11:55:03Z"
-          x-faker: date.past
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+          # x-faker: date.past
         type:
           type: string
           enum: [text poll, image poll, mini_survey]
           example: "text_poll"
-        image_url:
+        media:
           type: array
           items:
             type: object
@@ -432,7 +435,7 @@ components:
           example: ["error1", "error2"]
         status_code:
           type: number
-          default: 789
+          default: 123
   responses:
     created_options_group:
       description: Group created successfully
@@ -490,7 +493,6 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/single_post_response"
-                maxItems: 4
     single_post_deletion_response:
       description: Post deleted
     error_bad_request:
