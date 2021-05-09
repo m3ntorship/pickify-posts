@@ -9,4 +9,7 @@ export class MediaController {
   addMedia() {
     throw new NotImplementedException();
   }
+  a() {
+    return 'ab';
+  }
 }
