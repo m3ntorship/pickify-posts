@@ -19,7 +19,9 @@ describe('VotesController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should have addVote method', () => {
-    expect(controller.addVote).toThrowError(new NotImplementedException());
+  describe('addVote function', () => {
+    it('should throw not implemented', () => {
+      expect(controller.addVote).toThrowError(new NotImplementedException());
+    });
   });
 });
