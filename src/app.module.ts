@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ModuleExampleModule } from './moduleExample/moduleExample.module';
 import { MediaModule } from './media/media.module';
+import { PostsModule } from './posts/posts.module';
 import configuration from './config/configuration';
 import config from './config/database';
 
@@ -24,6 +25,7 @@ const evnVariable = process.env.NODE_ENV || 'development';
     TypeOrmModule.forRoot(config),
     ModuleExampleModule,
     MediaModule,
+    PostsModule,
   ],
   controllers: [],
   providers: [],
