@@ -12,6 +12,38 @@ import { formatISO } from 'date-fns';
 export class AllExceptionsFilterLogger implements ExceptionFilter {
   constructor(private readonly logger: Logger) {}
 
+  generateErrorBasedOnCurrentEnvironment(
+    status: number,
+    message: string,
+    stack,
+    url,
+  ) {
+    const currentEnvironment = process.env.NODE_ENV;
+    let expectedErrorToBeReturned = {};
+
+    if (currentEnvironment != 'production') {
+      expectedErrorToBeReturned = {
+        statusCode: status,
+        message: message,
+        stack,
+        timestamp: formatISO(Date.now()),
+        path: url,
+      };
+    } else {
+      if (status >= 500) {
+        message = 'Internal Server Error';
+      }
+
+      expectedErrorToBeReturned = {
+        statusCode: status,
+        message,
+        timestamp: formatISO(Date.now()),
+      };
+    }
+
+    return expectedErrorToBeReturned;
+  }
+
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -35,12 +67,13 @@ export class AllExceptionsFilterLogger implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    response.status(status).json({
-      statusCode: status,
-      message: message,
+    const errorToBeReturned = this.generateErrorBasedOnCurrentEnvironment(
+      status,
+      message,
       stack,
-      timestamp: formatISO(Date.now()),
-      path: url,
-    });
+      url,
+    );
+
+    response.status(status).json(errorToBeReturned);
   }
 }
