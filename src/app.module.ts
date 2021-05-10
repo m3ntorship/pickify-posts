@@ -7,12 +7,13 @@ import { PostsModule } from './posts/posts.module';
 import configuration from './config/configuration';
 import config from './config/database';
 
-const evnVariable = process.env.NODE_ENV || 'development';
+const evnVariable = process.env.NODE_ENV;
 @Module({
   imports: [
     ConfigModule.forRoot({
       // load different .env files based on runtime environment variable
-      envFilePath: [`.${evnVariable}.env`],
+      // envFilePath: [`.${evnVariable}.env`],
+      envFilePath: !evnVariable ? '.env' : `.env.${evnVariable}`,
       isGlobal: true,
       load: [configuration],
     }),
