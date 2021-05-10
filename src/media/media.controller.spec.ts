@@ -21,7 +21,7 @@ describe('MediaController', () => {
 
   describe('addMedia function', () => {
     it('should throw not implemented', () => {
-      expect(controller.addMedia()).toThrowError(new NotImplementedException());
+      expect(controller.addMedia).toThrowError(new NotImplementedException());
     });
   });
 });
