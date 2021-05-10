@@ -2,7 +2,7 @@ import { Entity, Column } from 'typeorm';
 
 import Model from '../../shared/entity.model';
 
-@Entity('posts')
+@Entity()
 export class Post extends Model {
   @Column()
   caption: string;
