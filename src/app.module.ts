@@ -12,8 +12,7 @@ const evnVariable = process.env.NODE_ENV;
   imports: [
     ConfigModule.forRoot({
       // load different .env files based on runtime environment variable
-      // envFilePath: [`.${evnVariable}.env`],
-      envFilePath: !evnVariable ? '.env' : `.env.${evnVariable}`,
+      envFilePath: !evnVariable ? '.development.env' : `.${evnVariable}.env.`,
       isGlobal: true,
       load: [configuration],
     }),
