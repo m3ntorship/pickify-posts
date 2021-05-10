@@ -11,7 +11,7 @@ export class Post extends Model {
   type: string;
 
   @Column()
-  isHidden: string;
+  is_hidden: string;
 
   @Column()
   user_id: number;
