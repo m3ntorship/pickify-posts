@@ -1,3 +1,3 @@
 import Model from 'src/shared/entity.model';
 
-export class OptionGroup extends Model {}
+export class Option extends Model {}
