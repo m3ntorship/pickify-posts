@@ -15,6 +15,9 @@ import * as swaggerDocument from '../openAPI/post.openAPI.json';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // add global prefix to all endpoints
+  app.setGlobalPrefix('api');
+
   // Enable cors
   app.enableCors();
 
