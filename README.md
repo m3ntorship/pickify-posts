@@ -127,3 +127,9 @@ yarn test:cov
   docker build -t pickify-posts .
   docker-compose up -d
   ```
+
+## OpenAPI specifications
+
+- [Check it online](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml)
+
+- Or, <ins>**/api**</ins> if the app is running
