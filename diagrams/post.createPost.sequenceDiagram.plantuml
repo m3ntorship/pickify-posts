@@ -1,0 +1,22 @@
+@startuml create_post
+hide footbox
+skinparam maxMessageSize 150
+actor user
+
+participant postService
+participant mediaService
+participant uploadService
+
+user -> postService : request to creat post 
+postService -> user : post id
+user -> postService : Request to create optionsGroup(s) and options
+postService -> user : optionsGroup(s) id + options ids
+user -> postService : binary file(s) 
+postService -> user : ack
+user -> postService : flag post as finished
+postService -> user : 204 response
+postService -> mediaService: Binary files
+mediaService -> uploadService: New binary files
+uploadService -> mediaService: Original URLs
+mediaService -> postService: Masked URLs
+@enduml
