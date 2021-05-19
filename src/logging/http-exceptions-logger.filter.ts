@@ -7,42 +7,11 @@ import {
 } from '@nestjs/common';
 import { Logger } from 'winston';
 import { formatISO } from 'date-fns';
+import generateErrorBasedOnCurrentEnvironment from '../../utils/LoggingUtils/generateErrorBasedOnEnvironment';
 
 @Catch()
 export class AllExceptionsFilterLogger implements ExceptionFilter {
   constructor(private readonly logger: Logger) {}
-
-  generateErrorBasedOnCurrentEnvironment(
-    status: number,
-    message: string,
-    stack,
-    url,
-  ) {
-    const currentEnvironment = process.env.NODE_ENV;
-    let expectedErrorToBeReturned = {};
-
-    if (currentEnvironment != 'production') {
-      expectedErrorToBeReturned = {
-        statusCode: status,
-        message: message,
-        stack,
-        timestamp: formatISO(Date.now()),
-        path: url,
-      };
-    } else {
-      if (status >= 500) {
-        message = 'Internal Server Error';
-      }
-
-      expectedErrorToBeReturned = {
-        statusCode: status,
-        message,
-        timestamp: formatISO(Date.now()),
-      };
-    }
-
-    return expectedErrorToBeReturned;
-  }
 
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -67,11 +36,12 @@ export class AllExceptionsFilterLogger implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const errorToBeReturned = this.generateErrorBasedOnCurrentEnvironment(
+    const errorToBeReturned = generateErrorBasedOnCurrentEnvironment(
       status,
       message,
       stack,
       url,
+      process.env.NODE_ENV,
     );
 
     response.status(status).json(errorToBeReturned);
