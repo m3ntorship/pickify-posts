@@ -5,12 +5,18 @@ import { PostsService } from './posts.service';
 
 describe('PostsController', () => {
   let controller: PostsController;
+  const service = {
+    createPost: jest.fn(() => 'test create'),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostsController],
       providers: [PostsService],
-    }).compile();
+    })
+      .overrideProvider(PostsService)
+      .useValue(service)
+      .compile();
 
     controller = module.get<PostsController>(PostsController);
   });
@@ -20,8 +26,10 @@ describe('PostsController', () => {
   });
 
   describe('createPost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.createPost).toThrowError(new NotImplementedException());
+    it('should return a string', () => {
+      const dto = { caption: 'test dto', type: 'text_poll', is_hidden: false };
+      expect(controller.createPost(dto)).toBe('test create');
+      expect(service.createPost).toBeCalledWith(dto);
     });
   });
 

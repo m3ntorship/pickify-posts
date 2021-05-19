@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -6,6 +7,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { CreatePostDto } from './dto/create-post.dto';
+import type { CreatePost as CreatePostInterface } from './interfaces/createPost.interface';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -13,8 +16,10 @@ export class PostsController {
   constructor(private postsService: PostsService) {}
 
   @Post('/')
-  createPost() {
-    throw new NotImplementedException();
+  createPost(
+    @Body() createPostDto: CreatePostDto,
+  ): Promise<CreatePostInterface> {
+    return this.postsService.createPost(createPostDto);
   }
 
   @Get('/')
