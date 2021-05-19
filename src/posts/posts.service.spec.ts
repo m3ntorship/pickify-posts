@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostRepository } from './entities/postRepository';
 import { PostsService } from './posts.service';
+import { CreatePostDto } from './dto/create-post.dto';
 
 describe('PostsService', () => {
   let service: PostsService;
@@ -33,7 +34,7 @@ describe('PostsService', () => {
 
   describe('createPost Fn', () => {
     it('should return object with id', async () => {
-      const dto = {
+      const dto: CreatePostDto = {
         type: 'text_poll',
         caption: 'test caption',
         is_hidden: false,

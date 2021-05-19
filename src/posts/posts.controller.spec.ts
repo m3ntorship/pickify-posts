@@ -2,6 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { CreatePostDto } from './dto/create-post.dto';
 
 describe('PostsController', () => {
   let controller: PostsController;
@@ -27,7 +28,11 @@ describe('PostsController', () => {
 
   describe('createPost function', () => {
     it('should return a string', () => {
-      const dto = { caption: 'test dto', type: 'text_poll', is_hidden: false };
+      const dto: CreatePostDto = {
+        caption: 'test dto',
+        type: 'text_poll',
+        is_hidden: false,
+      };
       expect(controller.createPost(dto)).toBe('test create');
       expect(service.createPost).toBeCalledWith(dto);
     });
