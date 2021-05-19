@@ -3,9 +3,11 @@ import {
   Delete,
   Get,
   NotImplementedException,
+  Param,
   Patch,
   Post,
 } from '@nestjs/common';
+import { PostIdParam } from '../validations/postIdParam.validator';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -33,7 +35,7 @@ export class PostsController {
   }
 
   @Patch('/:postid')
-  flagPost() {
+  flagPost(@Param() params: PostIdParam) {
     throw new NotImplementedException();
   }
 
