@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Logger } from 'winston';
 import { formatISO } from 'date-fns';
-import generateErrorBasedOnCurrentEnvironment from '../../utils/LoggingUtils/generateErrorBasedOnEnvironment';
+import generateErrorBasedOnCurrentEnvironment from '../utils/LoggingUtils/generateErrorBasedOnEnvironment';
 
 @Catch()
 export class AllExceptionsFilterLogger implements ExceptionFilter {
