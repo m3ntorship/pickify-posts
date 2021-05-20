@@ -1,5 +1,5 @@
 // import { OneToMany } from 'typeorm';
-import Model from 'src/shared/entity.model';
+import Model from '../../shared/entity.model';
 import { Column, Entity } from 'typeorm';
 // import { Option } from './option.entity';
 
