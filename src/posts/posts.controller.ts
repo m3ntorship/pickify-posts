@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
   NotImplementedException,
   Param,
   Patch,
@@ -9,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { PostIdParam } from '../validations/postIdParam.validator';
 import { PostsService } from './posts.service';
+import { FlagPostFinishedDto } from './dto/flag-post-finished';
 
 @Controller('posts')
 export class PostsController {
@@ -35,8 +38,12 @@ export class PostsController {
   }
 
   @Patch('/:postid')
-  flagPost(@Param() params: PostIdParam) {
-    throw new NotImplementedException();
+  @HttpCode(204)
+  flagPost(
+    @Param() params: PostIdParam,
+    @Body() flagPostDto: FlagPostFinishedDto,
+  ) {
+    this.postsService.flagPost(params, flagPostDto);
   }
 
   @Delete('/:postid')
