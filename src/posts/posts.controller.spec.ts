@@ -7,7 +7,7 @@ import { PostIdParam } from '../validations/postIdParam.validator';
 
 describe('PostsController', () => {
   let controller: PostsController;
-  const service: PostsService = {
+  const service = {
     flagPost: jest.fn(),
   };
 
@@ -58,10 +58,10 @@ describe('PostsController', () => {
   });
 
   describe('flagPost function', () => {
-    it('should call service.flagpost with passed parameters', () => {
+    it('should call service.flagpost with dto & postid', async () => {
       const dto: FlagPostFinishedDto = { finished: true };
       const params: PostIdParam = { postid: '23242' };
-      controller.flagPost(params, dto);
+      await controller.flagPost(params, dto);
       expect(service.flagPost).toBeCalledWith(params, dto);
     });
   });

@@ -39,11 +39,11 @@ export class PostsController {
 
   @Patch('/:postid')
   @HttpCode(204)
-  flagPost(
+  async flagPost(
     @Param() params: PostIdParam,
     @Body() flagPostDto: FlagPostFinishedDto,
   ) {
-    this.postsService.flagPost(params, flagPostDto);
+    await this.postsService.flagPost(params, flagPostDto);
   }
 
   @Delete('/:postid')
