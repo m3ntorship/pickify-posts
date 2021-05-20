@@ -1,5 +1,6 @@
 import Model from '../../shared/entity.model';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { OptiosnGroup } from './optionsGroup.entity';
 
 @Entity('options')
 export class Option extends Model {
@@ -8,4 +9,7 @@ export class Option extends Model {
 
   @Column()
   vote_count: number;
+
+  @ManyToOne(() => OptiosnGroup, (optionsGroup) => optionsGroup.options)
+  optionsGroup: OptiosnGroup;
 }
