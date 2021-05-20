@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PostIdParam } from 'src/validations/postIdParam.validator';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
+import { PostRepository } from './entities/postRepository';
 
 @Injectable()
 export class PostsService {
-  flagPost(params: PostIdParam, flagPostDto: FlagPostFinishedDto) {
-    const test =
-      'just to be able to commit without having linting errors due to empty flagPost function';
+  constructor(private postRepository: PostRepository) {}
+  async flagPost(params: PostIdParam, flagPostDto: FlagPostFinishedDto) {
+    await this.postRepository.flagPostCreation(
+      flagPostDto.finished,
+      params.postid,
+    );
   }
 }
