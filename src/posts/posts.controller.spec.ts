@@ -2,15 +2,23 @@ import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { FlagPostFinishedDto } from './dto/flag-post-finished';
+import { PostIdParam } from '../validations/postIdParam.validator';
 
 describe('PostsController', () => {
   let controller: PostsController;
+  const service: PostsService = {
+    flagPost: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostsController],
       providers: [PostsService],
-    }).compile();
+    })
+      .overrideProvider(PostsService)
+      .useValue(service)
+      .compile();
 
     controller = module.get<PostsController>(PostsController);
   });
@@ -50,8 +58,11 @@ describe('PostsController', () => {
   });
 
   describe('flagPost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.flagPost).toThrowError(new NotImplementedException());
+    it('should call service.flagpost with passed parameters', () => {
+      const dto: FlagPostFinishedDto = { finished: true };
+      const params: PostIdParam = { postid: '23242' };
+      controller.flagPost(params, dto);
+      expect(service.flagPost).toBeCalledWith(params, dto);
     });
   });
 
