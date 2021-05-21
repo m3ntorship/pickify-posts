@@ -40,7 +40,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-      .exclude('/api/(.[a-z0-9]*)')
+      .exclude('/api/(.[a-z0-9-/]*)')
       .forRoutes('/');
   }
 }
