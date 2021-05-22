@@ -4,7 +4,7 @@ import Model from '../../shared/entity.model';
 
 @Entity('posts')
 export class Post extends Model {
-  @Column()
+  @Column({ nullable: true })
   caption: string;
 
   @Column()
