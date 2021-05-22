@@ -1,10 +1,10 @@
-import { IsBoolean, IsIn } from 'class-validator';
+import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class CreatePostDto {
   caption?: string;
 
-  @IsIn(['text_poll', 'image_poll', 'mini_survey'])
-  type: 'text_poll' | 'image_poll' | 'mini_survey';
+  @IsNotEmpty()
+  type: string;
 
   @IsBoolean()
   is_hidden: boolean;
