@@ -14,7 +14,7 @@ describe('PostsService', () => {
         {
           provide: PostRepository,
           useValue: {
-            createPost: jest.fn(() => ({ uuid: 'test id' })),
+            createPost: jest.fn().mockResolvedValueOnce({ uuid: 'test id' }),
           },
         },
       ],
@@ -24,11 +24,8 @@ describe('PostsService', () => {
     repo = module.get<PostRepository>(PostRepository);
   });
 
-  it('should be defined', () => {
+  it('should be defined & have the necessary methods', () => {
     expect(service).toBeDefined();
-  });
-
-  it('should have createPost method', () => {
     expect(service).toHaveProperty('createPost');
   });
 
@@ -40,8 +37,9 @@ describe('PostsService', () => {
         is_hidden: false,
       };
       const data = await service.createPost(dto);
-      expect(data).toEqual({ id: 'test id' });
+      expect.assertions(2);
       expect(repo.createPost).toBeCalledWith(dto);
+      expect(data).toEqual({ id: 'test id' });
     });
   });
 });
