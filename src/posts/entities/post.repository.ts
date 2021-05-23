@@ -1,11 +1,11 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { CreatePostDto } from '../dto/create-post.dto';
+import { PostCreationDto } from '../dto/postCreation.dto';
 import { Post } from './post.entity';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
-  public async createPost(createPostDto: CreatePostDto): Promise<Post> {
-    const { caption, type, is_hidden } = createPostDto;
+  public async createPost(postCreationDto: PostCreationDto): Promise<Post> {
+    const { caption, type, is_hidden } = postCreationDto;
     const post = this.create();
     post.caption = caption;
     post.type = type;

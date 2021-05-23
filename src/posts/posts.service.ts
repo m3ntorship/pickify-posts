@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
+import { PostCreationDto } from './dto/postCreation.dto';
 import { PostRepository } from './entities/post.repository';
-import type { CreatePost as CreatePostInterface } from './interfaces/createPost.interface';
+import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
 
 @Injectable()
 export class PostsService {
   constructor(private postRepository: PostRepository) {}
-  async createPost(createPostDto: CreatePostDto): Promise<CreatePostInterface> {
-    const createdPost = await this.postRepository.createPost(createPostDto);
+  async createPost(
+    postCreationDto: PostCreationDto,
+  ): Promise<PostCreationInterface> {
+    const createdPost = await this.postRepository.createPost(postCreationDto);
     return { id: createdPost.uuid };
   }
 }

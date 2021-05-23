@@ -2,7 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
+import { PostCreationDto } from './dto/postCreation.dto';
 
 describe('PostsController', () => {
   let controller: PostsController;
@@ -28,7 +28,7 @@ describe('PostsController', () => {
 
   describe('createPost function', () => {
     it('should return a string', () => {
-      const dto: CreatePostDto = {
+      const dto: PostCreationDto = {
         caption: 'test dto',
         type: 'text_poll',
         is_hidden: false,

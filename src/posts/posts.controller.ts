@@ -7,8 +7,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import type { CreatePost as CreatePostInterface } from './interfaces/createPost.interface';
+import { PostCreationDto } from './dto/postCreation.dto';
+import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -17,9 +17,9 @@ export class PostsController {
 
   @Post('/')
   createPost(
-    @Body() createPostDto: CreatePostDto,
-  ): Promise<CreatePostInterface> {
-    return this.postsService.createPost(createPostDto);
+    @Body() postCreationDto: PostCreationDto,
+  ): Promise<PostCreationInterface> {
+    return this.postsService.createPost(postCreationDto);
   }
 
   @Get('/')
