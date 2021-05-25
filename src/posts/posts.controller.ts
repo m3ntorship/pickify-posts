@@ -6,16 +6,24 @@ import {
   NotImplementedException,
   Patch,
   Post,
+  UseFilters,
 } from '@nestjs/common';
 import { PostCreationDto } from './dto/postCreation.dto';
 import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
 import { PostsService } from './posts.service';
+import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
+import * as winston from 'winston';
+import { winstonLoggerOptions } from '../logging/winston.options';
 
 @Controller('posts')
 export class PostsController {
   constructor(private postsService: PostsService) {}
+  logger = winston.createLogger(winstonLoggerOptions);
 
   @Post('/')
+  @UseFilters(
+    new ValidationExceptionFilter(winston.createLogger(winstonLoggerOptions)),
+  )
   createPost(
     @Body() postCreationDto: PostCreationDto,
   ): Promise<PostCreationInterface> {
