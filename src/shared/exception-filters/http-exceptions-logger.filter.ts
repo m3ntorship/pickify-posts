@@ -6,7 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Logger } from 'winston';
-import { formatISO } from 'date-fns';
+import { now } from '../utils/now';
 
 @Catch()
 export class AllExceptionsFilterLogger implements ExceptionFilter {
@@ -20,14 +20,14 @@ export class AllExceptionsFilterLogger implements ExceptionFilter {
     const { message, stack } = exception;
 
     this.logger.error({
-      message,
+      ...exception,
       request: {
         headers,
         method,
         originalUrl,
+        path: url,
       },
-      stack,
-      timestamp: formatISO(Date.now()),
+      timestamp: now,
     });
 
     const status =
@@ -36,11 +36,9 @@ export class AllExceptionsFilterLogger implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     response.status(status).json({
-      statusCode: status,
+      status_code: status,
       message: message,
       stack,
-      timestamp: formatISO(Date.now()),
-      path: url,
     });
   }
 }
