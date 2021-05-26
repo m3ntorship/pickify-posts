@@ -13,7 +13,6 @@ export class PostRepository extends Repository<Post> {
     post.user_id = 1;
     post.created = false;
     post.ready = false;
-    await this.save(post);
-    return post;
+    return await this.save(post);
   }
 }
