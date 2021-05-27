@@ -1,4 +1,41 @@
 import { Injectable } from '@nestjs/common';
+import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
+import { OptionRepository } from './entities/option.repository';
+import { OptionsGroupRepository } from './entities/optionsGroup.repository';
+import { OptionsGroups } from './interface/optionsGroup.interface';
 
 @Injectable()
-export class PostsService {}
+export class PostsService {
+  constructor(
+    private optionRepository: OptionRepository,
+    private groupRepository: OptionsGroupRepository,
+  ) {}
+
+  async createOptionGroup(
+    postid: string,
+    groupsCreationDto: OptionsGroupCreationDto,
+  ): Promise<OptionsGroups> {
+    const response: OptionsGroups = { groups: [] };
+    // Loop through all groups
+    for (let i = 0; i < groupsCreationDto.groups.length; i++) {
+      const group = groupsCreationDto.groups[i];
+      const createdGroup = await this.groupRepository.createGroup(
+        postid,
+        group.name,
+      );
+      // Add the group uuid to the response
+      response.groups.push({ id: createdGroup.uuid, options: [] });
+      // Create Multiple options for the group
+      for (let j = 0; j < group.options.length; j++) {
+        const option = group.options[j];
+        const createdOption = await this.optionRepository.createOption(
+          createdGroup,
+          option,
+        );
+        response.groups[i].options.push({ id: createdOption.uuid });
+      }
+    }
+
+    return response;
+  }
+}
