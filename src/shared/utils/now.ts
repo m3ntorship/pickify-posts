@@ -1,3 +1,3 @@
-import { formatISO } from 'date-fns';
+import * as dayjs from 'dayjs';
 
-export const now = formatISO(Date.now());
+export const now = dayjs().format();
