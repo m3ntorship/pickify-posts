@@ -18,7 +18,7 @@ const logging: any =
 
 const config: TypeOrmModuleOptions = {
   type: 'postgres',
-  schema: 'pickify_posts',
+  migrationsRun: true,
   url: process.env.DB_URL,
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT, 10) || 5432,

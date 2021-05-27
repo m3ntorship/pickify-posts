@@ -2,7 +2,7 @@ import { Entity, Column } from 'typeorm';
 
 import Model from '../../shared/entity.model';
 
-@Entity('posts')
+@Entity({ name: 'posts', schema: 'pickify_posts' })
 export class Post extends Model {
   @Column({ nullable: true })
   caption: string;
