@@ -8,6 +8,10 @@ export class OptiosnGroup extends Model {
   @Column()
   name: string;
 
-  @OneToMany(() => Option, (option) => option.optionsGroup)
+  @OneToMany(() => Option, (option) => option.optionsGroup, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   options: Option[];
 }
