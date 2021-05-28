@@ -1,8 +1,8 @@
 import { Entity, Column } from 'typeorm';
 
-import Model from '../../shared/entity.model';
+import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 
-@Entity({ name: 'posts', schema: 'pickify_posts' })
+@Entity({ name: 'posts', schema: POSTS_SCHEMA })
 export class Post extends Model {
   @Column({ nullable: true })
   caption: string;
