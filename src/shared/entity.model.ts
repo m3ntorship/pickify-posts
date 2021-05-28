@@ -1,12 +1,14 @@
 import {
   BaseEntity,
   BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { v4 as uuid } from 'uuid';
+import { getNow } from '../shared/utils/datetime';
 
 // TODO: not sure if there is a way to add this
 // using annotation or static class method
@@ -14,16 +16,21 @@ import { v4 as uuid } from 'uuid';
 export const POSTS_SCHEMA = 'pickify_posts';
 
 export default abstract class Model extends BaseEntity {
+  constructor(model?: Partial<any>) {
+    super();
+    Object.assign(this, model);
+  }
+
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'uuid' })
   uuid: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
   @BeforeInsert()
@@ -31,9 +38,17 @@ export default abstract class Model extends BaseEntity {
     this.uuid = uuid();
   }
 
-  constructor(model?: Partial<any>) {
-    super();
-    Object.assign(this, model);
+  @BeforeInsert()
+  addInteractionDates() {
+    const date = getNow().toDate();
+    this.createdAt = date;
+    this.updatedAt = date;
+  }
+
+  @BeforeUpdate()
+  addUpdatedAt() {
+    const date = getNow().toDate();
+    this.updatedAt = date;
   }
 
   toJSON() {

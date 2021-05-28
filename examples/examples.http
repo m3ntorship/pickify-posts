@@ -1,0 +1,8 @@
+POST http://localhost:3000/api/posts
+content-type: application/json
+
+{
+    "caption": "Hello world4",
+    "type": "ahmed4",
+    "is_hidden": true
+}
