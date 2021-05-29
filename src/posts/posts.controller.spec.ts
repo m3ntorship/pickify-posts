@@ -7,7 +7,7 @@ import { PostCreationDto } from './dto/postCreation.dto';
 describe('PostsController', () => {
   let controller: PostsController;
   const service = {
-    createPost: jest.fn(() => 'test create'),
+    createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
   };
 
   beforeEach(async () => {
@@ -27,13 +27,18 @@ describe('PostsController', () => {
   });
 
   describe('createPost function', () => {
-    it('should return a string', () => {
+    it('should return a string', async () => {
       const dto: PostCreationDto = {
         caption: 'test dto',
         type: 'text_poll',
         is_hidden: false,
       };
-      expect(controller.createPost(dto)).toBe('test create');
+
+      const result = await controller.createPost(dto);
+
+      expect(result).toEqual({ uuid: 'test id' });
+
+      expect(service.createPost).toBeCalledTimes(1);
       expect(service.createPost).toBeCalledWith(dto);
     });
   });
