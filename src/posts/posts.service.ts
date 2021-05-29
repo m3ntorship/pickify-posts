@@ -1,15 +1,26 @@
 import { Injectable } from '@nestjs/common';
+import { PostCreationDto } from './dto/postCreation.dto';
+import { PostRepository } from './entities/post.repository';
+import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
-import { OptionsGroups } from './interface/optionsGroup.interface';
+import { OptionsGroups } from './interfaces/optionsGroup.interface';
 
 @Injectable()
 export class PostsService {
   constructor(
+    private postRepository: PostRepository,
     private optionRepository: OptionRepository,
     private groupRepository: OptionsGroupRepository,
   ) {}
+
+  async createPost(
+    postCreationDto: PostCreationDto,
+  ): Promise<PostCreationInterface> {
+    const createdPost = await this.postRepository.createPost(postCreationDto);
+    return { id: createdPost.uuid };
+  }
 
   async createOptionGroup(
     postid: string,
@@ -35,7 +46,6 @@ export class PostsService {
         response.groups[i].options.push({ id: createdOption.uuid });
       }
     }
-
     return response;
   }
 }

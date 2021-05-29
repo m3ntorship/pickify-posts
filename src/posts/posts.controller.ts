@@ -7,19 +7,31 @@ import {
   Param,
   Patch,
   Post,
+  UseFilters,
 } from '@nestjs/common';
 import { PostIdParam } from '../shared/validations/postIdParam.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
+import { OptionsGroups } from './interfaces/optionsGroup.interface';
+import { PostCreationDto } from './dto/postCreation.dto';
+import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
 import { PostsService } from './posts.service';
-import { OptionsGroups } from './interface/optionsGroup.interface';
+import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
+import * as winston from 'winston';
+import { winstonLoggerOptions } from '../logging/winston.options';
 
 @Controller('posts')
 export class PostsController {
   constructor(private postsService: PostsService) {}
+  logger = winston.createLogger(winstonLoggerOptions);
 
   @Post('/')
-  createPost() {
-    throw new NotImplementedException();
+  @UseFilters(
+    new ValidationExceptionFilter(winston.createLogger(winstonLoggerOptions)),
+  )
+  createPost(
+    @Body() postCreationDto: PostCreationDto,
+  ): Promise<PostCreationInterface> {
+    return this.postsService.createPost(postCreationDto);
   }
 
   @Get('/')

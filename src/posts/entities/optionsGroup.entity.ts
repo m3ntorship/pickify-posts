@@ -1,9 +1,9 @@
 // import { OneToMany } from 'typeorm';
-import Model from '../../shared/entity.model';
+import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Option } from './option.entity';
 
-@Entity('options_groups')
+@Entity({ name: 'options_groups', schema: POSTS_SCHEMA })
 export class OptiosnGroup extends Model {
   @Column()
   name: string;

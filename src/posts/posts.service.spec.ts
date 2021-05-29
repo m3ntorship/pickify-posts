@@ -2,13 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
-import { OptionsGroups } from './interface/optionsGroup.interface';
+import { OptionsGroups } from './interfaces/optionsGroup.interface';
+import { PostRepository } from './entities/post.repository';
 import { PostsService } from './posts.service';
+import { PostCreationDto } from './dto/postCreation.dto';
 
 describe('PostsService', () => {
   let service: PostsService;
   let optionRepo: OptionRepository;
   let groupRepo: OptionsGroupRepository;
+  let repo: PostRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,12 +33,19 @@ describe('PostsService', () => {
             }),
           },
         },
+        {
+          provide: PostRepository,
+          useValue: {
+            createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<PostsService>(PostsService);
     optionRepo = module.get<OptionRepository>(OptionRepository);
     groupRepo = module.get<OptionsGroupRepository>(OptionsGroupRepository);
+    repo = module.get<PostRepository>(PostRepository);
   });
 
   it('should be defined & have the necessary methods', () => {
@@ -136,6 +146,25 @@ describe('PostsService', () => {
       // assertions
       expect(optionRepo.createOption).toHaveBeenCalledTimes(6);
       expect(groupRepo.createGroup).toHaveBeenCalledTimes(2);
+      expect(service).toHaveProperty('createPost');
+      expect(repo).toBeDefined();
+      expect(repo).toHaveProperty('createPost');
+    });
+
+    describe('createPost method', () => {
+      it('should return object with id', async () => {
+        const dto: PostCreationDto = {
+          type: 'text_poll',
+          caption: 'test caption',
+          is_hidden: false,
+        };
+        const data = await service.createPost(dto);
+
+        expect(data).toEqual({ id: 'test id' });
+
+        expect(repo.createPost).toBeCalledWith(dto);
+        expect(repo.createPost).toBeCalledTimes(1);
+      });
     });
   });
 });

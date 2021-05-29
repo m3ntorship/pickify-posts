@@ -4,11 +4,13 @@ import { PostIdParam } from 'src/shared/validations/postIdParam.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { PostCreationDto } from './dto/postCreation.dto';
 
 describe('PostsController', () => {
   let controller: PostsController;
   const service = {
     createOptionGroup: jest.fn().mockResolvedValueOnce('test creating groups'),
+    createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
   };
 
   beforeEach(async () => {
@@ -28,8 +30,19 @@ describe('PostsController', () => {
   });
 
   describe('createPost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.createPost).toThrowError(new NotImplementedException());
+    it('should return a string', async () => {
+      const dto: PostCreationDto = {
+        caption: 'test dto',
+        type: 'text_poll',
+        is_hidden: false,
+      };
+
+      const result = await controller.createPost(dto);
+
+      expect(result).toEqual({ uuid: 'test id' });
+
+      expect(service.createPost).toBeCalledTimes(1);
+      expect(service.createPost).toBeCalledWith(dto);
     });
   });
 
