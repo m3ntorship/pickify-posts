@@ -7,7 +7,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Logger } from 'winston';
-import { now } from '../utils/now';
+import { getNow } from '../utils/datetime';
 
 @Catch(BadRequestException)
 export class ValidationExceptionFilter implements ExceptionFilter {
@@ -35,7 +35,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
         originalUrl,
         path: url,
       },
-      timestamp: now,
+      timestamp: getNow(),
     });
 
     response.status(HttpStatus.BAD_REQUEST).json({
