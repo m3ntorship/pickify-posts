@@ -1,10 +1,10 @@
 import { Entity, Column } from 'typeorm';
 
-import Model from '../../shared/entity.model';
+import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 
-@Entity('posts')
+@Entity({ name: 'posts', schema: POSTS_SCHEMA })
 export class Post extends Model {
-  @Column()
+  @Column({ nullable: true })
   caption: string;
 
   @Column()
