@@ -2,15 +2,22 @@ import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { PostCreationDto } from './dto/postCreation.dto';
 
 describe('PostsController', () => {
   let controller: PostsController;
+  const service = {
+    createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostsController],
       providers: [PostsService],
-    }).compile();
+    })
+      .overrideProvider(PostsService)
+      .useValue(service)
+      .compile();
 
     controller = module.get<PostsController>(PostsController);
   });
@@ -20,8 +27,19 @@ describe('PostsController', () => {
   });
 
   describe('createPost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.createPost).toThrowError(new NotImplementedException());
+    it('should return a string', async () => {
+      const dto: PostCreationDto = {
+        caption: 'test dto',
+        type: 'text_poll',
+        is_hidden: false,
+      };
+
+      const result = await controller.createPost(dto);
+
+      expect(result).toEqual({ uuid: 'test id' });
+
+      expect(service.createPost).toBeCalledTimes(1);
+      expect(service.createPost).toBeCalledWith(dto);
     });
   });
 
