@@ -50,8 +50,8 @@ describe('PostRepository', () => {
       // Mock this.save() inside postRepository
       Repository.prototype.save = jest.fn((post) => {
         post.id = 1;
-        post.updatedAt = now;
-        post.createdAt = now;
+        post.updated_at = now;
+        post.created_at = now;
         post.uuid = 'test-uuid';
         return new Promise((resolve) => {
           resolve(post);
@@ -69,9 +69,9 @@ describe('PostRepository', () => {
         caption: 'test caption',
         user_id: 1,
         created: false,
-        createdAt: now,
+        created_at: now,
         id: 1,
-        updatedAt: now,
+        updated_at: now,
         is_hidden: false,
         type: 'test type',
         uuid: 'test-uuid',
@@ -94,8 +94,8 @@ describe('PostRepository', () => {
       // Mock this.save() inside postRepository
       Repository.prototype.save = jest.fn((post) => {
         post.id = 1;
-        post.updatedAt = now;
-        post.createdAt = now;
+        post.updated_at = now;
+        post.created_at = now;
         post.uuid = 'test-uuid';
         return new Promise((resolve) => {
           resolve(post);
@@ -113,9 +113,9 @@ describe('PostRepository', () => {
         caption: 'test caption',
         user_id: 1,
         created: false,
-        createdAt: now,
+        created_at: now,
         id: 1,
-        updatedAt: now,
+        updated_at: now,
         is_hidden: false,
         type: 'test type',
         uuid: 'test-uuid',
@@ -144,8 +144,8 @@ describe('PostRepository', () => {
       // Mock this.save() inside postRepository
       Repository.prototype.save = jest.fn((post) => {
         post.id = 1;
-        post.updatedAt = now;
-        post.createdAt = now;
+        post.updated_at = now;
+        post.created_at = now;
         post.uuid = 'test-uuid';
         return new Promise((resolve, reject) => {
           // if (post.ready === undefined)
