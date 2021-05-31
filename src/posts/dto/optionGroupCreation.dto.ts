@@ -1,13 +1,13 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsIn } from 'class-validator';
+import { ValidateNested, IsNotEmpty } from 'class-validator';
 
 export class OptionDto {
-  body?: string;
-  vote_count: number;
+  @IsNotEmpty()
+  body: string;
 }
 
 export class OptionsGroupDto {
-  @IsIn(['test1', 'test2'])
+  @IsNotEmpty()
   name: string;
   @ValidateNested({ each: true })
   @Type(() => OptionDto)
