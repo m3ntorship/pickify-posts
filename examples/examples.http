@@ -1,8 +1,119 @@
-POST http://localhost:3000/api/posts
+// POST /api/posts
+//////////////////
+POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
 
 {
-    "caption": "Hello world4",
-    "type": "ahmed4",
+    "type": "text_poll",
+    "is_hidden": false
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
     "is_hidden": true
 }
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+    "is_hidden": "false"
+}
+
+##################
+// POST /api/posts/:postid/groups
+POST http://localhost:3000/api/posts/94c4e1a3-19b1-4a19-bf39-0d0df81da29c/groups HTTP/1.1
+content-type: application/json
+
+{   
+    "groups": [
+        {
+            "name": "group 1 name",
+            "options": [
+                {
+                    "body":"option 1 body"
+                }
+            ]
+        }
+    ]
+}
+
+###
+
+POST http://localhost:3000/api/posts/e67afb17-cea3-48ea-af71-87e80da0e478/groups HTTP/1.1
+content-type: application/json
+
+{   
+    "groups": [
+        {
+            "options": [
+                {
+                    "body":"option 1 body"
+                }
+            ]
+        }
+    ]
+}
+
+###
+
+POST http://localhost:3000/api/posts/e67afb17-cea3-48ea-af71-87e80da0e478/groups HTTP/1.1
+content-type: application/json
+
+{   
+    "groups": [
+        {
+            "name": "group name",
+            "options": [
+                {
+                    "body":"option 1 body"
+                },
+                {
+                    "body":"option 2 body"
+                },
+                {
+                    "body":"option 3 body"
+                }
+            ]
+        }
+    ]
+}
+
+##################
+// PATCH /api/posts/:postid
+
+
+##################
+// DELETE /api/posts/:postid
+
+
+##################
+// GET /api/posts
+
+
+##################
+// GET /api/posts/:postid
+
+
+##################
+// PUT /api/votes/:optionid
