@@ -10,6 +10,9 @@ export class Option extends Model {
   @Column()
   vote_count: number;
 
-  @ManyToOne(() => OptiosnGroup, (optionsGroup) => optionsGroup.options)
+  @ManyToOne(() => OptiosnGroup, (optionsGroup) => optionsGroup.options, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   optionsGroup: OptiosnGroup;
 }

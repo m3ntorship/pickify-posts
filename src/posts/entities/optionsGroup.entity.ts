@@ -10,14 +10,13 @@ export class OptiosnGroup extends Model {
   name: string;
 
   // one to many relation with option entity
-  @OneToMany(() => Option, (option) => option.optionsGroup, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => Option, (option) => option.optionsGroup)
   options: Option[];
 
   // many to one relation with post entity
-  @ManyToOne(() => Post, (post) => post.groups)
+  @ManyToOne(() => Post, (post) => post.groups, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   post: Post;
 }

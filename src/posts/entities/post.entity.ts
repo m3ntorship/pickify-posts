@@ -24,10 +24,6 @@ export class Post extends Model {
   created: boolean;
 
   // one to many relation with options_group entity
-  @OneToMany(() => OptiosnGroup, (group) => group.post, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => OptiosnGroup, (group) => group.post)
   groups: OptiosnGroup[];
 }
