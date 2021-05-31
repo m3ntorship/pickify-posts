@@ -62,8 +62,8 @@ describe('PostsService', () => {
           {
             name: 'test group name',
             options: [
-              { vote_count: 1, body: 'test option 1 body' },
-              { vote_count: 2, body: 'test option 2 body' },
+              { body: 'test option 1 body' },
+              { body: 'test option 2 body' },
             ],
           },
         ],
@@ -97,8 +97,8 @@ describe('PostsService', () => {
           {
             name: 'test group name',
             options: [
-              { vote_count: 1, body: 'test option 1 body' },
-              { vote_count: 2, body: 'test option 2 body' },
+              { body: 'test option 1 body' },
+              { body: 'test option 2 body' },
             ],
           },
         ],
@@ -125,17 +125,17 @@ describe('PostsService', () => {
           {
             name: 'test group name',
             options: [
-              { vote_count: 1, body: 'test option 1 body' },
-              { vote_count: 2, body: 'test option 2 body' },
-              { vote_count: 2, body: 'test option 2 body' },
+              { body: 'test option 1 body' },
+              { body: 'test option 2 body' },
+              { body: 'test option 2 body' },
             ],
           },
           {
             name: 'test group name',
             options: [
-              { vote_count: 1, body: 'test option 1 body' },
-              { vote_count: 2, body: 'test option 2 body' },
-              { vote_count: 2, body: 'test option 2 body' },
+              { body: 'test option 1 body' },
+              { body: 'test option 2 body' },
+              { body: 'test option 2 body' },
             ],
           },
         ],

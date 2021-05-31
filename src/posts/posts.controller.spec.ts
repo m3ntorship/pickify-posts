@@ -72,7 +72,7 @@ describe('PostsController', () => {
         groups: [
           {
             name: 'default',
-            options: [{ vote_count: 2, body: 'test option body' }],
+            options: [{ body: 'test option body' }],
           },
         ],
       };
