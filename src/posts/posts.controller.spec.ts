@@ -8,6 +8,7 @@ describe('PostsController', () => {
   let controller: PostsController;
   const service = {
     createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
+    deletePost: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -74,8 +75,10 @@ describe('PostsController', () => {
   });
 
   describe('deletePost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.deletePost).toThrowError(new NotImplementedException());
+    it('should call service function with postid', () => {
+      const postid = 'uuid';
+      controller.deletePost(postid);
+      expect(service.deletePost).toBeCalledWith(postid);
     });
   });
 });

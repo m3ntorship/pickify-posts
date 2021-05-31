@@ -12,4 +12,8 @@ export class PostsService {
     const createdPost = await this.postRepository.createPost(postCreationDto);
     return { id: createdPost.uuid };
   }
+
+  async deletePost(postid: string): Promise<void> {
+    await this.postRepository.deletePost(postid);
+  }
 }

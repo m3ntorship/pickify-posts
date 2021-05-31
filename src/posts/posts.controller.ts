@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   NotImplementedException,
+  Param,
   Patch,
   Post,
   UseFilters,
@@ -51,7 +52,7 @@ export class PostsController {
   }
 
   @Delete('/:postid')
-  deletePost() {
-    throw new NotImplementedException();
+  deletePost(@Param('postid') postid: string) {
+    return this.postsService.deletePost(postid);
   }
 }

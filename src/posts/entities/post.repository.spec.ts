@@ -9,16 +9,16 @@ jest.mock('../../shared/utils/datetime/now');
 
 // Mock typeorm which mocks all its methods and make them return undefined
 jest.mock('typeorm', () => ({
-  EntityRepository: jest.fn(),
   Repository: class Repository {},
-  Entity: jest.fn(),
   BaseEntity: class Mock {},
-  BeforeInsert: jest.fn(),
-  BeforeUpdate: jest.fn(),
-  Column: jest.fn(),
-  CreateDateColumn: jest.fn(),
-  PrimaryGeneratedColumn: jest.fn(),
-  UpdateDateColumn: jest.fn(),
+  EntityRepository: () => jest.fn(),
+  Entity: () => jest.fn(),
+  BeforeInsert: () => jest.fn(),
+  BeforeUpdate: () => jest.fn(),
+  Column: () => jest.fn(),
+  CreateDateColumn: () => jest.fn(),
+  PrimaryGeneratedColumn: () => jest.fn(),
+  UpdateDateColumn: () => jest.fn(),
 }));
 
 describe('PostRepository', () => {
