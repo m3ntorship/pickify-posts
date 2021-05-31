@@ -11,12 +11,14 @@ export class OptionRepository extends Repository<Option> {
     group: OptiosnGroup,
     optionData: OptionDto,
   ): Promise<Option> {
-    const option = this.create();
-    option.optionsGroup = group;
-    option.body = optionData.body;
-    option.vote_count = optionData.vote_count;
-    // group.post = post;
-    await option.save();
-    return option;
+    try {
+      const option = this.create();
+      option.optionsGroup = group;
+      option.body = optionData.body;
+      option.vote_count = 0;
+      return await this.save(option);
+    } catch (err) {
+      throw err;
+    }
   }
 }
