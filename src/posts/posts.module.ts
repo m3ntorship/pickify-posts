@@ -3,9 +3,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostRepository } from './entities/post.repository';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { OptionRepository } from './entities/option.repository';
+import { OptionsGroupRepository } from './entities/optionsGroup.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PostRepository])],
+  imports: [
+    TypeOrmModule.forFeature([
+      PostRepository,
+      OptionsGroupRepository,
+      OptionRepository,
+    ]),
+  ],
   controllers: [PostsController],
   providers: [PostsService],
 })

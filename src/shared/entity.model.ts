@@ -28,10 +28,10 @@ export default abstract class Model extends BaseEntity {
   uuid: string;
 
   @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
+  updated_at: Date;
 
   @BeforeInsert()
   createUuid() {
@@ -41,14 +41,14 @@ export default abstract class Model extends BaseEntity {
   @BeforeInsert()
   addInteractionDates() {
     const date = getNow().toDate();
-    this.createdAt = date;
-    this.updatedAt = date;
+    this.created_at = date;
+    this.updated_at = date;
   }
 
   @BeforeUpdate()
   addUpdatedAt() {
     const date = getNow().toDate();
-    this.updatedAt = date;
+    this.updated_at = date;
   }
 
   toJSON() {
