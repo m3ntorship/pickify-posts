@@ -37,6 +37,7 @@ describe('PostsService', () => {
           provide: PostRepository,
           useValue: {
             createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
+            deletePost: jest.fn(),
           },
         },
       ],
@@ -165,6 +166,13 @@ describe('PostsService', () => {
         expect(repo.createPost).toBeCalledWith(dto);
         expect(repo.createPost).toBeCalledTimes(1);
       });
+    });
+  });
+
+  describe('deletePost', () => {
+    it('should call repository fn with post uuid', async () => {
+      await service.deletePost('uuid');
+      expect(repo.deletePost).toHaveBeenCalledWith('uuid');
     });
   });
 });

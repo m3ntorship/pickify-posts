@@ -16,10 +16,10 @@ export class PostRepository extends Repository<Post> {
     post.ready = false;
     return await this.save(post);
   }
-  public async deletePost(postid: string) {
+  public async deletePost(postid: string): Promise<Post> {
     try {
       const post = await this.findOneOrFail({ where: { uuid: postid } });
-      await Post.remove(post);
+      return await Post.remove(post);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

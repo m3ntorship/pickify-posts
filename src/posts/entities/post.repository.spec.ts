@@ -4,13 +4,27 @@ import { Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Post } from './post.entity';
 import { getNow } from '../../shared/utils/datetime/now';
+import { NotFoundException } from '@nestjs/common';
 
 jest.mock('../../shared/utils/datetime/now');
 
 // Mock typeorm which mocks all its methods and make them return undefined
 jest.mock('typeorm', () => ({
   EntityRepository: () => jest.fn(),
-  Repository: class Repository {},
+  Repository: class Repository {
+    findOneOrFail: any;
+    constructor() {
+      this.findOneOrFail = (options) => {
+        const mockPost = { uuid: 'uuid' };
+        const {
+          where: { uuid },
+        } = options;
+        if (uuid === mockPost.uuid) {
+          return Promise.resolve(mockPost);
+        } else return Promise.reject({ message: 'not-found-exception' });
+      };
+    }
+  },
   Entity: () => jest.fn(),
   BaseEntity: class Mock {},
   BeforeInsert: () => jest.fn(),
@@ -21,6 +35,12 @@ jest.mock('typeorm', () => ({
   UpdateDateColumn: () => jest.fn(),
   OneToMany: () => jest.fn(),
   ManyToOne: () => jest.fn(),
+}));
+
+jest.mock('./post.entity', () => ({
+  Post: {
+    remove: jest.fn((mockPost) => mockPost),
+  },
 }));
 
 describe('PostRepository', () => {
@@ -160,6 +180,19 @@ describe('PostRepository', () => {
       expect(postRepository.createPost(dto)).rejects.toBe(
         'ready column should not be null',
       );
+    });
+  });
+
+  describe('deletPost', () => {
+    it('should fail if post doesnt exit', () => {
+      expect(postRepository.deletePost('nonexistent-uuid')).rejects.toThrow(
+        new NotFoundException('not-found-exception'),
+      );
+    });
+    it('should return deleted post, if post was found and deleted', () => {
+      expect(postRepository.deletePost('uuid')).resolves.toEqual({
+        uuid: 'uuid',
+      });
     });
   });
 });
