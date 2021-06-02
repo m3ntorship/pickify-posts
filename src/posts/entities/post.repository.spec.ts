@@ -38,8 +38,10 @@ jest.mock('typeorm', () => ({
 }));
 
 jest.mock('./post.entity', () => ({
-  Post: {
-    remove: jest.fn((mockPost) => mockPost),
+  Post: class Mock {
+    static remove(mockPost) {
+      return mockPost;
+    }
   },
 }));
 

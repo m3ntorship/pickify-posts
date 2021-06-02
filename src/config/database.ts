@@ -19,7 +19,7 @@ const logging: any =
 const config: TypeOrmModuleOptions = {
   type: 'postgres',
   migrationsRun: true,
-  url: process.env.DB_URL,
+  // url: process.env.DB_URL,
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT, 10) || 5432,
   username: process.env.DB_USERNAME || 'postgres',
