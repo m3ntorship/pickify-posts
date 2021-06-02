@@ -9,6 +9,9 @@ import {
   Post,
   UseFilters,
 } from '@nestjs/common';
+import { PostIdParam } from '../shared/validations/postIdParam.validator';
+import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
+import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import { PostCreationDto } from './dto/postCreation.dto';
 import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
 import { PostsService } from './posts.service';
@@ -42,8 +45,15 @@ export class PostsController {
   }
 
   @Post('/:postid/groups')
-  createOptionGroup() {
-    throw new NotImplementedException();
+  async createOptionGroup(
+    @Param() params: PostIdParam,
+    @Body() createGroupsDto: OptionsGroupCreationDto,
+  ): Promise<OptionsGroups> {
+    const createdGroups = await this.postsService.createOptionGroup(
+      params.postid,
+      createGroupsDto,
+    );
+    return createdGroups;
   }
 
   @Patch('/:postid')

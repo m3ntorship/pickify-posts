@@ -1,5 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PostIdParam } from 'src/shared/validations/postIdParam.validator';
+import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { PostCreationDto } from './dto/postCreation.dto';
@@ -7,6 +9,7 @@ import { PostCreationDto } from './dto/postCreation.dto';
 describe('PostsController', () => {
   let controller: PostsController;
   const service = {
+    createOptionGroup: jest.fn().mockResolvedValueOnce('test creating groups'),
     createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
     deletePost: jest.fn(),
   };
@@ -61,10 +64,22 @@ describe('PostsController', () => {
   });
 
   describe('createOptionGroup function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.createOptionGroup).toThrowError(
-        new NotImplementedException(),
-      );
+    it('should call service.createOptionGroup with proper parameters and return its return', async () => {
+      // mocks
+
+      // data
+      const param: PostIdParam = { postid: 'test postId' };
+      const dto: OptionsGroupCreationDto = {
+        groups: [
+          {
+            name: 'default',
+            options: [{ body: 'test option body' }],
+          },
+        ],
+      };
+      const data = await controller.createOptionGroup(param, dto);
+      expect(service.createOptionGroup).toBeCalledWith(param.postid, dto);
+      expect(data).toEqual('test creating groups');
     });
   });
 

@@ -2,10 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { PostCreationDto } from './dto/postCreation.dto';
 import { PostRepository } from './entities/post.repository';
 import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
+import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
+import { OptionRepository } from './entities/option.repository';
+import { OptionsGroupRepository } from './entities/optionsGroup.repository';
+import { OptionsGroups } from './interfaces/optionsGroup.interface';
 
 @Injectable()
 export class PostsService {
-  constructor(private postRepository: PostRepository) {}
+  constructor(
+    private postRepository: PostRepository,
+    private optionRepository: OptionRepository,
+    private groupRepository: OptionsGroupRepository,
+  ) {}
+
   async createPost(
     postCreationDto: PostCreationDto,
   ): Promise<PostCreationInterface> {
@@ -15,5 +24,32 @@ export class PostsService {
 
   async deletePost(postid: string): Promise<void> {
     await this.postRepository.deletePost(postid);
+  }
+
+  async createOptionGroup(
+    postid: string,
+    groupsCreationDto: OptionsGroupCreationDto,
+  ): Promise<OptionsGroups> {
+    const response: OptionsGroups = { groups: [] };
+    // Loop through all groups
+    for (let i = 0; i < groupsCreationDto.groups.length; i++) {
+      const group = groupsCreationDto.groups[i];
+      const createdGroup = await this.groupRepository.createGroup(
+        postid,
+        group.name,
+      );
+      // Add the group uuid to the response
+      response.groups.push({ id: createdGroup.uuid, options: [] });
+      // Create Multiple options for the group
+      for (let j = 0; j < group.options.length; j++) {
+        const option = group.options[j];
+        const createdOption = await this.optionRepository.createOption(
+          createdGroup,
+          option,
+        );
+        response.groups[i].options.push({ id: createdOption.uuid });
+      }
+    }
+    return response;
   }
 }

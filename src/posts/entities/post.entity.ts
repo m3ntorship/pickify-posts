@@ -1,6 +1,7 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
+import { OptiosnGroup } from './optionsGroup.entity';
 
 @Entity({ name: 'posts', schema: POSTS_SCHEMA })
 export class Post extends Model {
@@ -21,4 +22,8 @@ export class Post extends Model {
 
   @Column()
   created: boolean;
+
+  // one to many relation with options_group entity
+  @OneToMany(() => OptiosnGroup, (group) => group.post)
+  groups: OptiosnGroup[];
 }
