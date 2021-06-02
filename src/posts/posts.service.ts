@@ -48,4 +48,7 @@ export class PostsService {
     }
     return response;
   }
+  async getAllPosts() {
+    return this.postRepository.getAllPosts();
+  }
 }

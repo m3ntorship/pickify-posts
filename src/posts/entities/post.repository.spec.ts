@@ -10,7 +10,15 @@ jest.mock('../../shared/utils/datetime/now');
 // Mock typeorm which mocks all its methods and make them return undefined
 jest.mock('typeorm', () => ({
   EntityRepository: () => jest.fn(),
-  Repository: class Repository {},
+  Repository: class Repository {
+    find: any;
+    constructor() {
+      this.find = jest.fn((relations) => {
+        const mockPosts = ['post1', 'post2'];
+        return Promise.resolve(mockPosts);
+      });
+    }
+  },
   Entity: () => jest.fn(),
   BaseEntity: class Mock {},
   BeforeInsert: () => jest.fn(),
@@ -38,6 +46,7 @@ describe('PostRepository', () => {
   it('should be defined and have necessary methods', () => {
     expect(postRepository).toBeDefined();
     expect(postRepository).toHaveProperty('createPost');
+    expect(postRepository).toHaveProperty('getAllPosts');
   });
 
   describe('createPost method', () => {
@@ -160,6 +169,13 @@ describe('PostRepository', () => {
       expect(postRepository.createPost(dto)).rejects.toBe(
         'ready column should not be null',
       );
+    });
+  });
+  describe('getAllPosts function', () => {
+    it('it should return posts array', async () => {
+      const result = await postRepository.getAllPosts();
+      expect(result).toEqual({ postsCount: 2, posts: ['post1', 'post2'] });
+      expect(postRepository.find).toHaveBeenCalled();
     });
   });
 });

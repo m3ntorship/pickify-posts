@@ -15,4 +15,10 @@ export class PostRepository extends Repository<Post> {
     post.ready = false;
     return await this.save(post);
   }
+  async getAllPosts() {
+    const posts = await this.find({ relations: ['groups', 'groups.options'] });
+    const posts_count = posts.length;
+    const response = { postsCount: posts_count, posts: posts };
+    return response;
+  }
 }

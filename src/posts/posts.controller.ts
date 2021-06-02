@@ -36,7 +36,7 @@ export class PostsController {
 
   @Get('/')
   getAllPosts() {
-    throw new NotImplementedException();
+    return this.postsService.getAllPosts();
   }
 
   @Get('/:postid')

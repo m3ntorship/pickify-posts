@@ -37,6 +37,7 @@ describe('PostsService', () => {
           provide: PostRepository,
           useValue: {
             createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
+            getAllPosts: jest.fn().mockReturnValue({ postCount: 1, posts: [] }),
           },
         },
       ],
@@ -165,6 +166,14 @@ describe('PostsService', () => {
         expect(repo.createPost).toBeCalledWith(dto);
         expect(repo.createPost).toBeCalledTimes(1);
       });
+    });
+  });
+  describe('getAllPosts function', () => {
+    it('should return object with array of posts and post count', async () => {
+      const result = await service.getAllPosts();
+      expect(result).toEqual({ postCount: 1, posts: [] });
+      expect(repo.getAllPosts).toHaveBeenCalled();
+      expect(repo.getAllPosts).toHaveReturned();
     });
   });
 });
