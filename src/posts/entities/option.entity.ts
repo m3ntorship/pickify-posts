@@ -1,6 +1,7 @@
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { OptiosnGroup } from './optionsGroup.entity';
+import { Vote } from './vote.entity';
 
 @Entity({ name: 'options', schema: POSTS_SCHEMA })
 export class Option extends Model {
@@ -15,4 +16,7 @@ export class Option extends Model {
     onDelete: 'CASCADE',
   })
   optionsGroup: OptiosnGroup;
+
+  @OneToMany(() => Vote, (vote) => vote.option)
+  votes: Vote[];
 }
