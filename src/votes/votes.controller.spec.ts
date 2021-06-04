@@ -9,7 +9,7 @@ describe('VotesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [VotesController],
-      providers: [VotesService],
+      providers: [{ provide: VotesService, useValue: { addVote: jest.fn() } }],
     }).compile();
 
     controller = module.get<VotesController>(VotesController);
@@ -19,9 +19,9 @@ describe('VotesController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('addVote function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.addVote).toThrowError(new NotImplementedException());
-    });
-  });
+  // describe('addVote function', () => {
+  //   it('should throw not implemented', () => {
+  //     expect(controller.addVote).toThrowError(new NotImplementedException());
+  //   });
+  // });
 });

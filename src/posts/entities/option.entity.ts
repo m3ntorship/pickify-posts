@@ -1,7 +1,7 @@
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { OptiosnGroup } from './optionsGroup.entity';
-import { Vote } from './vote.entity';
+import { Vote } from '../../votes/entities/vote.entity';
 
 @Entity({ name: 'options', schema: POSTS_SCHEMA })
 export class Option extends Model {
