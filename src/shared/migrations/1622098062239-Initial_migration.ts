@@ -17,6 +17,9 @@ export class InitialMigration1622098062239 implements MigrationInterface {
     await queryRunner.query(
       `CREATE TABLE IF NOT EXISTS "${POSTS_SCHEMA}"."options" ("id" SERIAL NOT NULL, "uuid" uuid NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "body" character varying NOT NULL, "vote_count" integer NOT NULL, "optionsGroupId" integer, CONSTRAINT "PK_b0ba798adfe36f8d5c9429759f2" PRIMARY KEY ("id"), CONSTRAINT "FK_cff2c5c22b420f553677f550126" FOREIGN KEY ("optionsGroupId") REFERENCES "${POSTS_SCHEMA}"."options_groups"("id") ON DELETE CASCADE ON UPDATE NO ACTION)`,
     );
+    await queryRunner.query(
+      `CREATE TABLE IF NOT EXISTS "${POSTS_SCHEMA}"."votes" ("id" SERIAL NOT NULL, "uuid" uuid NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "optionId" integer, CONSTRAINT "FK_26c647863c296d49e748b5ef98f" FOREIGN KEY ("optionId") REFERENCES "${POSTS_SCHEMA}"."options"("id") ON DELETE CASCADE ON UPDATE NO ACTION)`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -26,5 +29,6 @@ export class InitialMigration1622098062239 implements MigrationInterface {
       `DROP TABLE IF EXISTS "${POSTS_SCHEMA}"."options_groups"`,
     );
     await queryRunner.query(`DROP TABLE IF EXISTS "${POSTS_SCHEMA}"."posts"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "${POSTS_SCHEMA}"."vote"`);
   }
 }
