@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Post } from './post.entity';
 import { getNow } from '../../shared/utils/datetime/now';
+import { NotFoundException } from '@nestjs/common';
 
 jest.mock('../../shared/utils/datetime/now');
 
@@ -38,6 +39,7 @@ describe('PostRepository', () => {
   it('should be defined and have necessary methods', () => {
     expect(postRepository).toBeDefined();
     expect(postRepository).toHaveProperty('createPost');
+    expect(postRepository).toHaveProperty('flagPostCreation');
   });
 
   describe('createPost method', () => {
@@ -160,6 +162,70 @@ describe('PostRepository', () => {
       expect(postRepository.createPost(dto)).rejects.toBe(
         'ready column should not be null',
       );
+    });
+  });
+
+  describe('flagPostCreation method', () => {
+    it('should throw error if post not found', () => {
+      // Mocks
+      ///////
+      Repository.prototype.findOne = jest.fn().mockImplementation((search) => {
+        const post = {
+          id: 1,
+          uuid: 'test-post-uuid',
+          created: false,
+        };
+
+        return new Promise((resolve, reject) => {
+          if (search.where.uuid === post.uuid) {
+            resolve(post);
+          } else {
+            reject(new NotFoundException('post not found'));
+          }
+        });
+      });
+
+      // Assertions
+      ////////////
+      expect(
+        postRepository.flagPostCreation(true, 'test-wrong-post-uuid'),
+      ).rejects.toThrowError(new NotFoundException('post not found'));
+    });
+
+    it('should change post.created to true', async () => {
+      // data
+      ////////
+      const post = {
+        id: 1,
+        uuid: 'test-post-uuid',
+        created: true,
+      };
+      // Mocks
+      ///////
+      Repository.prototype.findOne = jest.fn().mockImplementation((search) => {
+        const post = {
+          id: 1,
+          uuid: 'test-post-uuid',
+          created: false,
+        };
+
+        return new Promise((resolve, reject) => {
+          if (search.where.uuid === post.uuid) {
+            resolve(post);
+          } else {
+            reject(new NotFoundException('post not found'));
+          }
+        });
+      });
+
+      Repository.prototype.save = jest.fn().mockImplementation((post) => {
+        return Promise.resolve('saved!!');
+      });
+
+      // Assertions
+      ////////////
+      await postRepository.flagPostCreation(true, 'test-post-uuid');
+      expect(postRepository.save).toHaveBeenCalledWith(post);
     });
   });
 });
