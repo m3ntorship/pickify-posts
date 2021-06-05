@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { OptiosnGroup } from 'src/posts/entities/optionsGroup.entity';
 
 @EntityRepository(Vote)
 export class VoteRepository extends Repository<Vote> {
@@ -17,11 +16,11 @@ export class VoteRepository extends Repository<Vote> {
       vote.option = option;
       await vote.save();
 
-      option.votes.push(vote);
       option.vote_count++;
       await option.save();
     } catch (error) {
-      if (error) throw new NotFoundException();
+      console.log(error);
+      if (error.name === 'EntityNotFound') throw new NotFoundException();
       else throw new InternalServerErrorException();
     }
   }

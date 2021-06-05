@@ -6,7 +6,7 @@ export class VotesController {
   constructor(private votesService: VotesService) {}
 
   @Put('/:optionid')
-  addVote(@Param() optionId: string) {
+  addVote(@Param('optionid') optionId: string) {
     return this.votesService.addVote(optionId);
   }
 }
