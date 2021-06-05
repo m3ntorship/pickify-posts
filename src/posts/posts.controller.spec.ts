@@ -88,9 +88,10 @@ describe('PostsController', () => {
 
   describe('deletePost function', () => {
     it('should call service function with postid', () => {
-      const postid = 'uuid';
-      controller.deletePost(postid);
-      expect(service.deletePost).toBeCalledWith(postid);
+      const params = { postid: 'uuid' };
+      const res = controller.deletePost(params);
+      expect(res).toBeUndefined();
+      expect(service.deletePost).toBeCalledWith(params.postid);
     });
   });
 });

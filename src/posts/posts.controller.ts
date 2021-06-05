@@ -64,7 +64,7 @@ export class PostsController {
 
   @Delete('/:postid')
   @HttpCode(204)
-  deletePost(@Param('postid') postid: string) {
-    return this.postsService.deletePost(postid);
+  deletePost(@Param() params: PostIdParam) {
+    return this.postsService.deletePost(params.postid);
   }
 }

@@ -21,7 +21,11 @@ jest.mock('typeorm', () => ({
         } = options;
         if (uuid === mockPost.uuid) {
           return Promise.resolve(mockPost);
-        } else return Promise.reject({ message: 'not-found-exception' });
+        } else
+          return Promise.reject({
+            name: 'EntityNotFound',
+            message: 'not-found-exception',
+          });
       };
     }
   },
@@ -191,10 +195,8 @@ describe('PostRepository', () => {
         new NotFoundException('not-found-exception'),
       );
     });
-    it('should return deleted post, if post was found and deleted', () => {
-      expect(postRepository.deletePost('uuid')).resolves.toEqual({
-        uuid: 'uuid',
-      });
+    it('should return void', () => {
+      expect(postRepository.deletePost('uuid')).resolves.toBeUndefined();
     });
   });
 });

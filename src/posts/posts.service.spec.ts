@@ -171,7 +171,8 @@ describe('PostsService', () => {
 
   describe('deletePost', () => {
     it('should call repository fn with post uuid', async () => {
-      await service.deletePost('uuid');
+      const res = await service.deletePost('uuid');
+      expect(res).toBeUndefined();
       expect(repo.deletePost).toHaveBeenCalledWith('uuid');
     });
   });
