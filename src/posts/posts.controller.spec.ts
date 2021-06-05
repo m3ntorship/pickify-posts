@@ -87,9 +87,9 @@ describe('PostsController', () => {
   });
 
   describe('deletePost function', () => {
-    it('should call service function with postid', () => {
+    it('should call service function with postid', async () => {
       const params = { postid: 'uuid' };
-      const res = controller.deletePost(params);
+      const res = await controller.deletePost(params);
       expect(res).toBeUndefined();
       expect(service.deletePost).toBeCalledWith(params.postid);
     });

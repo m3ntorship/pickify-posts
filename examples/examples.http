@@ -101,7 +101,7 @@ content-type: application/json
 
 ##################
 // DELETE /api/posts/:postid
-DELETE http://localhost:3000/api/posts/518fc3a8-23ca-492e-bd65-00aa6bec3e7f HTTP/1.1
+DELETE http://localhost:3000/api/posts/647b5049-2c4a-4d3b-858b-23f5aade1b60 HTTP/1.1
 content-type: application/json
 
 
