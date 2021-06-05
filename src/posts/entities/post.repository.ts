@@ -1,3 +1,7 @@
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { PostCreationDto } from '../dto/postCreation.dto';
 import { Post } from './post.entity';
@@ -14,5 +18,15 @@ export class PostRepository extends Repository<Post> {
     post.created = false;
     post.ready = false;
     return await this.save(post);
+  }
+  public async deletePost(postid: string): Promise<void> {
+    try {
+      const post = await this.findOneOrFail({ where: { uuid: postid } });
+      await Post.remove(post);
+    } catch (error) {
+      if (error.name === 'EntityNotFound')
+        throw new NotFoundException(error.message);
+      else throw new InternalServerErrorException();
+    }
   }
 }

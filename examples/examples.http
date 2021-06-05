@@ -42,7 +42,7 @@ content-type: application/json
 
 ##################
 // POST /api/posts/:postid/groups
-POST http://localhost:3000/api/posts/94c4e1a3-19b1-4a19-bf39-0d0df81da29c/groups HTTP/1.1
+POST http://localhost:3000/api/posts/c2fae873-6e47-43ec-b734-a19c9347fc3d/groups HTTP/1.1
 content-type: application/json
 
 {   
@@ -100,11 +100,13 @@ content-type: application/json
 }
 
 ##################
-// PATCH /api/posts/:postid
+// DELETE /api/posts/:postid
+DELETE http://localhost:3000/api/posts/647b5049-2c4a-4d3b-858b-23f5aade1b60 HTTP/1.1
+content-type: application/json
 
 
 ##################
-// DELETE /api/posts/:postid
+// PATCH /api/posts/:postid
 
 
 ##################
