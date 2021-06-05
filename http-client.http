@@ -1,0 +1,64 @@
+// POST /api/posts
+//////////////////
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{
+    "type": "text_poll",
+    "is_hidden": false
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+    "is_hidden": true
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+    "is_hidden": "false"
+}
+
+##################
+// POST /api/posts/:postid/groups
+
+
+##################
+// PATCH /api/posts/:postid
+
+
+##################
+// DELETE /api/posts/:postid
+
+
+##################
+// GET /api/posts
+
+
+##################
+// GET /api/posts/:postid
+
+
+##################
+// PUT /api/votes/:optionid

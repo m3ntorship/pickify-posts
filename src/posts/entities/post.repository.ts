@@ -1,6 +1,6 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
-import { CreatePostDto } from '../dto/create-post.dto';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { PostCreationDto } from '../dto/postCreation.dto';
 import { Post } from './post.entity';
 
 @EntityRepository(Post)
@@ -8,8 +8,8 @@ export class PostRepository extends Repository<Post> {
   /**
    * createPost
    */
-  public async createPost(createPostDto: CreatePostDto): Promise<Post> {
-    const { caption, type, is_hidden } = createPostDto;
+  public async createPost(postCreationDto: PostCreationDto): Promise<Post> {
+    const { caption, type, is_hidden } = postCreationDto;
     const post = this.create();
     post.caption = caption;
     post.type = type;
@@ -17,14 +17,13 @@ export class PostRepository extends Repository<Post> {
     post.user_id = 1;
     post.created = false;
     post.ready = false;
-    await this.save(post);
-    return post;
+    return await this.save(post);
   }
 
   /**
    * flagPostCreation
    */
-  public async flagPostCreation(flag: boolean, postid: string) {
+  public async flagPostCreation(flag: boolean, postid: string): Promise<void> {
     const post = await this.findOne({ where: { uuid: postid } });
     if (!post) throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
     post.created = flag;
