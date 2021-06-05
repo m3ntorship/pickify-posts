@@ -14,8 +14,8 @@ POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
 
 {   
-    "caption": "post caption",
-    "type": "text_poll",
+    "caption": "post 2 caption",
+    "type": "image_poll",
     "is_hidden": true
 }
 
@@ -42,7 +42,7 @@ content-type: application/json
 
 ##################
 // POST /api/posts/:postid/groups
-POST http://localhost:3000/api/posts/94c4e1a3-19b1-4a19-bf39-0d0df81da29c/groups HTTP/1.1
+POST http://localhost:3000/api/posts/ff64adcb-5e7e-4279-ae98-c2dedcb20f8f/groups HTTP/1.1
 content-type: application/json
 
 {   
@@ -101,6 +101,12 @@ content-type: application/json
 
 ##################
 // PATCH /api/posts/:postid
+PATCH http://localhost:3000/api/posts/98dcb0da-972b-4d25-950a-10c62ba8a78f
+Content-Type: application/json
+
+{
+    "finished": true
+}
 
 
 ##################
