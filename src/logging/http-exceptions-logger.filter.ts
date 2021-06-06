@@ -16,7 +16,7 @@ export class AllExceptionsFilterLogger implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const { headers, method, originalUrl, url } = ctx.getRequest();
+    const { headers, method, originalUrl } = ctx.getRequest();
     delete headers.authorization;
     const { message, stack } = exception;
 
@@ -40,7 +40,6 @@ export class AllExceptionsFilterLogger implements ExceptionFilter {
       status,
       message,
       stack,
-      url,
       process.env.NODE_ENV,
     );
 
