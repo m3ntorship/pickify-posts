@@ -13,16 +13,14 @@ describe('PostsController', () => {
     flagPost: jest.fn(),
     createOptionGroup: jest.fn().mockResolvedValueOnce('test creating groups'),
     createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
+    deletePost: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostsController],
-      providers: [PostsService],
-    })
-      .overrideProvider(PostsService)
-      .useValue(service)
-      .compile();
+      providers: [{ provide: PostsService, useValue: service }],
+    }).compile();
 
     controller = module.get<PostsController>(PostsController);
   });
@@ -94,8 +92,11 @@ describe('PostsController', () => {
   });
 
   describe('deletePost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.deletePost).toThrowError(new NotImplementedException());
+    it('should call service function with postid', async () => {
+      const params = { postid: 'uuid' };
+      const res = await controller.deletePost(params);
+      expect(res).toBeUndefined();
+      expect(service.deletePost).toBeCalledWith(params.postid);
     });
   });
 });

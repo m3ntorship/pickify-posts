@@ -11,7 +11,24 @@ jest.mock('../../shared/utils/datetime/now');
 // Mock typeorm which mocks all its methods and make them return undefined
 jest.mock('typeorm', () => ({
   EntityRepository: () => jest.fn(),
-  Repository: class Repository {},
+  Repository: class Repository {
+    findOneOrFail: any;
+    constructor() {
+      this.findOneOrFail = (options) => {
+        const mockPost = { uuid: 'uuid' };
+        const {
+          where: { uuid },
+        } = options;
+        if (uuid === mockPost.uuid) {
+          return Promise.resolve(mockPost);
+        } else
+          return Promise.reject({
+            name: 'EntityNotFound',
+            message: 'not-found-exception',
+          });
+      };
+    }
+  },
   Entity: () => jest.fn(),
   BaseEntity: class Mock {},
   BeforeInsert: () => jest.fn(),
@@ -22,6 +39,14 @@ jest.mock('typeorm', () => ({
   UpdateDateColumn: () => jest.fn(),
   OneToMany: () => jest.fn(),
   ManyToOne: () => jest.fn(),
+}));
+
+jest.mock('./post.entity', () => ({
+  Post: class Mock {
+    static remove(mockPost) {
+      return mockPost;
+    }
+  },
 }));
 
 describe('PostRepository', () => {
@@ -226,6 +251,16 @@ describe('PostRepository', () => {
       ////////////
       await postRepository.flagPostCreation(true, 'test-post-uuid');
       expect(postRepository.save).toHaveBeenCalledWith(post);
+    });
+  });
+  describe('deletPost', () => {
+    it('should fail if post doesnt exit', () => {
+      expect(postRepository.deletePost('nonexistent-uuid')).rejects.toThrow(
+        new NotFoundException('not-found-exception'),
+      );
+    });
+    it('should return void', () => {
+      expect(postRepository.deletePost('uuid')).resolves.toBeUndefined();
     });
   });
 });
