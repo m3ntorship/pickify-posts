@@ -11,12 +11,12 @@ import config from './config/database';
 import * as swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from '../openAPI/post.openAPI.json';
 
-const evnVariable = process.env.NODE_ENV || 'development';
+const evnVariable = process.env.NODE_ENV;
 @Module({
   imports: [
     ConfigModule.forRoot({
       // load different .env files based on runtime environment variable
-      envFilePath: [`.${evnVariable}.env`],
+      envFilePath: !evnVariable ? '.development.env' : `.${evnVariable}.env`,
       isGlobal: true,
       load: [configuration],
     }),
