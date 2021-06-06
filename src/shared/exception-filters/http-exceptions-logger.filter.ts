@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import generateErrorBasedOnCurrentEnvironment from '../../shared/utils/LoggingUtils/generateErrorBasedOnEnvironment';
+import generateErrorBasedOnCurrentEnvironment from '../utils/Logging/generateErrorBasedOnEnvironment';
 import { Logger } from 'winston';
 import { getNow } from '../utils/datetime';
 
