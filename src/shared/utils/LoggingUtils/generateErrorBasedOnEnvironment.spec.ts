@@ -1,4 +1,4 @@
-import generateErrorBasedOnCurrentEnvironment from '../LoggingUtils/generateErrorBasedOnEnvironment';
+import generateErrorBasedOnCurrentEnvironment from './generateErrorBasedOnEnvironment';
 
 const expectedErrorInNonProductionEnv = {
   statusCode: 200,

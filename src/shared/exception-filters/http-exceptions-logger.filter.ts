@@ -5,9 +5,9 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import generateErrorBasedOnCurrentEnvironment from '../../shared/utils/LoggingUtils/generateErrorBasedOnEnvironment';
 import { Logger } from 'winston';
-import { formatISO } from 'date-fns';
-import generateErrorBasedOnCurrentEnvironment from '../utils/LoggingUtils/generateErrorBasedOnEnvironment';
+import { getNow } from '../utils/datetime';
 
 @Catch()
 export class AllExceptionsFilterLogger implements ExceptionFilter {
@@ -21,14 +21,13 @@ export class AllExceptionsFilterLogger implements ExceptionFilter {
     const { message, stack } = exception;
 
     this.logger.error({
-      message,
+      ...exception,
       request: {
         headers,
         method,
         originalUrl,
       },
-      stack,
-      timestamp: formatISO(Date.now()),
+      timestamp: getNow(),
     });
 
     const status =

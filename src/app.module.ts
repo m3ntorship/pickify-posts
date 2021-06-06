@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { PromModule } from '@digikare/nestjs-prom';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ModuleExampleModule } from './moduleExample/moduleExample.module';
 import { MediaModule } from './media/media.module';
 import { VotesModule } from './votes/votes.module';
 import { PostsModule } from './posts/posts.module';
@@ -27,7 +26,6 @@ const evnVariable = process.env.NODE_ENV;
       },
     }),
     TypeOrmModule.forRoot(config),
-    ModuleExampleModule,
     MediaModule,
     VotesModule,
     PostsModule,
@@ -40,7 +38,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-      .exclude('/api/(.[a-z0-9]*)')
+      .exclude('/api/(.[a-z0-9-/]*)')
       .forRoutes('/');
   }
 }

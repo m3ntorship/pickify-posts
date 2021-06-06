@@ -1,0 +1,121 @@
+// POST /api/posts
+//////////////////
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{
+    "type": "text_poll",
+    "is_hidden": false
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+    "is_hidden": true
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+    "is_hidden": "false"
+}
+
+##################
+// POST /api/posts/:postid/groups
+POST http://localhost:3000/api/posts/c2fae873-6e47-43ec-b734-a19c9347fc3d/groups HTTP/1.1
+content-type: application/json
+
+{   
+    "groups": [
+        {
+            "name": "group 1 name",
+            "options": [
+                {
+                    "body":"option 1 body"
+                }
+            ]
+        }
+    ]
+}
+
+###
+
+POST http://localhost:3000/api/posts/e67afb17-cea3-48ea-af71-87e80da0e478/groups HTTP/1.1
+content-type: application/json
+
+{   
+    "groups": [
+        {
+            "options": [
+                {
+                    "body":"option 1 body"
+                }
+            ]
+        }
+    ]
+}
+
+###
+
+POST http://localhost:3000/api/posts/e67afb17-cea3-48ea-af71-87e80da0e478/groups HTTP/1.1
+content-type: application/json
+
+{   
+    "groups": [
+        {
+            "name": "group name",
+            "options": [
+                {
+                    "body":"option 1 body"
+                },
+                {
+                    "body":"option 2 body"
+                },
+                {
+                    "body":"option 3 body"
+                }
+            ]
+        }
+    ]
+}
+
+##################
+// DELETE /api/posts/:postid
+DELETE http://localhost:3000/api/posts/647b5049-2c4a-4d3b-858b-23f5aade1b60 HTTP/1.1
+content-type: application/json
+
+
+##################
+// PATCH /api/posts/:postid
+
+
+##################
+// GET /api/posts
+
+
+##################
+// GET /api/posts/:postid
+
+
+##################
+// PUT /api/votes/:optionid
