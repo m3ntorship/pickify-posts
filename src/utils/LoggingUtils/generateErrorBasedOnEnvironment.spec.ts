@@ -1,35 +1,36 @@
-import { formatISO } from 'date-fns';
+import generateErrorBasedOnCurrentEnvironment from '../LoggingUtils/generateErrorBasedOnEnvironment';
 
 const expectedErrorInNonProductionEnv = {
   statusCode: 200,
-  message: '',
+  message: 'Error Message',
   stack: 'stack trace',
-  timestamp: formatISO(Date.now()),
-  path: 'URL',
-};
-const expectedErrorInProductionEnv = {
-  statusCode: 500,
-  message: 'Internal Service Error',
-  timestamp: formatISO(Date.now()),
 };
 
-function returnCoresspondingError(currentEnvironment: string) {
-  if (currentEnvironment != 'production') {
-    return expectedErrorInNonProductionEnv;
-  }
-  return expectedErrorInProductionEnv;
-}
+const expectedErrorInProductionEnv = {
+  statusCode: 500,
+  message: 'Internal Server Error',
+};
 
 describe('test error returned based on the working environment', () => {
   it('check error returned if env not production', () => {
-    expect(returnCoresspondingError('development')).toEqual(
-      expectedErrorInNonProductionEnv,
-    );
+    expect(
+      generateErrorBasedOnCurrentEnvironment(
+        200,
+        'Error Message',
+        'stack trace',
+        'development',
+      ),
+    ).toEqual(expectedErrorInNonProductionEnv);
   });
 
   it('check error returned if env is production', () => {
-    expect(returnCoresspondingError('production')).toEqual(
-      expectedErrorInProductionEnv,
-    );
+    expect(
+      generateErrorBasedOnCurrentEnvironment(
+        500,
+        'Error Message',
+        'stack trace',
+        'production',
+      ),
+    ).toEqual(expectedErrorInProductionEnv);
   });
 });

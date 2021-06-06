@@ -1,10 +1,7 @@
-import { formatISO } from 'date-fns';
-
 export default function generateErrorBasedOnCurrentEnvironment(
   status: number,
   message: string,
   stack,
-  url,
   currentEnvironment: string,
 ) {
   let expectedErrorToBeReturned = {};
@@ -14,8 +11,6 @@ export default function generateErrorBasedOnCurrentEnvironment(
       statusCode: status,
       message: message,
       stack,
-      timestamp: formatISO(Date.now()),
-      path: url,
     };
   } else {
     if (status >= 500) {
@@ -25,7 +20,6 @@ export default function generateErrorBasedOnCurrentEnvironment(
     expectedErrorToBeReturned = {
       statusCode: status,
       message,
-      timestamp: formatISO(Date.now()),
     };
   }
 
