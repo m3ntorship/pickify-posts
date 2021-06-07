@@ -185,7 +185,6 @@ describe('PostsService', () => {
   describe('getAllPosts function', () => {
     it('should return object with array of posts and post count', async () => {
       const result = await service.getAllPosts();
-      console.log(result);
       const mockedReturnedPosts = [
         {
           id: 'd14cf2cb-25c7-43e8-89a3-9ac62a02e688',
