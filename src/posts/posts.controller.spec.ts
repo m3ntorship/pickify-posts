@@ -16,6 +16,7 @@ describe('PostsController', () => {
     getAllPosts: jest
       .fn()
       .mockReturnValue({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] }),
+    getSinglePost: jest.fn().mockResolvedValue({ id: 'post1-id' }),
     deletePost: jest.fn(),
   };
 
@@ -58,10 +59,11 @@ describe('PostsController', () => {
   });
 
   describe('getSinglePost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.getSinglePost).toThrowError(
-        new NotImplementedException(),
-      );
+    it('should throw not implemented', async () => {
+      const params = { postid: 'post1-id' };
+      const result = await controller.getSinglePost(params);
+      expect(result).toEqual({ id: 'post1-id' });
+      expect(service.getSinglePost).toBeCalledWith(params.postid);
     });
   });
 

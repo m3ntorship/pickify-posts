@@ -9,6 +9,7 @@ import {
   group,
   option,
   optionsGroup,
+  post,
   posts,
 } from './interfaces/getPosts.interface';
 import { response } from 'express';
@@ -102,5 +103,24 @@ export class PostsService {
       });
     }
     return response;
+  }
+  async getSinglePost(postId: string): Promise<post> {
+    const post = await this.postRepository.getSinglePost(postId);
+    const postUuid = post.uuid;
+    delete post['uuid'];
+
+    // modifying groups data
+    const groups: group[] = post.groups.map((obj) => {
+      const groupUuid = obj['uuid'];
+      delete obj['uuid'];
+      const options = obj.options.map((option) => {
+        const optionUuid = option['uuid'];
+        delete option['uuid'];
+        return { id: optionUuid, ...(option as any) };
+      });
+      delete obj['options'];
+      return { id: groupUuid, options: options, ...(obj as any) };
+    });
+    return { id: postUuid, ...(post as any), options_groups: groups };
   }
 }

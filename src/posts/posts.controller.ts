@@ -42,8 +42,8 @@ export class PostsController {
   }
 
   @Get('/:postid')
-  getSinglePost() {
-    throw new NotImplementedException();
+  getSinglePost(@Param() params: PostIdParam) {
+    return this.postsService.getSinglePost(params.postid);
   }
 
   @Post('/:postid/groups')
