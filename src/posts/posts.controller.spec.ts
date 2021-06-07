@@ -1,14 +1,16 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostIdParam } from 'src/shared/validations/uuid.validator';
+import { PostIdParam } from '../shared/validations/uuid.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { FlagPostFinishedDto } from './dto/flag-post-finished';
 import { PostCreationDto } from './dto/postCreation.dto';
 
 describe('PostsController', () => {
   let controller: PostsController;
   const service = {
+    flagPost: jest.fn(),
     createOptionGroup: jest.fn().mockResolvedValueOnce('test creating groups'),
     createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
     deletePost: jest.fn(),
@@ -81,8 +83,11 @@ describe('PostsController', () => {
   });
 
   describe('flagPost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.flagPost).toThrowError(new NotImplementedException());
+    it('should call service.flagpost with dto & postid', async () => {
+      const dto: FlagPostFinishedDto = { finished: true };
+      const params: PostIdParam = { postid: '23242' };
+      await controller.flagPost(params, dto);
+      expect(service.flagPost).toBeCalledWith(params, dto);
     });
   });
 
