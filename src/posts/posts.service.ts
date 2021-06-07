@@ -22,6 +22,10 @@ export class PostsService {
     return { id: createdPost.uuid };
   }
 
+  async deletePost(postid: string): Promise<void> {
+    await this.postRepository.deletePost(postid);
+  }
+
   async createOptionGroup(
     postid: string,
     groupsCreationDto: OptionsGroupCreationDto,

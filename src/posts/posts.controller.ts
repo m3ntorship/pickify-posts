@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   NotImplementedException,
   Param,
   Patch,
@@ -62,7 +63,8 @@ export class PostsController {
   }
 
   @Delete('/:postid')
-  deletePost() {
-    throw new NotImplementedException();
+  @HttpCode(204)
+  async deletePost(@Param() params: PostIdParam) {
+    await this.postsService.deletePost(params.postid);
   }
 }
