@@ -10,12 +10,13 @@ import {
   Post,
   UseFilters,
 } from '@nestjs/common';
+import { PostsService } from './posts.service';
+import { FlagPostFinishedDto } from './dto/flag-post-finished';
 import { PostIdParam } from '../shared/validations/postIdParam.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import { PostCreationDto } from './dto/postCreation.dto';
 import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
-import { PostsService } from './posts.service';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
@@ -58,8 +59,12 @@ export class PostsController {
   }
 
   @Patch('/:postid')
-  flagPost() {
-    throw new NotImplementedException();
+  @HttpCode(204)
+  async flagPost(
+    @Param() params: PostIdParam,
+    @Body() flagPostDto: FlagPostFinishedDto,
+  ): Promise<void> {
+    await this.postsService.flagPost(params, flagPostDto);
   }
 
   @Delete('/:postid')

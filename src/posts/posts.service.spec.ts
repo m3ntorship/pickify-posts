@@ -6,12 +6,13 @@ import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import { PostRepository } from './entities/post.repository';
 import { PostsService } from './posts.service';
 import { PostCreationDto } from './dto/postCreation.dto';
+import { PostIdParam } from '../shared/validations/postIdParam.validator';
 
 describe('PostsService', () => {
   let service: PostsService;
   let optionRepo: OptionRepository;
   let groupRepo: OptionsGroupRepository;
-  let repo: PostRepository;
+  let postRepo: PostRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,6 +38,7 @@ describe('PostsService', () => {
           provide: PostRepository,
           useValue: {
             createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
+            flagPostCreation: jest.fn(),
             deletePost: jest.fn(),
           },
         },
@@ -46,12 +48,14 @@ describe('PostsService', () => {
     service = module.get<PostsService>(PostsService);
     optionRepo = module.get<OptionRepository>(OptionRepository);
     groupRepo = module.get<OptionsGroupRepository>(OptionsGroupRepository);
-    repo = module.get<PostRepository>(PostRepository);
+    postRepo = module.get<PostRepository>(PostRepository);
   });
 
   it('should be defined & have the necessary methods', () => {
     expect(service).toBeDefined();
+    expect(service).toHaveProperty('createPost');
     expect(service).toHaveProperty('createOptionGroup');
+    expect(service).toHaveProperty('flagPost');
   });
 
   describe('createOptionGroup method', () => {
@@ -147,9 +151,6 @@ describe('PostsService', () => {
       // assertions
       expect(optionRepo.createOption).toHaveBeenCalledTimes(6);
       expect(groupRepo.createGroup).toHaveBeenCalledTimes(2);
-      expect(service).toHaveProperty('createPost');
-      expect(repo).toBeDefined();
-      expect(repo).toHaveProperty('createPost');
     });
 
     describe('createPost method', () => {
@@ -163,17 +164,28 @@ describe('PostsService', () => {
 
         expect(data).toEqual({ id: 'test id' });
 
-        expect(repo.createPost).toBeCalledWith(dto);
-        expect(repo.createPost).toBeCalledTimes(1);
+        expect(postRepo.createPost).toBeCalledWith(dto);
+        expect(postRepo.createPost).toBeCalledTimes(1);
       });
     });
   });
 
+  describe('flagPost method', () => {
+    it('should call postRepository.flagPost with dto & postid', async () => {
+      const dto = { finished: true };
+      const params = new PostIdParam();
+      await service.flagPost(params, dto);
+      expect(postRepo.flagPostCreation).toBeCalledWith(
+        dto.finished,
+        params.postid,
+      );
+    });
+  });
   describe('deletePost', () => {
     it('should call repository fn with post uuid', async () => {
       const res = await service.deletePost('uuid');
       expect(res).toBeUndefined();
-      expect(repo.deletePost).toHaveBeenCalledWith('uuid');
+      expect(postRepo.deletePost).toHaveBeenCalledWith('uuid');
     });
   });
 });
