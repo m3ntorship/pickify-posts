@@ -1,4 +1,3 @@
-import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VotesController } from './votes.controller';
 import { VotesService } from './votes.service';
@@ -27,13 +26,13 @@ describe('VotesController', () => {
   });
 
   describe('addVote', () => {
-    const params = { optionId: 'uuid' };
+    const params = { optionid: 'uuid' };
     it('should call service function with optionId', async () => {
-      controller.addVote(params.optionId);
-      expect(mockService.addVote).toBeCalledWith(params.optionId);
+      controller.addVote(params);
+      expect(mockService.addVote).toBeCalledWith(params.optionid);
     });
     it('should return whatever service method returns', () => {
-      const res = controller.addVote(params.optionId);
+      const res = controller.addVote(params);
       expect(res).resolves.toEqual(['options']);
     });
   });

@@ -10,7 +10,7 @@ import {
   Post,
   UseFilters,
 } from '@nestjs/common';
-import { PostIdParam } from '../shared/validations/postIdParam.validator';
+import { PostIdParam } from '../shared/validations/uuid.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import { PostCreationDto } from './dto/postCreation.dto';

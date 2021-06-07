@@ -11,7 +11,17 @@ const mockVotes = [];
 
 jest.mock('typeorm', () => ({
   EntityRepository: () => jest.fn(),
-  Repository: class Repository {},
+  Repository: class Repository {
+    create: any;
+    constructor() {
+      this.create = jest.fn(() => ({
+        option: {},
+        save: jest.fn(() => {
+          mockVotes.push({ optionId: 'id' });
+        }),
+      }));
+    }
+  },
   Entity: () => jest.fn(),
   BaseEntity: class Mock {},
   BeforeInsert: () => jest.fn(),
@@ -33,21 +43,13 @@ jest.mock('../../posts/entities/option.entity', () => ({
       if (uuid === mockOption.uuid)
         return Promise.resolve({
           ...mockOption,
-          optionsGroup: { options: [mockOption, mockOption] },
+          optionsGroup: { options: [{ ...mockOption }, { ...mockOption }] },
           save: jest.fn(() => {
             mockOption.vote_count++;
           }),
         });
       else return Promise.reject({ name: 'EntityNotFound' });
     }
-  },
-}));
-
-jest.mock('./vote.entity', () => ({
-  Vote: class MockClass {
-    save = jest.fn(() => {
-      mockVotes.push({ optionId: 'id' });
-    });
   },
 }));
 
@@ -59,6 +61,12 @@ describe('Votes Repository', () => {
     }).compile();
     voteRepository = mockModule.get<VoteRepository>(VoteRepository);
   });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    mockOption.vote_count = 0;
+  });
+
   it('should be defined and have necessary methods', () => {
     expect(voteRepository).toBeDefined();
     expect(voteRepository).toHaveProperty('addVote');
@@ -67,7 +75,9 @@ describe('Votes Repository', () => {
   describe('addVote method', () => {
     it('should throw if post wasnt found', () => {
       const response = voteRepository.addVote('nonexistent-uuid');
-      expect(response).rejects.toThrow(new NotFoundException());
+      expect(response).rejects.toThrow(
+        new NotFoundException('cannot find option entity with this id'),
+      );
     });
     it('should save a new record to votes', async () => {
       const prevVotesRecords = mockVotes.length;

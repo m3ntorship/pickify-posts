@@ -101,7 +101,7 @@ content-type: application/json
 
 ##################
 // DELETE /api/posts/:postid
-DELETE http://localhost:3000/api/posts/647b5049-2c4a-4d3b-858b-23f5aade1b60 HTTP/1.1
+DELETE http://localhost:3000/api/posts/219e9e3d-f209-4f64-b816-6bba8e0d2e43 HTTP/1.1
 content-type: application/json
 
 
@@ -120,4 +120,4 @@ content-type: application/json
 ##################
 // PUT /api/votes/:optionid
 
-PUT http://localhost:3000/api/votes/8898c208-0be3-4e92-a83b-862a688ba8dc HTTP/1.1
+PUT http://localhost:3000/api/votes/a502658a-d92f-4759-a0fc-8fd79e656172 HTTP/1.1
