@@ -1,29 +1,29 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostIdParam } from 'src/shared/validations/postIdParam.validator';
+import { PostIdParam } from '../shared/validations/uuid.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { FlagPostFinishedDto } from './dto/flag-post-finished';
 import { PostCreationDto } from './dto/postCreation.dto';
 
 describe('PostsController', () => {
   let controller: PostsController;
   const service = {
+    flagPost: jest.fn(),
     createOptionGroup: jest.fn().mockResolvedValueOnce('test creating groups'),
     createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
     getAllPosts: jest
       .fn()
       .mockReturnValue({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] }),
+    deletePost: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostsController],
-      providers: [PostsService],
-    })
-      .overrideProvider(PostsService)
-      .useValue(service)
-      .compile();
+      providers: [{ provide: PostsService, useValue: service }],
+    }).compile();
 
     controller = module.get<PostsController>(PostsController);
   });
@@ -86,14 +86,20 @@ describe('PostsController', () => {
   });
 
   describe('flagPost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.flagPost).toThrowError(new NotImplementedException());
+    it('should call service.flagpost with dto & postid', async () => {
+      const dto: FlagPostFinishedDto = { finished: true };
+      const params: PostIdParam = { postid: '23242' };
+      await controller.flagPost(params, dto);
+      expect(service.flagPost).toBeCalledWith(params, dto);
     });
   });
 
   describe('deletePost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.deletePost).toThrowError(new NotImplementedException());
+    it('should call service function with postid', async () => {
+      const params = { postid: 'uuid' };
+      const res = await controller.deletePost(params);
+      expect(res).toBeUndefined();
+      expect(service.deletePost).toBeCalledWith(params.postid);
     });
   });
 });

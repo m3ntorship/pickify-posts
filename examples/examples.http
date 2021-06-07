@@ -14,8 +14,8 @@ POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
 
 {   
-    "caption": "post caption",
-    "type": "text_poll",
+    "caption": "post 2 caption",
+    "type": "image_poll",
     "is_hidden": true
 }
 
@@ -42,7 +42,7 @@ content-type: application/json
 
 ##################
 // POST /api/posts/:postid/groups
-POST http://localhost:3000/api/posts/94c4e1a3-19b1-4a19-bf39-0d0df81da29c/groups HTTP/1.1
+POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
 content-type: application/json
 
 {   
@@ -60,7 +60,7 @@ content-type: application/json
 
 ###
 
-POST http://localhost:3000/api/posts/e67afb17-cea3-48ea-af71-87e80da0e478/groups HTTP/1.1
+POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
 content-type: application/json
 
 {   
@@ -77,7 +77,7 @@ content-type: application/json
 
 ###
 
-POST http://localhost:3000/api/posts/e67afb17-cea3-48ea-af71-87e80da0e478/groups HTTP/1.1
+POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
 content-type: application/json
 
 {   
@@ -101,10 +101,20 @@ content-type: application/json
 
 ##################
 // PATCH /api/posts/:postid
+PATCH http://localhost:3000/api/posts/98dcb0da-972b-4d25-950a-10c62ba8a78f
+Content-Type: application/json
+
+{
+    "finished": true
+}
+###
+// DELETE /api/posts/:postid
+DELETE http://localhost:3000/api/posts/219e9e3d-f209-4f64-b816-6bba8e0d2e43 HTTP/1.1
+content-type: application/json
 
 
 ##################
-// DELETE /api/posts/:postid
+// PATCH /api/posts/:postid
 
 
 ##################
@@ -117,3 +127,5 @@ content-type: application/json
 
 ##################
 // PUT /api/votes/:optionid
+
+PUT http://localhost:3000/api/votes/a502658a-d92f-4759-a0fc-8fd79e656172 HTTP/1.1

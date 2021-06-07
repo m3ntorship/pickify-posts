@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { PostCreationDto } from './dto/postCreation.dto';
 import { PostRepository } from './entities/post.repository';
 import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
@@ -14,6 +13,9 @@ import {
 } from './interfaces/getPosts.interface';
 import { response } from 'express';
 import { FORMERR } from 'node:dns';
+import { Injectable } from '@nestjs/common';
+import { PostIdParam } from '../shared/validations/uuid.validator';
+import { FlagPostFinishedDto } from './dto/flag-post-finished';
 
 @Injectable()
 export class PostsService {
@@ -28,6 +30,20 @@ export class PostsService {
   ): Promise<PostCreationInterface> {
     const createdPost = await this.postRepository.createPost(postCreationDto);
     return { id: createdPost.uuid };
+  }
+
+  async flagPost(
+    params: PostIdParam,
+    flagPostDto: FlagPostFinishedDto,
+  ): Promise<void> {
+    await this.postRepository.flagPostCreation(
+      flagPostDto.finished,
+      params.postid,
+    );
+  }
+
+  async deletePost(postid: string): Promise<void> {
+    await this.postRepository.deletePost(postid);
   }
 
   async createOptionGroup(

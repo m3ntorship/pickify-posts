@@ -4,6 +4,7 @@ import { createQueryBuilder, Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Post } from './post.entity';
 import { getNow } from '../../shared/utils/datetime/now';
+import { NotFoundException } from '@nestjs/common';
 
 jest.mock('../../shared/utils/datetime/now');
 
@@ -11,18 +12,22 @@ jest.mock('../../shared/utils/datetime/now');
 jest.mock('typeorm', () => ({
   EntityRepository: () => jest.fn(),
   Repository: class Repository {
-    //   createQueryBuilder(){
-    //     const posts = [{uuid: 'post1-uuid', id: 1},{uuid: 'post2-uuid', id: 2}]
-    //     return {
-    //       select:jest.fn().mockImplementation(()=> ({
-    //         leftJoin: () => ({
-    //           leftJoin: () => ({
-    //             getMany: jest.fn().mockResolvedValue(posts)
-    //           })
-    //         })
-    //       }))
-    //     };
-    //  }
+    findOneOrFail: any;
+    constructor() {
+      this.findOneOrFail = (options) => {
+        const mockPost = { uuid: 'uuid' };
+        const {
+          where: { uuid },
+        } = options;
+        if (uuid === mockPost.uuid) {
+          return Promise.resolve(mockPost);
+        } else
+          return Promise.reject({
+            name: 'EntityNotFound',
+            message: 'not-found-exception',
+          });
+      };
+    }
   },
   Entity: () => jest.fn(),
   BaseEntity: class Mock {},
@@ -34,6 +39,14 @@ jest.mock('typeorm', () => ({
   UpdateDateColumn: () => jest.fn(),
   OneToMany: () => jest.fn(),
   ManyToOne: () => jest.fn(),
+}));
+
+jest.mock('./post.entity', () => ({
+  Post: class Mock {
+    static remove(mockPost) {
+      return mockPost;
+    }
+  },
 }));
 
 describe('PostRepository', () => {
@@ -52,6 +65,7 @@ describe('PostRepository', () => {
     expect(postRepository).toBeDefined();
     expect(postRepository).toHaveProperty('createPost');
     expect(postRepository).toHaveProperty('getAllPosts');
+    expect(postRepository).toHaveProperty('flagPostCreation');
   });
 
   describe('createPost method', () => {
@@ -200,6 +214,80 @@ describe('PostRepository', () => {
       // assertions
       /////////////
       expect(postRepository.getAllPosts()).resolves.toEqual(posts);
+    });
+  });
+
+  describe('flagPostCreation method', () => {
+    it('should throw error if post not found', () => {
+      // Mocks
+      ///////
+      Repository.prototype.findOne = jest.fn().mockImplementation((search) => {
+        const post = {
+          id: 1,
+          uuid: 'test-post-uuid',
+          created: false,
+        };
+
+        return new Promise((resolve, reject) => {
+          if (search.where.uuid === post.uuid) {
+            resolve(post);
+          } else {
+            reject(new NotFoundException('post not found'));
+          }
+        });
+      });
+
+      // Assertions
+      ////////////
+      expect(
+        postRepository.flagPostCreation(true, 'test-wrong-post-uuid'),
+      ).rejects.toThrowError(new NotFoundException('post not found'));
+    });
+
+    it('should change post.created to true', async () => {
+      // data
+      ////////
+      const post = {
+        id: 1,
+        uuid: 'test-post-uuid',
+        created: true,
+      };
+      // Mocks
+      ///////
+      Repository.prototype.findOne = jest.fn().mockImplementation((search) => {
+        const post = {
+          id: 1,
+          uuid: 'test-post-uuid',
+          created: false,
+        };
+
+        return new Promise((resolve, reject) => {
+          if (search.where.uuid === post.uuid) {
+            resolve(post);
+          } else {
+            reject(new NotFoundException('post not found'));
+          }
+        });
+      });
+
+      Repository.prototype.save = jest.fn().mockImplementation((post) => {
+        return Promise.resolve('saved!!');
+      });
+
+      // Assertions
+      ////////////
+      await postRepository.flagPostCreation(true, 'test-post-uuid');
+      expect(postRepository.save).toHaveBeenCalledWith(post);
+    });
+  });
+  describe('deletPost', () => {
+    it('should fail if post doesnt exit', () => {
+      expect(postRepository.deletePost('nonexistent-uuid')).rejects.toThrow(
+        new NotFoundException('not-found-exception'),
+      );
+    });
+    it('should return void', () => {
+      expect(postRepository.deletePost('uuid')).resolves.toBeUndefined();
     });
   });
 });
