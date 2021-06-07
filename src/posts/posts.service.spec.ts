@@ -6,7 +6,7 @@ import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import { PostRepository } from './entities/post.repository';
 import { PostsService } from './posts.service';
 import { PostCreationDto } from './dto/postCreation.dto';
-import { PostIdParam } from '../shared/validations/postIdParam.validator';
+import { PostIdParam } from '../shared/validations/uuid.validator';
 
 describe('PostsService', () => {
   let service: PostsService;

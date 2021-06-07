@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostIdParam } from '../shared/validations/postIdParam.validator';
+import { PostIdParam } from '../shared/validations/uuid.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';

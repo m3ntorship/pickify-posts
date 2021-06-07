@@ -6,7 +6,7 @@ import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import { Injectable } from '@nestjs/common';
-import { PostIdParam } from '../shared/validations/postIdParam.validator';
+import { PostIdParam } from '../shared/validations/uuid.validator';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
 
 @Injectable()

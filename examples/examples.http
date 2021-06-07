@@ -42,7 +42,7 @@ content-type: application/json
 
 ##################
 // POST /api/posts/:postid/groups
-POST http://localhost:3000/api/posts/c2fae873-6e47-43ec-b734-a19c9347fc3d/groups HTTP/1.1
+POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
 content-type: application/json
 
 {   
@@ -60,7 +60,7 @@ content-type: application/json
 
 ###
 
-POST http://localhost:3000/api/posts/e67afb17-cea3-48ea-af71-87e80da0e478/groups HTTP/1.1
+POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
 content-type: application/json
 
 {   
@@ -77,7 +77,7 @@ content-type: application/json
 
 ###
 
-POST http://localhost:3000/api/posts/e67afb17-cea3-48ea-af71-87e80da0e478/groups HTTP/1.1
+POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
 content-type: application/json
 
 {   
@@ -109,7 +109,7 @@ Content-Type: application/json
 }
 ###
 // DELETE /api/posts/:postid
-DELETE http://localhost:3000/api/posts/647b5049-2c4a-4d3b-858b-23f5aade1b60 HTTP/1.1
+DELETE http://localhost:3000/api/posts/219e9e3d-f209-4f64-b816-6bba8e0d2e43 HTTP/1.1
 content-type: application/json
 
 
@@ -127,3 +127,5 @@ content-type: application/json
 
 ##################
 // PUT /api/votes/:optionid
+
+PUT http://localhost:3000/api/votes/a502658a-d92f-4759-a0fc-8fd79e656172 HTTP/1.1
