@@ -6,6 +6,14 @@ import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
+import {
+  group,
+  option,
+  optionsGroup,
+  posts,
+} from './interfaces/getPosts.interface';
+import { response } from 'express';
+import { FORMERR } from 'node:dns';
 
 @Injectable()
 export class PostsService {
@@ -48,7 +56,35 @@ export class PostsService {
     }
     return response;
   }
-  async getAllPosts() {
-    return this.postRepository.getAllPosts();
+  async getAllPosts(): Promise<posts> {
+    const currentPosts = await this.postRepository.getAllPosts();
+
+    const response: posts = { postsCount: currentPosts.length, posts: [] };
+    for (let i = 0; i < currentPosts.length; i++) {
+      const post = currentPosts[i];
+
+      //modifying groups and options returned data
+      const groups: group[] = post.groups.map((obj) => {
+        const groupUuid = obj['uuid'];
+        delete obj['uuid'];
+        const options = obj.options.map((option) => {
+          const optionUuid = option['uuid'];
+          delete option['uuid'];
+          return { id: optionUuid, ...(option as any) };
+        });
+        delete obj['options'];
+        return { id: groupUuid, options: options, ...(obj as any) };
+      });
+
+      response.posts.push({
+        id: post.uuid,
+        caption: post.caption,
+        is_hidden: post.is_hidden,
+        created_at: post.created_at,
+        type: post.type,
+        options_groups: { groups: groups },
+      });
+    }
+    return response;
   }
 }

@@ -11,7 +11,9 @@ describe('PostsController', () => {
   const service = {
     createOptionGroup: jest.fn().mockResolvedValueOnce('test creating groups'),
     createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
-    getAllPosts: jest.fn().mockReturnValue({ postCount: 1, posts: [] }),
+    getAllPosts: jest
+      .fn()
+      .mockReturnValue({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] }),
   };
 
   beforeEach(async () => {
@@ -50,7 +52,7 @@ describe('PostsController', () => {
   describe('getAllPosts function', () => {
     it('should return object with array of posts and post count', async () => {
       const result = await controller.getAllPosts();
-      expect(result).toEqual({ postCount: 1, posts: [] });
+      expect(result).toEqual({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] });
       expect(service.getAllPosts).toHaveBeenCalled();
     });
   });

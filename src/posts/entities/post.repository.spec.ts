@@ -1,6 +1,6 @@
 import { PostRepository } from './post.repository';
 import { PostCreationDto } from '../dto/postCreation.dto';
-import { Repository } from 'typeorm';
+import { createQueryBuilder, Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Post } from './post.entity';
 import { getNow } from '../../shared/utils/datetime/now';
@@ -11,13 +11,18 @@ jest.mock('../../shared/utils/datetime/now');
 jest.mock('typeorm', () => ({
   EntityRepository: () => jest.fn(),
   Repository: class Repository {
-    find: any;
-    constructor() {
-      this.find = jest.fn((relations) => {
-        const mockPosts = ['post1', 'post2'];
-        return Promise.resolve(mockPosts);
-      });
-    }
+    //   createQueryBuilder(){
+    //     const posts = [{uuid: 'post1-uuid', id: 1},{uuid: 'post2-uuid', id: 2}]
+    //     return {
+    //       select:jest.fn().mockImplementation(()=> ({
+    //         leftJoin: () => ({
+    //           leftJoin: () => ({
+    //             getMany: jest.fn().mockResolvedValue(posts)
+    //           })
+    //         })
+    //       }))
+    //     };
+    //  }
   },
   Entity: () => jest.fn(),
   BaseEntity: class Mock {},
@@ -171,11 +176,30 @@ describe('PostRepository', () => {
       );
     });
   });
-  describe('getAllPosts function', () => {
-    it('it should return posts array', async () => {
-      const result = await postRepository.getAllPosts();
-      expect(result).toEqual({ postsCount: 2, posts: ['post1', 'post2'] });
-      expect(postRepository.find).toHaveBeenCalled();
+  describe('getPosts function', () => {
+    it('should return array of posts', () => {
+      // data
+      ///////
+      const posts = [
+        { uuid: 'post1-uuid', id: 1 },
+        { uuid: 'post2-uuid', id: 2 },
+      ];
+      // mocks
+      ///////
+      Repository.prototype.createQueryBuilder = jest
+        .fn()
+        .mockImplementation(() => ({
+          select: jest.fn().mockImplementation(() => ({
+            leftJoin: () => ({
+              leftJoin: () => ({
+                getMany: jest.fn().mockResolvedValue(posts),
+              }),
+            }),
+          })),
+        }));
+      // assertions
+      /////////////
+      expect(postRepository.getAllPosts()).resolves.toEqual(posts);
     });
   });
 });

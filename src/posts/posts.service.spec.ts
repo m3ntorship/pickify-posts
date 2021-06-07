@@ -6,12 +6,24 @@ import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import { PostRepository } from './entities/post.repository';
 import { PostsService } from './posts.service';
 import { PostCreationDto } from './dto/postCreation.dto';
+import { Post } from './entities/post.entity';
 
 describe('PostsService', () => {
   let service: PostsService;
   let optionRepo: OptionRepository;
   let groupRepo: OptionsGroupRepository;
   let repo: PostRepository;
+
+  const mockedPosts = [
+    {
+      uuid: 'd14cf2cb-25c7-43e8-89a3-9ac62a02e688',
+      created_at: '2021-06-01T18:09:01.512Z',
+      caption: 'post 5',
+      type: 'text poll',
+      is_hidden: false,
+      groups: [{ uuid: 'group1-uuid', options: [] }],
+    },
+  ];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,7 +49,7 @@ describe('PostsService', () => {
           provide: PostRepository,
           useValue: {
             createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
-            getAllPosts: jest.fn().mockReturnValue({ postCount: 1, posts: [] }),
+            getAllPosts: jest.fn().mockResolvedValue(mockedPosts),
           },
         },
       ],
@@ -171,9 +183,20 @@ describe('PostsService', () => {
   describe('getAllPosts function', () => {
     it('should return object with array of posts and post count', async () => {
       const result = await service.getAllPosts();
-      expect(result).toEqual({ postCount: 1, posts: [] });
-      expect(repo.getAllPosts).toHaveBeenCalled();
-      expect(repo.getAllPosts).toHaveReturned();
+      console.log(result);
+      const mockedReturnedPosts = [
+        {
+          id: 'd14cf2cb-25c7-43e8-89a3-9ac62a02e688',
+          caption: 'post 5',
+          is_hidden: false,
+          created_at: '2021-06-01T18:09:01.512Z',
+          type: 'text poll',
+          options_groups: {
+            groups: [{ id: 'group1-uuid', options: [] }],
+          },
+        },
+      ];
+      expect(result).toEqual({ postsCount: 1, posts: mockedReturnedPosts });
     });
   });
 });
