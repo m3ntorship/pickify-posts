@@ -1,12 +1,10 @@
 import { PostRepository } from './post.repository';
 import { PostCreationDto } from '../dto/postCreation.dto';
-import { createQueryBuilder, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Post } from './post.entity';
 import { getNow } from '../../shared/utils/datetime/now';
 import { NotFoundException } from '@nestjs/common';
-import { async } from 'rxjs';
-import { resolve } from 'node:path';
 
 jest.mock('../../shared/utils/datetime/now');
 
@@ -218,33 +216,41 @@ describe('PostRepository', () => {
       expect(postRepository.getAllPosts()).resolves.toEqual(posts);
     });
   });
-  // describe('getSinglePost function', () => {
-  //   it('should fail if post doesnt exit', async() => {
-  //     expect(postRepository.getSinglePost('nonexistent-uuid')).rejects.toThrow(
-  //       new NotFoundException('post not found'),
-  //     );
-  //   });
-  //   it('should return post object', () => {
-  //     // data //
-  //     const post = { uuid: 'post1-uuid', id: 1 };
-  //     // mocks //
-  //     Repository.prototype.createQueryBuilder = jest
-  //       .fn()
-  //       .mockImplementation(() => ({
-  //         select: jest.fn().mockImplementation(() => ({
-  //           leftJoin: () => ({
-  //             leftJoin: () => ({
-  //               where: () => ({
-  //                 getOneOrFail: jest.fn().mockResolvedValue(post),
-  //               }),
-  //             }),
-  //           }),
-  //         })),
-  //       }));
-  //     // assertions //
-  //     expect(postRepository.getSinglePost(post.uuid)).resolves.toEqual(post);
-  //   });
-  // });
+  describe('getSinglePost function', () => {
+    it('should return the found post or throw error if not found', async () => {
+      // data //
+      const post = { uuid: 'post-uuid', id: 1 };
+      // mocks //
+      Repository.prototype.createQueryBuilder = jest
+        .fn()
+        .mockImplementation(() => ({
+          select: jest.fn().mockImplementation(() => ({
+            leftJoin: () => ({
+              leftJoin: () => ({
+                where: (string, search) => ({
+                  getOneOrFail: jest.fn().mockImplementation(() => {
+                    return new Promise((resolve, reject) => {
+                      if (search.uuid === 'post-uuid') {
+                        resolve(post);
+                      } else {
+                        reject({
+                          name: 'EntityNotFound',
+                        });
+                      }
+                    });
+                  }),
+                }),
+              }),
+            }),
+          })),
+        }));
+      // Assertions //
+      expect(postRepository.getSinglePost('nonexistent-uuid')).rejects.toThrow(
+        new NotFoundException('post not found'),
+      );
+      expect(postRepository.getSinglePost(post.uuid)).resolves.toEqual(post);
+    });
+  });
 
   describe('flagPostCreation method', () => {
     it('should throw error if post not found', () => {
