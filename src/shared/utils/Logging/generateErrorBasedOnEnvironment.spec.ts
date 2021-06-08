@@ -1,13 +1,13 @@
 import generateErrorBasedOnCurrentEnvironment from './generateErrorBasedOnEnvironment';
 
 const expectedErrorInNonProductionEnv = {
-  statusCode: 200,
+  status_code: 200,
   message: 'Error Message',
   stack: 'stack trace',
 };
 
 const expectedErrorInProductionEnv = {
-  statusCode: 500,
+  status_code: 500,
   message: 'Internal Server Error',
 };
 
@@ -44,7 +44,7 @@ describe('test error returned based on the working environment', () => {
       ),
     ).toEqual({
       ...expectedErrorInProductionEnv,
-      statusCode: 400,
+      status_code: 400,
       message: 'Error Message',
     });
   });

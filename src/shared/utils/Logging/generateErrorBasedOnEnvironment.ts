@@ -1,6 +1,6 @@
 export default function generateErrorBasedOnCurrentEnvironment(
   status: number,
-  message: string,
+  message: string | string[],
   stack,
   currentEnvironment: string,
 ) {
@@ -8,7 +8,7 @@ export default function generateErrorBasedOnCurrentEnvironment(
 
   if (currentEnvironment != 'production') {
     expectedErrorToBeReturned = {
-      statusCode: status,
+      status_code: status,
       message: message,
       stack,
     };
@@ -18,7 +18,7 @@ export default function generateErrorBasedOnCurrentEnvironment(
     }
 
     expectedErrorToBeReturned = {
-      statusCode: status,
+      status_code: status,
       message,
     };
   }
