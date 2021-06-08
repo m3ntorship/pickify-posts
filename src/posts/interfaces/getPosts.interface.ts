@@ -1,25 +1,25 @@
-export interface post {
+export interface Post {
   id: string;
   caption: string;
   is_hidden: boolean;
   created_at: Date;
   type: string;
-  options_groups: optionsGroup;
+  options_groups: OptionsGroup;
 }
-export interface optionsGroup {
-  groups: group[];
+export interface OptionsGroup {
+  groups: Group[];
 }
-export interface option {
+export interface Option {
   id: string;
   body: string;
   vote_count: number;
 }
-export interface group {
+export interface Group {
   id: string;
   name: string;
-  options: option[];
+  options: Option[];
 }
-export interface posts {
+export interface Posts {
   postsCount: number;
-  posts: post[];
+  posts: Post[];
 }

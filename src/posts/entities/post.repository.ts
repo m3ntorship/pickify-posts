@@ -5,9 +5,7 @@ import {
 import { EntityRepository, Repository } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { PostCreationDto } from '../dto/postCreation.dto';
-import { posts } from '../interfaces/getPosts.interface';
 import { Post } from './post.entity';
-import { response } from 'express';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -25,7 +23,7 @@ export class PostRepository extends Repository<Post> {
     post.ready = false;
     return await this.save(post);
   }
-  async getAllPosts(): Promise<Post[]> {
+  public async getAllPosts(): Promise<Post[]> {
     const posts = await this.createQueryBuilder('posts')
       .select([
         'posts.uuid',
