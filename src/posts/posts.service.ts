@@ -121,6 +121,14 @@ export class PostsService {
       delete obj['options'];
       return { id: groupUuid, options: options, ...(obj as any) };
     });
-    return { id: postUuid, ...(post as any), options_groups: groups };
+
+    //deleting old groups
+    delete post['groups'];
+
+    return {
+      id: postUuid,
+      ...(post as any),
+      options_groups: { groups: groups },
+    };
   }
 }

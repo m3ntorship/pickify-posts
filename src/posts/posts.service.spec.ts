@@ -8,6 +8,7 @@ import { PostsService } from './posts.service';
 import { PostCreationDto } from './dto/postCreation.dto';
 import { Post } from './entities/post.entity';
 import { PostIdParam } from '../shared/validations/uuid.validator';
+import { async } from 'rxjs';
 
 describe('PostsService', () => {
   let service: PostsService;
@@ -17,14 +18,22 @@ describe('PostsService', () => {
 
   const mockedPosts = [
     {
-      uuid: 'd14cf2cb-25c7-43e8-89a3-9ac62a02e688',
-      created_at: '2021-06-01T18:09:01.512Z',
+      uuid: 'post5-uuid',
+      created_at: '2021-06-01',
       caption: 'post 5',
       type: 'text poll',
       is_hidden: false,
       groups: [{ uuid: 'group1-uuid', options: [] }],
     },
   ];
+  const mockedPost = {
+    uuid: 'post6-uuid',
+    caption: 'post 6',
+    is_hidden: false,
+    created_at: '2021-06-01',
+    type: 'text poll',
+    groups: [{ uuid: 'group1-uuid', options: [] }],
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,6 +60,7 @@ describe('PostsService', () => {
           useValue: {
             createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
             getAllPosts: jest.fn().mockResolvedValue(mockedPosts),
+            getSinglePost: jest.fn().mockResolvedValue(mockedPost),
             flagPostCreation: jest.fn(),
             deletePost: jest.fn(),
           },
@@ -182,15 +192,15 @@ describe('PostsService', () => {
       });
     });
   });
-  describe('getAllPosts function', () => {
-    it('should return object with array of posts and post count', async () => {
+  describe('getAllPosts function ', () => {
+    it('should return an object with array of posts and postsCount', async () => {
       const result = await service.getAllPosts();
       const mockedReturnedPosts = [
         {
-          id: 'd14cf2cb-25c7-43e8-89a3-9ac62a02e688',
+          id: 'post5-uuid',
           caption: 'post 5',
           is_hidden: false,
-          created_at: '2021-06-01T18:09:01.512Z',
+          created_at: '2021-06-01',
           type: 'text poll',
           options_groups: {
             groups: [{ id: 'group1-uuid', options: [] }],
@@ -200,6 +210,23 @@ describe('PostsService', () => {
       expect(result).toEqual({ postsCount: 1, posts: mockedReturnedPosts });
     });
   });
+
+  describe('getSinglePosts function', () => {
+    it('should return post object', async () => {
+      const result = await service.getSinglePost('post6-uuid');
+      const mockedReturnedPost = {
+        id: 'post6-uuid',
+        caption: 'post 6',
+        is_hidden: false,
+        created_at: '2021-06-01',
+        type: 'text poll',
+        options_groups: { groups: [{ id: 'group1-uuid', options: [] }] },
+      };
+      expect(result).toEqual(mockedReturnedPost);
+      expect(postRepo.getSinglePost).toBeCalledWith('post6-uuid');
+    });
+  });
+
   describe('flagPost method', () => {
     it('should call postRepository.flagPost with dto & postid', async () => {
       const dto = { finished: true };

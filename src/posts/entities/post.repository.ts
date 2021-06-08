@@ -86,7 +86,7 @@ export class PostRepository extends Repository<Post> {
       return post;
     } catch (error) {
       if (error.name === 'EntityNotFound')
-        throw new NotFoundException(error.message);
+        throw new NotFoundException('post not found');
       else throw new InternalServerErrorException();
     }
   }

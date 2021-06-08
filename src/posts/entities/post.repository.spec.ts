@@ -5,6 +5,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Post } from './post.entity';
 import { getNow } from '../../shared/utils/datetime/now';
 import { NotFoundException } from '@nestjs/common';
+import { async } from 'rxjs';
+import { resolve } from 'node:path';
 
 jest.mock('../../shared/utils/datetime/now');
 
@@ -216,6 +218,33 @@ describe('PostRepository', () => {
       expect(postRepository.getAllPosts()).resolves.toEqual(posts);
     });
   });
+  // describe('getSinglePost function', () => {
+  //   it('should fail if post doesnt exit', async() => {
+  //     expect(postRepository.getSinglePost('nonexistent-uuid')).rejects.toThrow(
+  //       new NotFoundException('post not found'),
+  //     );
+  //   });
+  //   it('should return post object', () => {
+  //     // data //
+  //     const post = { uuid: 'post1-uuid', id: 1 };
+  //     // mocks //
+  //     Repository.prototype.createQueryBuilder = jest
+  //       .fn()
+  //       .mockImplementation(() => ({
+  //         select: jest.fn().mockImplementation(() => ({
+  //           leftJoin: () => ({
+  //             leftJoin: () => ({
+  //               where: () => ({
+  //                 getOneOrFail: jest.fn().mockResolvedValue(post),
+  //               }),
+  //             }),
+  //           }),
+  //         })),
+  //       }));
+  //     // assertions //
+  //     expect(postRepository.getSinglePost(post.uuid)).resolves.toEqual(post);
+  //   });
+  // });
 
   describe('flagPostCreation method', () => {
     it('should throw error if post not found', () => {
