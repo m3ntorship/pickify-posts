@@ -64,6 +64,7 @@ describe('PostRepository', () => {
   it('should be defined and have necessary methods', () => {
     expect(postRepository).toBeDefined();
     expect(postRepository).toHaveProperty('createPost');
+    expect(postRepository).toHaveProperty('getAllPosts');
     expect(postRepository).toHaveProperty('flagPostCreation');
   });
 
@@ -187,6 +188,67 @@ describe('PostRepository', () => {
       expect(postRepository.createPost(dto)).rejects.toBe(
         'ready column should not be null',
       );
+    });
+  });
+  describe('getPosts function', () => {
+    it('should return array of posts', () => {
+      // data
+      ///////
+      const posts = [
+        { uuid: 'post1-uuid', id: 1 },
+        { uuid: 'post2-uuid', id: 2 },
+      ];
+      // mocks
+      ///////
+      Repository.prototype.createQueryBuilder = jest
+        .fn()
+        .mockImplementation(() => ({
+          select: jest.fn().mockImplementation(() => ({
+            leftJoin: () => ({
+              leftJoin: () => ({
+                getMany: jest.fn().mockResolvedValue(posts),
+              }),
+            }),
+          })),
+        }));
+      // assertions
+      /////////////
+      expect(postRepository.getAllPosts()).resolves.toEqual(posts);
+    });
+  });
+  describe('getSinglePost function', () => {
+    it('should return the found post or throw error if not found', async () => {
+      // data //
+      const post = { uuid: 'post-uuid', id: 1 };
+      // mocks //
+      Repository.prototype.createQueryBuilder = jest
+        .fn()
+        .mockImplementation(() => ({
+          select: jest.fn().mockImplementation(() => ({
+            leftJoin: () => ({
+              leftJoin: () => ({
+                where: (string, search) => ({
+                  getOneOrFail: jest.fn().mockImplementation(() => {
+                    return new Promise((resolve, reject) => {
+                      if (search.uuid === 'post-uuid') {
+                        resolve(post);
+                      } else {
+                        reject({
+                          name: 'EntityNotFound',
+                        });
+                      }
+                    });
+                  }),
+                }),
+              }),
+            }),
+          })),
+        }));
+      // Assertions //
+      expect(postRepository.getSinglePost('nonexistent-uuid')).rejects.toThrow(
+        new NotFoundException('post not found'),
+      );
+      expect(postRepository.getSinglePost(post.uuid)).resolves.toEqual(post);
     });
   });
 

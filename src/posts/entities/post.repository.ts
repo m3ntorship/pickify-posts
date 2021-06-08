@@ -23,7 +23,25 @@ export class PostRepository extends Repository<Post> {
     post.ready = false;
     return await this.save(post);
   }
-
+  public async getAllPosts(): Promise<Post[]> {
+    const posts = await this.createQueryBuilder('posts')
+      .select([
+        'posts.uuid',
+        'posts.caption',
+        'posts.is_hidden',
+        'posts.created_at',
+        'posts.type',
+        'groups.uuid',
+        'groups.name',
+        'options.uuid',
+        'options.vote_count',
+        'options.body',
+      ])
+      .leftJoin('posts.groups', 'groups')
+      .leftJoin('groups.options', 'options')
+      .getMany();
+    return posts;
+  }
   /**
    * flagPostCreation
    */
@@ -41,6 +59,32 @@ export class PostRepository extends Repository<Post> {
     } catch (error) {
       if (error.name === 'EntityNotFound')
         throw new NotFoundException(error.message);
+      else throw new InternalServerErrorException();
+    }
+  }
+  public async getSinglePost(postid: string): Promise<Post> {
+    try {
+      const post = await this.createQueryBuilder('posts')
+        .select([
+          'posts.uuid',
+          'posts.caption',
+          'posts.is_hidden',
+          'posts.created_at',
+          'posts.type',
+          'groups.uuid',
+          'groups.name',
+          'options.uuid',
+          'options.vote_count',
+          'options.body',
+        ])
+        .leftJoin('posts.groups', 'groups')
+        .leftJoin('groups.options', 'options')
+        .where('posts.uuid = :uuid', { uuid: postid })
+        .getOneOrFail();
+      return post;
+    } catch (error) {
+      if (error.name === 'EntityNotFound')
+        throw new NotFoundException('post not found');
       else throw new InternalServerErrorException();
     }
   }

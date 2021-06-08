@@ -119,13 +119,12 @@ content-type: application/json
 
 ##################
 // GET /api/posts
-
+GET http://localhost:3000/api/posts
 
 ##################
 // GET /api/posts/:postid
-
+GET http://localhost:3000/api/posts/28f465dd-55dd-488c-8995-d427cef0cc2
 
 ##################
 // PUT /api/votes/:optionid
-
 PUT http://localhost:3000/api/votes/a502658a-d92f-4759-a0fc-8fd79e656172 HTTP/1.1

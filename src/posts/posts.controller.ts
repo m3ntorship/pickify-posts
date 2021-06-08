@@ -4,11 +4,10 @@ import {
   Delete,
   Get,
   HttpCode,
-  NotImplementedException,
   Param,
   Patch,
-  Post,
   UseFilters,
+  Post,
 } from '@nestjs/common';
 import { PostIdParam } from '../shared/validations/uuid.validator';
 import { PostsService } from './posts.service';
@@ -20,16 +19,17 @@ import type { PostCreation as PostCreationInterface } from './interfaces/postCre
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
+import type { Posts } from './interfaces/getPosts.interface';
 
 @Controller('posts')
+@UseFilters(
+  new ValidationExceptionFilter(winston.createLogger(winstonLoggerOptions)),
+)
 export class PostsController {
   constructor(private postsService: PostsService) {}
   logger = winston.createLogger(winstonLoggerOptions);
 
   @Post('/')
-  @UseFilters(
-    new ValidationExceptionFilter(winston.createLogger(winstonLoggerOptions)),
-  )
   createPost(
     @Body() postCreationDto: PostCreationDto,
   ): Promise<PostCreationInterface> {
@@ -37,13 +37,13 @@ export class PostsController {
   }
 
   @Get('/')
-  getAllPosts() {
-    throw new NotImplementedException();
+  async getAllPosts(): Promise<Posts> {
+    return await this.postsService.getAllPosts();
   }
 
   @Get('/:postid')
-  getSinglePost() {
-    throw new NotImplementedException();
+  getSinglePost(@Param() params: PostIdParam) {
+    return this.postsService.getSinglePost(params.postid);
   }
 
   @Post('/:postid/groups')

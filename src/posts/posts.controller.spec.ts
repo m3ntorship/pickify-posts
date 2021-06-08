@@ -13,6 +13,10 @@ describe('PostsController', () => {
     flagPost: jest.fn(),
     createOptionGroup: jest.fn().mockResolvedValueOnce('test creating groups'),
     createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
+    getAllPosts: jest
+      .fn()
+      .mockReturnValue({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] }),
+    getSinglePost: jest.fn().mockResolvedValue({ id: 'post1-id' }),
     deletePost: jest.fn(),
   };
 
@@ -47,18 +51,19 @@ describe('PostsController', () => {
   });
 
   describe('getAllPosts function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.getAllPosts).toThrowError(
-        new NotImplementedException(),
-      );
+    it('should return object with array of posts and post count', async () => {
+      const result = await controller.getAllPosts();
+      expect(result).toEqual({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] });
+      expect(service.getAllPosts).toHaveBeenCalled();
     });
   });
 
   describe('getSinglePost function', () => {
-    it('should throw not implemented', () => {
-      expect(controller.getSinglePost).toThrowError(
-        new NotImplementedException(),
-      );
+    it('should throw not implemented', async () => {
+      const params = { postid: 'post1-id' };
+      const result = await controller.getSinglePost(params);
+      expect(result).toEqual({ id: 'post1-id' });
+      expect(service.getSinglePost).toBeCalledWith(params.postid);
     });
   });
 
