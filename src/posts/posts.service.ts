@@ -5,15 +5,7 @@ import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
-import {
-  group,
-  option,
-  optionsGroup,
-  post,
-  posts,
-} from './interfaces/getPosts.interface';
-import { response } from 'express';
-import { FORMERR } from 'node:dns';
+import type { Group, Post, Posts } from './interfaces/getPosts.interface';
 import { Injectable } from '@nestjs/common';
 import { PostIdParam } from '../shared/validations/uuid.validator';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
@@ -25,6 +17,21 @@ export class PostsService {
     private optionRepository: OptionRepository,
     private groupRepository: OptionsGroupRepository,
   ) {}
+
+  private modifyGroupsData(post): Group[] {
+    const groups: Group[] = post.groups.map((obj) => {
+      const groupUuid = obj['uuid'];
+      delete obj['uuid'];
+      const options = obj.options.map((option) => {
+        const optionUuid = option['uuid'];
+        delete option['uuid'];
+        return { id: optionUuid, ...(option as any) };
+      });
+      delete obj['options'];
+      return { id: groupUuid, options: options, ...(obj as any) };
+    });
+    return groups;
+  }
 
   async createPost(
     postCreationDto: PostCreationDto,
@@ -73,26 +80,14 @@ export class PostsService {
     }
     return response;
   }
-  async getAllPosts(): Promise<posts> {
+  async getAllPosts(): Promise<Posts> {
     const currentPosts = await this.postRepository.getAllPosts();
 
-    const response: posts = { postsCount: currentPosts.length, posts: [] };
+    const response: Posts = { postsCount: currentPosts.length, posts: [] };
     for (let i = 0; i < currentPosts.length; i++) {
       const post = currentPosts[i];
-
-      //modifying groups and options returned data
-      const groups: group[] = post.groups.map((obj) => {
-        const groupUuid = obj['uuid'];
-        delete obj['uuid'];
-        const options = obj.options.map((option) => {
-          const optionUuid = option['uuid'];
-          delete option['uuid'];
-          return { id: optionUuid, ...(option as any) };
-        });
-        delete obj['options'];
-        return { id: groupUuid, options: options, ...(obj as any) };
-      });
-
+      // call function to modify group data
+      const groups: Group[] = this.modifyGroupsData(post);
       response.posts.push({
         id: post.uuid,
         caption: post.caption,
@@ -104,23 +99,12 @@ export class PostsService {
     }
     return response;
   }
-  async getSinglePost(postId: string): Promise<post> {
+  async getSinglePost(postId: string): Promise<Post> {
     const post = await this.postRepository.getSinglePost(postId);
     const postUuid = post.uuid;
     delete post['uuid'];
-
-    // modifying groups data
-    const groups: group[] = post.groups.map((obj) => {
-      const groupUuid = obj['uuid'];
-      delete obj['uuid'];
-      const options = obj.options.map((option) => {
-        const optionUuid = option['uuid'];
-        delete option['uuid'];
-        return { id: optionUuid, ...(option as any) };
-      });
-      delete obj['options'];
-      return { id: groupUuid, options: options, ...(obj as any) };
-    });
+    //calling function to modify groups data
+    const groups: Group[] = this.modifyGroupsData(post);
 
     //deleting old groups
     delete post['groups'];
