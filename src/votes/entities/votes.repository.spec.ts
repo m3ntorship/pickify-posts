@@ -36,19 +36,22 @@ jest.mock('typeorm', () => ({
 
 jest.mock('../../posts/entities/option.entity', () => ({
   Option: class MockClass {
-    static findOneOrFail(search_options) {
+    static findOne(search_options: { where: { uuid: string } }) {
       const {
         where: { uuid },
       } = search_options;
       if (uuid === mockOption.uuid)
         return Promise.resolve({
           ...mockOption,
-          optionsGroup: { options: [{ ...mockOption }, { ...mockOption }] },
+          optionsGroup: {
+            post: { created: true },
+            options: [{ ...mockOption }, { ...mockOption }],
+          },
           save: jest.fn(() => {
             mockOption.vote_count++;
           }),
         });
-      else return Promise.reject({ name: 'EntityNotFound' });
+      else return Promise.resolve(undefined);
     }
   },
 }));
@@ -73,7 +76,7 @@ describe('Votes Repository', () => {
   });
 
   describe('addVote method', () => {
-    it('should throw if post wasnt found', () => {
+    it('should throw if option wasnt found', () => {
       const response = voteRepository.addVote('nonexistent-uuid');
       expect(response).rejects.toThrow(
         new NotFoundException('cannot find option entity with this id'),
