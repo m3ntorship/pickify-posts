@@ -103,6 +103,7 @@ export class PostsService {
     const post = await this.postRepository.getSinglePost(postId);
     const postUuid = post.uuid;
     delete post['uuid'];
+    delete post['created'];
     //calling function to modify groups data
     const groups: Group[] = this.modifyGroupsData(post);
 

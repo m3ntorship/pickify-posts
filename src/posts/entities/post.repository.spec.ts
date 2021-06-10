@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Post } from './post.entity';
 import { getNow } from '../../shared/utils/datetime/now';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 jest.mock('../../shared/utils/datetime/now');
 
@@ -191,12 +191,18 @@ describe('PostRepository', () => {
     });
   });
   describe('getPosts function', () => {
-    it('should return array of posts', () => {
+    it('should return created posts only', () => {
       // data
       ///////
       const posts = [
-        { uuid: 'post1-uuid', id: 1 },
-        { uuid: 'post2-uuid', id: 2 },
+        { uuid: 'post1-uuid', id: 1, created: true },
+        { uuid: 'post2-uuid', id: 2, created: true },
+        { uuid: 'post2-uuid', id: 2, created: false },
+      ];
+
+      const expectedPosts = [
+        { uuid: 'post1-uuid', id: 1, created: true },
+        { uuid: 'post2-uuid', id: 2, created: true },
       ];
       // mocks
       ///////
@@ -213,13 +219,13 @@ describe('PostRepository', () => {
         }));
       // assertions
       /////////////
-      expect(postRepository.getAllPosts()).resolves.toEqual(posts);
+      expect(postRepository.getAllPosts()).resolves.toEqual(expectedPosts);
     });
   });
   describe('getSinglePost function', () => {
-    it('should return the found post or throw error if not found', async () => {
+    it('should return the found post or not found error', () => {
       // data //
-      const post = { uuid: 'post-uuid', id: 1 };
+      const post = { uuid: 'post-uuid', id: 1, created: true };
       // mocks //
       Repository.prototype.createQueryBuilder = jest
         .fn()
@@ -227,15 +233,13 @@ describe('PostRepository', () => {
           select: jest.fn().mockImplementation(() => ({
             leftJoin: () => ({
               leftJoin: () => ({
-                where: (string, search) => ({
-                  getOneOrFail: jest.fn().mockImplementation(() => {
-                    return new Promise((resolve, reject) => {
+                where: (_, search: { uuid: string }) => ({
+                  getOne: jest.fn().mockImplementation(() => {
+                    return new Promise((resolve) => {
                       if (search.uuid === 'post-uuid') {
                         resolve(post);
                       } else {
-                        reject({
-                          name: 'EntityNotFound',
-                        });
+                        resolve(undefined);
                       }
                     });
                   }),
@@ -246,9 +250,40 @@ describe('PostRepository', () => {
         }));
       // Assertions //
       expect(postRepository.getSinglePost('nonexistent-uuid')).rejects.toThrow(
-        new NotFoundException('post not found'),
+        new NotFoundException('Post not found'),
       );
       expect(postRepository.getSinglePost(post.uuid)).resolves.toEqual(post);
+    });
+
+    it('should throw Post not created error', () => {
+      // data //
+      const post = { uuid: 'post-uuid', id: 1, created: false };
+      // mocks //
+      Repository.prototype.createQueryBuilder = jest
+        .fn()
+        .mockImplementation(() => ({
+          select: jest.fn().mockImplementation(() => ({
+            leftJoin: () => ({
+              leftJoin: () => ({
+                where: (_, search: { uuid: string }) => ({
+                  getOne: jest.fn().mockImplementation(() => {
+                    return new Promise((resolve) => {
+                      if (search.uuid === 'post-uuid') {
+                        resolve(post);
+                      } else {
+                        resolve(undefined);
+                      }
+                    });
+                  }),
+                }),
+              }),
+            }),
+          })),
+        }));
+      // Assertions //
+      expect(postRepository.getSinglePost(post.uuid)).rejects.toEqual(
+        new BadRequestException('Post still under creation...'),
+      );
     });
   });
 

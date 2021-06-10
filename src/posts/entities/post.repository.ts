@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -27,6 +28,7 @@ export class PostRepository extends Repository<Post> {
     const posts = await this.createQueryBuilder('posts')
       .select([
         'posts.uuid',
+        'posts.created',
         'posts.caption',
         'posts.is_hidden',
         'posts.created_at',
@@ -40,7 +42,8 @@ export class PostRepository extends Repository<Post> {
       .leftJoin('posts.groups', 'groups')
       .leftJoin('groups.options', 'options')
       .getMany();
-    return posts;
+    // filter posts that is not created yet
+    return posts.filter((post) => post.created);
   }
   /**
    * flagPostCreation
@@ -84,29 +87,30 @@ export class PostRepository extends Repository<Post> {
     }
   }
   public async getSinglePost(postid: string): Promise<Post> {
-    try {
-      const post = await this.createQueryBuilder('posts')
-        .select([
-          'posts.uuid',
-          'posts.caption',
-          'posts.is_hidden',
-          'posts.created_at',
-          'posts.type',
-          'groups.uuid',
-          'groups.name',
-          'options.uuid',
-          'options.vote_count',
-          'options.body',
-        ])
-        .leftJoin('posts.groups', 'groups')
-        .leftJoin('groups.options', 'options')
-        .where('posts.uuid = :uuid', { uuid: postid })
-        .getOneOrFail();
-      return post;
-    } catch (error) {
-      if (error.name === 'EntityNotFound')
-        throw new NotFoundException('post not found');
-      else throw new InternalServerErrorException();
-    }
+    const post = await this.createQueryBuilder('posts')
+      .select([
+        'posts.uuid',
+        'posts.created',
+        'posts.caption',
+        'posts.is_hidden',
+        'posts.created_at',
+        'posts.type',
+        'groups.uuid',
+        'groups.name',
+        'options.uuid',
+        'options.vote_count',
+        'options.body',
+      ])
+      .leftJoin('posts.groups', 'groups')
+      .leftJoin('groups.options', 'options')
+      .where('posts.uuid = :uuid', { uuid: postid })
+      .getOne();
+
+    if (!post) throw new NotFoundException('Post not found');
+
+    // don't return post if post.created = false
+    if (!post.created)
+      throw new BadRequestException('Post still under creation...');
+    return post;
   }
 }
