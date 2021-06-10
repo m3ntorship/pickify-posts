@@ -1,25 +1,27 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  Headers,
   HttpCode,
   Param,
   Patch,
-  UseFilters,
   Post,
+  UseFilters,
 } from '@nestjs/common';
-import { PostIdParam } from '../shared/validations/uuid.validator';
-import { PostsService } from './posts.service';
-import { FlagPostFinishedDto } from './dto/flag-post-finished';
-import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
-import { OptionsGroups } from './interfaces/optionsGroup.interface';
-import { PostCreationDto } from './dto/postCreation.dto';
-import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
-import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
+import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
+import { PostIdParam } from '../shared/validations/uuid.validator';
+import { FlagPostFinishedDto } from './dto/flag-post-finished';
+import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
+import { PostCreationDto } from './dto/postCreation.dto';
 import type { Posts } from './interfaces/getPosts.interface';
+import { OptionsGroups } from './interfaces/optionsGroup.interface';
+import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
+import { PostsService } from './posts.service';
 
 @Controller('posts')
 @UseFilters(
@@ -32,8 +34,12 @@ export class PostsController {
   @Post('/')
   createPost(
     @Body() postCreationDto: PostCreationDto,
+    @Headers() headers: { Authorization: string },
   ): Promise<PostCreationInterface> {
-    return this.postsService.createPost(postCreationDto);
+    const userId = headers.Authorization;
+    if (!userId)
+      throw new BadRequestException('User id is not sent in authorization');
+    return this.postsService.createPost(postCreationDto, +userId);
   }
 
   @Get('/')

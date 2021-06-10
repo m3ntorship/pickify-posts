@@ -95,9 +95,10 @@ describe('PostRepository', () => {
         caption: 'test caption',
         is_hidden: false,
       };
+      const userId = 2;
       const newPost: Post = {
         caption: 'test caption',
-        user_id: 1,
+        user_id: userId,
         created: false,
         created_at: now,
         id: 1,
@@ -110,7 +111,7 @@ describe('PostRepository', () => {
 
       // assertions
       /////////////
-      expect(postRepository.createPost(dto)).resolves.toEqual(newPost);
+      expect(postRepository.createPost(dto, userId)).resolves.toEqual(newPost);
     });
 
     it('should add dto data to the created post object', async () => {
@@ -139,9 +140,10 @@ describe('PostRepository', () => {
         caption: 'test caption',
         is_hidden: false,
       };
+      const userId = 2;
       const newPost: Post = {
         caption: 'test caption',
-        user_id: 1,
+        user_id: userId,
         created: false,
         created_at: now,
         id: 1,
@@ -154,7 +156,7 @@ describe('PostRepository', () => {
 
       // assertions
       /////////////
-      expect(postRepository.createPost(dto)).resolves.toEqual(newPost);
+      expect(postRepository.createPost(dto, userId)).resolves.toEqual(newPost);
     });
 
     it('return error if ready col is not set', () => {
@@ -165,6 +167,7 @@ describe('PostRepository', () => {
         caption: 'test caption',
         is_hidden: false,
       };
+      const userId = 2;
 
       // mocks
       ////////
@@ -185,7 +188,7 @@ describe('PostRepository', () => {
       });
 
       // assertions
-      expect(postRepository.createPost(dto)).rejects.toBe(
+      expect(postRepository.createPost(dto, userId)).rejects.toBe(
         'ready column should not be null',
       );
     });

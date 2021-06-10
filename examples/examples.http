@@ -1,11 +1,13 @@
-@postId = cf0de9bd-b087-4110-bb23-b0baa9fea896
+@postId = cf0de9bd-b087-4110-bb23-b0baa9fea896	
 @groupId = 48cf88df-e3cf-4caa-aae5-cc1ade55bcb5
-@optionId = 302c9522-1d6a-4c3c-bba1-f4da4f4a81f8
+@optionId = daab365e-2912-464a-aa38-b809dee3009a
+@userId = 3
 
 // POST /api/posts
 //////////////////
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {
     "type": "text_poll",
@@ -16,6 +18,7 @@ content-type: application/json
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "caption": "post 2 caption",
@@ -27,6 +30,7 @@ content-type: application/json
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "caption": "post caption",
@@ -37,6 +41,7 @@ content-type: application/json
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "caption": "post caption",
@@ -48,6 +53,7 @@ content-type: application/json
 // POST /api/posts/:postid/groups
 POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "groups": [
@@ -66,6 +72,7 @@ content-type: application/json
 
 POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "groups": [
@@ -83,6 +90,7 @@ content-type: application/json
 
 POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "groups": [
@@ -107,6 +115,7 @@ content-type: application/json
 // PATCH /api/posts/:postid
 PATCH http://localhost:3000/api/posts/{{postId}}
 Content-Type: application/json
+Authorization: Bearer {{userId}}
 
 {
     "finished": true
@@ -115,6 +124,7 @@ Content-Type: application/json
 // DELETE /api/posts/:postid
 DELETE http://localhost:3000/api/posts/{{postId}} HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 
 ##################
@@ -132,3 +142,4 @@ GET http://localhost:3000/api/posts/{{postId}}
 ##################
 // PUT /api/votes/:optionid
 PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
+Authorization: Bearer {{userId}}

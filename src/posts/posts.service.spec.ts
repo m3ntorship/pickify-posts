@@ -175,21 +175,22 @@ describe('PostsService', () => {
       expect(optionRepo.createOption).toHaveBeenCalledTimes(6);
       expect(groupRepo.createGroup).toHaveBeenCalledTimes(2);
     });
+  });
 
-    describe('createPost method', () => {
-      it('should return object with id', async () => {
-        const dto: PostCreationDto = {
-          type: 'text_poll',
-          caption: 'test caption',
-          is_hidden: false,
-        };
-        const data = await service.createPost(dto);
+  describe('createPost method', () => {
+    it('should return object with id', async () => {
+      const dto: PostCreationDto = {
+        type: 'text_poll',
+        caption: 'test caption',
+        is_hidden: false,
+      };
+      const userId = 2;
+      const data = await service.createPost(dto, userId);
 
-        expect(data).toEqual({ id: 'test id' });
+      expect(data).toEqual({ id: 'test id' });
 
-        expect(postRepo.createPost).toBeCalledWith(dto);
-        expect(postRepo.createPost).toBeCalledTimes(1);
-      });
+      expect(postRepo.createPost).toBeCalledWith(dto, userId);
+      expect(postRepo.createPost).toBeCalledTimes(1);
     });
   });
   describe('getAllPosts function ', () => {

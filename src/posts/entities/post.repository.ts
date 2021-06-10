@@ -13,13 +13,16 @@ export class PostRepository extends Repository<Post> {
   /**
    * createPost
    */
-  public async createPost(postCreationDto: PostCreationDto): Promise<Post> {
+  public async createPost(
+    postCreationDto: PostCreationDto,
+    userId: number,
+  ): Promise<Post> {
     const { caption, type, is_hidden } = postCreationDto;
     const post = this.create();
     post.caption = caption;
     post.type = type;
     post.is_hidden = is_hidden;
-    post.user_id = 1;
+    post.user_id = userId;
     post.created = false;
     post.ready = false;
     return await this.save(post);

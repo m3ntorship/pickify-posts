@@ -35,8 +35,12 @@ export class PostsService {
 
   async createPost(
     postCreationDto: PostCreationDto,
+    userId: number,
   ): Promise<PostCreationInterface> {
-    const createdPost = await this.postRepository.createPost(postCreationDto);
+    const createdPost = await this.postRepository.createPost(
+      postCreationDto,
+      userId,
+    );
     return { id: createdPost.uuid };
   }
 

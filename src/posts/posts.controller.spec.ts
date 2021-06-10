@@ -41,12 +41,14 @@ describe('PostsController', () => {
         is_hidden: false,
       };
 
-      const result = await controller.createPost(dto);
+      const headers = { Authorization: '3' };
+
+      const result = await controller.createPost(dto, headers);
 
       expect(result).toEqual({ uuid: 'test id' });
 
       expect(service.createPost).toBeCalledTimes(1);
-      expect(service.createPost).toBeCalledWith(dto);
+      expect(service.createPost).toBeCalledWith(dto, +headers.Authorization);
     });
   });
 
