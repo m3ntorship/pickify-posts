@@ -37,8 +37,6 @@ export class PostsController {
     @Headers() headers: { Authorization: string },
   ): Promise<PostCreationInterface> {
     const userId = headers.Authorization;
-    if (!userId)
-      throw new BadRequestException('User id is not sent in authorization');
     return this.postsService.createPost(postCreationDto, +userId);
   }
 

@@ -37,6 +37,7 @@ const evnVariable = process.env.NODE_ENV;
 export class AppModule implements NestModule {
   // Add swagger middleware to /api endpoint only
   configure(consumer: MiddlewareConsumer) {
+    // THIS MIDDLEWARE SHOULD BE REMOVED AND REPLACED WITH CORRECT IMPLEMENTATION FOR AUTHENTICATION
     consumer.apply(ExtendHeadersMiddleware).forRoutes('/');
     consumer
       .apply(swaggerUi.serve, swaggerUi.setup(swaggerDocument))
