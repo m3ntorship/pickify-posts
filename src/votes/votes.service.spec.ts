@@ -30,11 +30,11 @@ describe('VotesService', () => {
 
   describe('addVote method', () => {
     it('should call repository fn with optionId', () => {
-      service.addVote('uuid');
-      expect(mockRepository.addVote).toHaveBeenCalledWith('uuid');
+      service.addVote('uuid', 3);
+      expect(mockRepository.addVote).toHaveBeenCalledWith('uuid', 3);
     });
     it('should return what repository method returns', () => {
-      const res = service.addVote('uuid');
+      const res = service.addVote('uuid', 3);
       expect(res).resolves.toEqual(['options']);
     });
   });

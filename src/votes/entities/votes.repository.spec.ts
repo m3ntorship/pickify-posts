@@ -5,6 +5,7 @@ import { VoteRepository } from './votes.repository';
 const mockOption = {
   vote_count: 0,
   uuid: 'correct-uuid',
+  votes: [{ user_id: 3 }],
 };
 
 const mockVotes = [];
@@ -77,23 +78,23 @@ describe('Votes Repository', () => {
 
   describe('addVote method', () => {
     it('should throw if option wasnt found', () => {
-      const response = voteRepository.addVote('nonexistent-uuid');
+      const response = voteRepository.addVote('nonexistent-uuid', 2);
       expect(response).rejects.toThrow(
         new NotFoundException('cannot find option entity with this id'),
       );
     });
     it('should save a new record to votes', async () => {
       const prevVotesRecords = mockVotes.length;
-      await voteRepository.addVote('correct-uuid');
+      await voteRepository.addVote('correct-uuid', 2);
       expect(mockVotes.length).toBe(prevVotesRecords + 1);
     });
     it('should increment vote count by 1', async () => {
       const prevVoteCount = mockOption.vote_count;
-      await voteRepository.addVote('correct-uuid');
+      await voteRepository.addVote('correct-uuid', 2);
       expect(mockOption.vote_count).toBe(prevVoteCount + 1);
     });
     it('should respond with all option votes in the same group', async () => {
-      const response = await voteRepository.addVote('correct-uuid');
+      const response = await voteRepository.addVote('correct-uuid', 2);
       expect(response[0]).toHaveProperty('votes_count');
       expect(response[0]).toHaveProperty('optionId');
     });

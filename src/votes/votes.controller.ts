@@ -1,4 +1,4 @@
-import { Controller, Param, Put, UseFilters } from '@nestjs/common';
+import { Controller, Param, Put, UseFilters, Headers } from '@nestjs/common';
 import { OptionIdParam } from '../shared/validations/uuid.validator';
 import { VotesService } from './votes.service';
 import { OptionsVotes } from './interfaces/optionsVotes.interface';
@@ -14,7 +14,11 @@ export class VotesController {
   constructor(private votesService: VotesService) {}
 
   @Put('/:optionid')
-  addVote(@Param() params: OptionIdParam): Promise<OptionsVotes[]> {
-    return this.votesService.addVote(params.optionid);
+  addVote(
+    @Param() params: OptionIdParam,
+    @Headers() headers: { Authorization: string },
+  ): Promise<OptionsVotes[]> {
+    const userId = headers.Authorization;
+    return this.votesService.addVote(params.optionid, +userId);
   }
 }
