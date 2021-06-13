@@ -3,7 +3,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 import { PostCreationDto } from '../dto/postCreation.dto';
 import { Post } from './post.entity';
 
@@ -54,7 +54,7 @@ export class PostRepository extends Repository<Post> {
       where: { uuid: postid },
       relations: ['groups', 'groups.options'],
     });
-    if (!post) throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+    if (!post) throw new NotFoundException(`Post with id: ${postid} not found`);
     post.created = flag;
     post.ready = true;
     await this.save(post);
@@ -90,11 +90,14 @@ export class PostRepository extends Repository<Post> {
       .where('posts.uuid = :uuid', { uuid: postid })
       .getOne();
 
-    if (!post) throw new NotFoundException('Post not found');
+    if (!post) throw new NotFoundException(`Post with id: ${postid} not found`);
 
     // don't return post if post.created = false
     if (!post.created)
-      throw new HttpException('Post still under creation...', 423);
+      throw new HttpException(
+        `Post with id: ${postid} still under creation...`,
+        423,
+      );
     return post;
   }
 }

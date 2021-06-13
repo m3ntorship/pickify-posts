@@ -257,7 +257,7 @@ describe('PostRepository', () => {
         }));
       // Assertions //
       expect(postRepository.getSinglePost('nonexistent-uuid')).rejects.toThrow(
-        new NotFoundException('Post not found'),
+        new NotFoundException(`Post with id: nonexistent-uuid not found`),
       );
       expect(postRepository.getSinglePost(post.uuid)).resolves.toEqual(post);
     });
@@ -289,7 +289,10 @@ describe('PostRepository', () => {
         }));
       // Assertions //
       expect(postRepository.getSinglePost(post.uuid)).rejects.toEqual(
-        new HttpException('Post still under creation...', 423),
+        new HttpException(
+          'Post with id: post-uuid still under creation...',
+          423,
+        ),
       );
     });
   });

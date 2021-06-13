@@ -15,7 +15,8 @@ export class OptionsGroupRepository extends Repository<OptiosnGroup> {
       const post = await this.manager
         .getRepository(Post)
         .findOne({ where: { uuid: postid } });
-      if (!post) throw new NotFoundException('post not found');
+      if (!post)
+        throw new NotFoundException(`Post with id: ${postid} not found`);
       const group = this.create();
       group.name = name;
       group.post = post;

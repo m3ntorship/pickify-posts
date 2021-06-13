@@ -25,7 +25,11 @@ jest.mock('typeorm', () => ({
               if (search.where.uuid === 'test-with-existing-post') {
                 resolve(post);
               } else {
-                reject(new NotFoundException('post not found'));
+                reject(
+                  new NotFoundException(
+                    'Post with id: any-post-uuid not found',
+                  ),
+                );
               }
             });
           }),
@@ -81,7 +85,7 @@ describe('OptionGroup Repository', () => {
       // assertions
       /////////////
       expect(groupRepository.createGroup(postid, groupName)).rejects.toEqual(
-        new NotFoundException('post not found'),
+        new NotFoundException('Post with id: any-post-uuid not found'),
       );
     });
 

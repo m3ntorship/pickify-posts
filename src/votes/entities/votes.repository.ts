@@ -24,11 +24,14 @@ export class VoteRepository extends Repository<Vote> {
 
     // if option not found
     if (!option)
-      throw new NotFoundException('cannot find option entity with this id');
+      throw new NotFoundException(`Option with id:${optionId} not found`);
 
     // if post of option still under creation
     if (!option.optionsGroup.post.created)
-      throw new HttpException('Post still under creation...', 423);
+      throw new HttpException(
+        `Post:${option.optionsGroup.post.uuid} with option:${optionId} still under creation...`,
+        423,
+      );
 
     // check if user has voted for this option before
     const isUserVoted = option.votes.some((vote) => vote.user_id === userId);

@@ -80,7 +80,7 @@ describe('Votes Repository', () => {
     it('should throw if option wasnt found', () => {
       const response = voteRepository.addVote('nonexistent-uuid', 2);
       expect(response).rejects.toThrow(
-        new NotFoundException('cannot find option entity with this id'),
+        new NotFoundException(`Option with id:nonexistent-uuid not found`),
       );
     });
     it('should save a new record to votes', async () => {
