@@ -200,7 +200,7 @@ describe('PostRepository', () => {
       const posts = [
         { uuid: 'post1-uuid', id: 1, created: true },
         { uuid: 'post2-uuid', id: 2, created: true },
-        { uuid: 'post2-uuid', id: 2, created: false },
+        { uuid: 'post2-uuid', id: 3, created: false },
       ];
 
       const expectedPosts = [
@@ -213,9 +213,13 @@ describe('PostRepository', () => {
         .fn()
         .mockImplementation(() => ({
           select: jest.fn().mockImplementation(() => ({
-            leftJoin: () => ({
+            where: () => ({
               leftJoin: () => ({
-                getMany: jest.fn().mockResolvedValue(posts),
+                leftJoin: () => ({
+                  getMany: jest
+                    .fn()
+                    .mockResolvedValue(posts.filter((post) => post.created)),
+                }),
               }),
             }),
           })),

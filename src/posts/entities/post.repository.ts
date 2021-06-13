@@ -27,7 +27,7 @@ export class PostRepository extends Repository<Post> {
     return await this.save(post);
   }
   public async getAllPosts(): Promise<Post[]> {
-    const posts = await this.createQueryBuilder('posts')
+    return await this.createQueryBuilder('posts')
       .select([
         'posts.uuid',
         'posts.created',
@@ -41,11 +41,10 @@ export class PostRepository extends Repository<Post> {
         'options.vote_count',
         'options.body',
       ])
+      .where('posts.created = :created', { created: true })
       .leftJoin('posts.groups', 'groups')
       .leftJoin('groups.options', 'options')
       .getMany();
-    // filter posts that is not created yet
-    return posts.filter((post) => post.created);
   }
   /**
    * flagPostCreation
