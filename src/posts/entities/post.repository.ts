@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -96,7 +95,7 @@ export class PostRepository extends Repository<Post> {
 
     // don't return post if post.created = false
     if (!post.created)
-      throw new BadRequestException('Post still under creation...');
+      throw new HttpException('Post still under creation...', 423);
     return post;
   }
 }

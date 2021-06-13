@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Post } from './post.entity';
 import { getNow } from '../../shared/utils/datetime/now';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { HttpException, NotFoundException } from '@nestjs/common';
 
 jest.mock('../../shared/utils/datetime/now');
 
@@ -285,7 +285,7 @@ describe('PostRepository', () => {
         }));
       // Assertions //
       expect(postRepository.getSinglePost(post.uuid)).rejects.toEqual(
-        new BadRequestException('Post still under creation...'),
+        new HttpException('Post still under creation...', 423),
       );
     });
   });
