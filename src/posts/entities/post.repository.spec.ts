@@ -299,6 +299,7 @@ describe('PostRepository', () => {
           id: 1,
           uuid: 'test-post-uuid',
           created: false,
+          ready: false,
         };
 
         return new Promise((resolve, reject) => {
@@ -317,7 +318,7 @@ describe('PostRepository', () => {
       ).rejects.toThrowError(new NotFoundException('post not found'));
     });
 
-    it('should change post.created to true & ready to true if post does not have media', async () => {
+    it('should change post.created to true & ready to true ', async () => {
       // data
       ////////
       const post = {
@@ -325,71 +326,12 @@ describe('PostRepository', () => {
         uuid: 'test-post-uuid',
         created: false,
         ready: false,
-        groups: [
-          {
-            options: [{}],
-          },
-        ],
       };
       const expectedPost = {
         id: 1,
         uuid: 'test-post-uuid',
         created: true,
         ready: true,
-        groups: [
-          {
-            options: [{}],
-          },
-        ],
-      };
-      // Mocks
-      ///////
-      Repository.prototype.findOne = jest.fn().mockImplementation((search) => {
-        return new Promise((resolve, reject) => {
-          if (search.where.uuid === post.uuid) {
-            resolve(post);
-          } else {
-            reject(new NotFoundException('post not found'));
-          }
-        });
-      });
-
-      Repository.prototype.save = jest.fn().mockImplementation((post) => {
-        return Promise.resolve('saved!!');
-      });
-
-      // Assertions
-      ////////////
-      await postRepository.flagPostCreation(true, 'test-post-uuid');
-      expect(postRepository.save).toHaveBeenCalledWith(expectedPost);
-    });
-
-    it('should change post.created to true & keep ready as is if post has media', async () => {
-      // data
-      ////////
-      const post = {
-        id: 1,
-        uuid: 'test-post-uuid',
-        created: false,
-        ready: false,
-        media: [],
-        groups: [
-          {
-            options: [{}],
-          },
-        ],
-      };
-      const expectedPost = {
-        id: 1,
-        uuid: 'test-post-uuid',
-        created: true,
-        ready: false,
-        media: [],
-        groups: [
-          {
-            options: [{}],
-          },
-        ],
       };
       // Mocks
       ///////

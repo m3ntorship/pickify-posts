@@ -58,24 +58,7 @@ export class PostRepository extends Repository<Post> {
     });
     if (!post) throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
     post.created = flag;
-    // if post does not have any media, it means ready will always be true as long as created is true
-    const isPostHasMedia = (
-      post: any /* change any to Post when media is implemented */,
-    ) => {
-      // check if post has media
-      if (post.media) return true;
-      let output = false;
-      post.groups.forEach((group: any) => {
-        // check if a group has media
-        if (group.media) return (output = true);
-        group.options.forEach((option: any) => {
-          // check if an option has media
-          if (option.media) return (output = true);
-        });
-      });
-      return output;
-    };
-    if (!isPostHasMedia(post)) post.ready = true;
+    post.ready = true;
     await this.save(post);
   }
 
