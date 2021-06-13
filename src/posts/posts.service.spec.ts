@@ -240,10 +240,13 @@ describe('PostsService', () => {
     });
   });
   describe('deletePost', () => {
-    it('should call repository fn with post uuid', async () => {
-      const res = await service.deletePost('uuid');
+    it('should return undefined', async () => {
+      const res = await service.deletePost('uuid', 3);
       expect(res).toBeUndefined();
-      expect(postRepo.deletePost).toHaveBeenCalledWith('uuid');
+    });
+    it('should call repository fn with post uuid and user id', async () => {
+      await service.deletePost('uuid', 3);
+      expect(postRepo.deletePost).toHaveBeenCalledWith('uuid', 3);
     });
   });
 });

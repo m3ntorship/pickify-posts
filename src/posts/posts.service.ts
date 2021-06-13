@@ -54,8 +54,8 @@ export class PostsService {
     );
   }
 
-  async deletePost(postid: string): Promise<void> {
-    await this.postRepository.deletePost(postid);
+  async deletePost(postid: string, userId: number): Promise<void> {
+    await this.postRepository.deletePost(postid, userId);
   }
 
   async createOptionGroup(

@@ -1,6 +1,7 @@
 import {
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { HttpException } from '@nestjs/common';
@@ -60,14 +61,22 @@ export class PostRepository extends Repository<Post> {
     await this.save(post);
   }
 
-  public async deletePost(postid: string): Promise<void> {
+  public async deletePost(postid: string, userId: number): Promise<void> {
     try {
+      // get post from DB
       const post = await this.findOneOrFail({ where: { uuid: postid } });
+      // Check if current user is the owner of the post
+      if (post.user_id !== userId) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+      // remove post
       await Post.remove(post);
     } catch (error) {
-      if (error.name === 'EntityNotFound')
+      if (error.name === 'EntityNotFound') {
         throw new NotFoundException(error.message);
-      else throw new InternalServerErrorException();
+      } else if (error.message === 'Unauthorized') {
+        throw new UnauthorizedException('Unauthorized');
+      } else throw new InternalServerErrorException();
     }
   }
   public async getSinglePost(postid: string): Promise<Post> {

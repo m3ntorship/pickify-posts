@@ -15,7 +15,7 @@ jest.mock('typeorm', () => ({
     findOneOrFail: any;
     constructor() {
       this.findOneOrFail = (options) => {
-        const mockPost = { uuid: 'uuid' };
+        const mockPost = { uuid: 'uuid', user_id: 3 };
         const {
           where: { uuid },
         } = options;
@@ -364,12 +364,12 @@ describe('PostRepository', () => {
   });
   describe('deletPost', () => {
     it('should fail if post doesnt exit', () => {
-      expect(postRepository.deletePost('nonexistent-uuid')).rejects.toThrow(
+      expect(postRepository.deletePost('nonexistent-uuid', 3)).rejects.toThrow(
         new NotFoundException('not-found-exception'),
       );
     });
     it('should return void', () => {
-      expect(postRepository.deletePost('uuid')).resolves.toBeUndefined();
+      expect(postRepository.deletePost('uuid', 3)).resolves.toBeUndefined();
     });
   });
 });
