@@ -21,15 +21,11 @@ jest.mock('typeorm', () => ({
               id: 1,
               uuid: 'test-with-existing-post',
             } as Post;
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
               if (search.where.uuid === 'test-with-existing-post') {
                 resolve(post);
               } else {
-                reject(
-                  new NotFoundException(
-                    'Post with id: any-post-uuid not found',
-                  ),
-                );
+                resolve(undefined);
               }
             });
           }),

@@ -62,22 +62,21 @@ export class PostRepository extends Repository<Post> {
   }
 
   public async deletePost(postid: string, userId: number): Promise<void> {
-    try {
-      // get post from DB
-      const post = await this.findOneOrFail({ where: { uuid: postid } });
-      // Check if current user is the owner of the post
-      if (post.user_id !== userId) {
-        throw new UnauthorizedException('Unauthorized');
-      }
-      // remove post
-      await Post.remove(post);
-    } catch (error) {
-      if (error.name === 'EntityNotFound') {
-        throw new NotFoundException(error.message);
-      } else if (error.message === 'Unauthorized') {
-        throw new UnauthorizedException('Unauthorized');
-      } else throw new InternalServerErrorException();
+    // get post from DB
+    const post = await this.findOne({ where: { uuid: postid } });
+
+    // Check whether there is a post with the passed id
+    if (!post) {
+      throw new NotFoundException(`Post with id:${postid} not found`);
     }
+
+    // Check if current user is the owner of the post
+    if (post.user_id !== userId) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    // remove post
+    await Post.remove(post);
   }
   public async getSinglePost(postid: string): Promise<Post> {
     const post = await this.createQueryBuilder('posts')
