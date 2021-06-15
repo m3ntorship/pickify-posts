@@ -6,7 +6,12 @@ import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import type { Group, Post, Posts } from './interfaces/getPosts.interface';
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PostIdParam } from '../shared/validations/uuid.validator';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
 
@@ -48,14 +53,32 @@ export class PostsService {
     params: PostIdParam,
     flagPostDto: FlagPostFinishedDto,
   ): Promise<void> {
-    await this.postRepository.flagPostCreation(
-      flagPostDto.finished,
-      params.postid,
-    );
+    // get post
+    const post = await this.postRepository.findPostById(params.postid);
+
+    // check whether post is found
+    if (!post) {
+      throw new NotFoundException(`Post with id: ${params.postid} not found`);
+    }
+
+    await this.postRepository.flagPostCreation(flagPostDto.finished, post);
   }
 
   async deletePost(postid: string, userId: number): Promise<void> {
-    await this.postRepository.deletePost(postid, userId);
+    // get post
+    const post = await this.postRepository.findPostById(postid);
+
+    // check whether post is found
+    if (!post) {
+      throw new NotFoundException(`Post with id: ${postid} not found`);
+    }
+
+    // Check if current user is the owner of the post
+    if (post.user_id !== userId) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    await this.postRepository.remove(post);
   }
 
   async createOptionGroup(
@@ -63,15 +86,26 @@ export class PostsService {
     groupsCreationDto: OptionsGroupCreationDto,
   ): Promise<OptionsGroups> {
     const response: OptionsGroups = { groups: [] };
+
+    // get post
+    const post = await this.postRepository.findPostById(postid);
+
+    // check whether post found
+    if (!post) {
+      throw new NotFoundException(`Post with id: ${postid} not found`);
+    }
+
     // Loop through all groups
     for (let i = 0; i < groupsCreationDto.groups.length; i++) {
       const group = groupsCreationDto.groups[i];
       const createdGroup = await this.groupRepository.createGroup(
-        postid,
+        post,
         group.name,
       );
+
       // Add the group uuid to the response
       response.groups.push({ id: createdGroup.uuid, options: [] });
+
       // Create Multiple options for the group
       for (let j = 0; j < group.options.length; j++) {
         const option = group.options[j];
@@ -85,7 +119,9 @@ export class PostsService {
     return response;
   }
   async getAllPosts(): Promise<Posts> {
-    const currentPosts = await this.postRepository.getAllPosts();
+    let currentPosts = await this.postRepository.getAllPosts();
+
+    currentPosts = currentPosts.filter((post) => post.created);
 
     const response: Posts = { postsCount: currentPosts.length, posts: [] };
     for (let i = 0; i < currentPosts.length; i++) {
@@ -105,6 +141,17 @@ export class PostsService {
   }
   async getSinglePost(postId: string): Promise<Post> {
     const post = await this.postRepository.getSinglePost(postId);
+
+    // check whether post is found
+    if (!post) throw new NotFoundException(`Post with id: ${postId} not found`);
+
+    // don't return post if post.created = false
+    if (!post.created) {
+      throw new HttpException(
+        `Post with id: ${postId} still under creation...`,
+        423,
+      );
+    }
     const postUuid = post.uuid;
     delete post['uuid'];
     delete post['created'];

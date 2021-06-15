@@ -1,4 +1,3 @@
-import { NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { OptiosnGroup } from './optionsGroup.entity';
 import { Post } from './post.entity';
@@ -7,14 +6,7 @@ export class OptionsGroupRepository extends Repository<OptiosnGroup> {
   /**
    * createGroup
    */
-  public async createGroup(
-    postid: string,
-    name: string,
-  ): Promise<OptiosnGroup> {
-    const post = await this.manager
-      .getRepository(Post)
-      .findOne({ where: { uuid: postid } });
-    if (!post) throw new NotFoundException(`Post with id: ${postid} not found`);
+  public async createGroup(post: Post, name: string): Promise<OptiosnGroup> {
     const group = this.create();
     group.name = name;
     group.post = post;

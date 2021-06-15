@@ -9,6 +9,11 @@ import { PostCreationDto } from './dto/postCreation.dto';
 import { Post } from './entities/post.entity';
 import { PostIdParam } from '../shared/validations/uuid.validator';
 import { async } from 'rxjs';
+import {
+  HttpException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 describe('PostsService', () => {
   let service: PostsService;
@@ -16,55 +21,13 @@ describe('PostsService', () => {
   let groupRepo: OptionsGroupRepository;
   let postRepo: PostRepository;
 
-  const mockedPosts = [
-    {
-      uuid: 'post5-uuid',
-      created_at: '2021-06-01',
-      caption: 'post 5',
-      type: 'text poll',
-      is_hidden: false,
-      groups: [{ uuid: 'group1-uuid', options: [] }],
-    },
-  ];
-  const mockedPost = {
-    uuid: 'post6-uuid',
-    caption: 'post 6',
-    is_hidden: false,
-    created_at: '2021-06-01',
-    type: 'text poll',
-    groups: [{ uuid: 'group1-uuid', options: [] }],
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PostsService,
-        {
-          provide: OptionsGroupRepository,
-          useValue: {
-            createGroup: jest.fn().mockResolvedValue({
-              uuid: 'test group id',
-            }),
-          },
-        },
-        {
-          provide: OptionRepository,
-          useValue: {
-            createOption: jest.fn().mockResolvedValue({
-              uuid: 'test option id',
-            }),
-          },
-        },
-        {
-          provide: PostRepository,
-          useValue: {
-            createPost: jest.fn().mockResolvedValue({ uuid: 'test id' }),
-            getAllPosts: jest.fn().mockResolvedValue(mockedPosts),
-            getSinglePost: jest.fn().mockResolvedValue(mockedPost),
-            flagPostCreation: jest.fn(),
-            deletePost: jest.fn(),
-          },
-        },
+        OptionsGroupRepository,
+        OptionRepository,
+        PostRepository,
       ],
     }).compile();
 
@@ -99,22 +62,66 @@ describe('PostsService', () => {
       const createdOptionsGroups: OptionsGroups = {
         groups: [
           {
-            id: 'test group id',
+            id: 'created-group-uuid',
             options: [
               {
-                id: 'test option id',
+                id: 'created-option-uuid',
               },
               {
-                id: 'test option id',
+                id: 'created-option-uuid',
               },
             ],
           },
         ],
       };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce({ id: 1 });
+      groupRepo.createGroup = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-group-uuid' });
+      optionRepo.createOption = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-option-uuid' });
+
+      // action
       const data = await service.createOptionGroup(postid, dto);
 
       // assertions
       expect(data).toEqual(createdOptionsGroups);
+    });
+
+    it('should throw error if post not found', async () => {
+      // data
+      const postid = 'test post id';
+      const dto: OptionsGroupCreationDto = {
+        groups: [
+          {
+            name: 'test group name',
+            options: [
+              { body: 'test option 1 body' },
+              { body: 'test option 2 body' },
+            ],
+          },
+        ],
+      };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(undefined);
+      groupRepo.createGroup = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-group-uuid' });
+      optionRepo.createOption = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-option-uuid' });
+
+      // action
+      const data = service.createOptionGroup(postid, dto);
+
+      // assertions
+      expect(data).rejects.toThrowError(
+        new NotFoundException('Post with id: test post id not found'),
+      );
     });
 
     it('should call groupRepo.createGroup & optionRepo.createOption with correct parameters', async () => {
@@ -132,13 +139,28 @@ describe('PostsService', () => {
         ],
       };
       const createdGroup = {
-        uuid: 'test group id',
+        uuid: 'created-group-uuid',
       };
 
+      const foundPost = { id: 1 };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      groupRepo.createGroup = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-group-uuid' });
+      optionRepo.createOption = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-option-uuid' });
+
+      // action
       await service.createOptionGroup(postid, dto);
 
       // assertions
-      expect(groupRepo.createGroup).toBeCalledWith(postid, dto.groups[0].name);
+      expect(groupRepo.createGroup).toBeCalledWith(
+        foundPost,
+        dto.groups[0].name,
+      );
       expect(optionRepo.createOption).toBeCalledWith(
         createdGroup,
         dto.groups[0].options[0],
@@ -168,6 +190,16 @@ describe('PostsService', () => {
           },
         ],
       };
+      const foundPost = { id: 1 };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      groupRepo.createGroup = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-group-uuid' });
+      optionRepo.createOption = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-option-uuid' });
 
       await service.createOptionGroup(postid, dto);
 
@@ -178,75 +210,486 @@ describe('PostsService', () => {
   });
 
   describe('createPost method', () => {
-    it('should return object with id', async () => {
+    it('should return the uuid of the created post in object with id prop', () => {
+      // data
       const dto: PostCreationDto = {
         type: 'text_poll',
         caption: 'test caption',
         is_hidden: false,
       };
       const userId = 2;
-      const data = await service.createPost(dto, userId);
 
-      expect(data).toEqual({ id: 'test id' });
+      // mocks
+      postRepo.createPost = jest
+        .fn()
+        .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
 
+      // action
+      const data = service.createPost(dto, userId);
+
+      // assertions
+      expect(data).resolves.toEqual({ id: 'created-post-uuid' });
+    });
+
+    it('should call postRepo.createPost with the appropriate parameters', async () => {
+      // data
+      const dto: PostCreationDto = {
+        type: 'text_poll',
+        caption: 'test caption',
+        is_hidden: false,
+      };
+      const userId = 2;
+
+      // mocks
+      postRepo.createPost = jest
+        .fn()
+        .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
+
+      // action
+      await service.createPost(dto, userId);
+
+      // assertions
       expect(postRepo.createPost).toBeCalledWith(dto, userId);
       expect(postRepo.createPost).toBeCalledTimes(1);
     });
   });
   describe('getAllPosts function ', () => {
-    it('should return an object with array of posts and postsCount', async () => {
-      const result = await service.getAllPosts();
-      const mockedReturnedPosts = [
-        {
-          id: 'post5-uuid',
-          caption: 'post 5',
-          is_hidden: false,
-          created_at: '2021-06-01',
-          type: 'text poll',
-          options_groups: {
-            groups: [{ id: 'group1-uuid', options: [] }],
+    it('should return object contains postsCount and array of posts', async () => {
+      // data
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        created: true,
+        caption: 'test-post-caption',
+        is_hidden: false,
+        created_at: 'test-creation-time',
+        type: 'text poll',
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            options: [
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option-uuid',
+              },
+            ],
           },
+        ],
+      };
+      const postsInDB = [
+        {
+          ...postInDB,
+          groups: [
+            {
+              ...postInDB.groups[0],
+              options: [{ ...postInDB.groups[0].options[0] }],
+            },
+          ],
+        },
+        {
+          ...postInDB,
+          groups: [
+            {
+              ...postInDB.groups[0],
+              options: [{ ...postInDB.groups[0].options[0] }],
+            },
+          ],
         },
       ];
-      expect(result).toEqual({ postsCount: 1, posts: mockedReturnedPosts });
+      const expectedPost = {
+        id: postInDB.uuid,
+        caption: postInDB.caption,
+        is_hidden: postInDB.is_hidden,
+        created_at: postInDB.created_at,
+        type: postInDB.type,
+        options_groups: {
+          groups: [
+            {
+              id: postInDB.groups[0].uuid,
+              name: postInDB.groups[0].name,
+              options: [
+                {
+                  id: postInDB.groups[0].options[0].uuid,
+                  body: postInDB.groups[0].options[0].body,
+                  vote_count: postInDB.groups[0].options[0].vote_count,
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const expectedPosts = {
+        postsCount: postsInDB.length,
+        posts: [{ ...expectedPost }, { ...expectedPost }],
+      };
+
+      // mocks
+      postRepo.getAllPosts = jest.fn().mockResolvedValueOnce(postsInDB);
+
+      // actions
+      const result = await service.getAllPosts();
+
+      // assertions
+      expect(result).toEqual(expectedPosts);
+    });
+
+    it('should return only the posts with created = true', async () => {
+      // data
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        created: false,
+        caption: 'test-post-caption',
+        is_hidden: false,
+        created_at: 'test-creation-time',
+        type: 'text poll',
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            options: [
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option-uuid',
+              },
+            ],
+          },
+        ],
+      };
+      const postsInDB = [
+        {
+          ...postInDB,
+          created: true,
+          groups: [
+            {
+              ...postInDB.groups[0],
+              options: [{ ...postInDB.groups[0].options[0] }],
+            },
+          ],
+        },
+        {
+          ...postInDB,
+          groups: [
+            {
+              ...postInDB.groups[0],
+              options: [{ ...postInDB.groups[0].options[0] }],
+            },
+          ],
+        },
+      ];
+      const expectedPost = {
+        id: postInDB.uuid,
+        caption: postInDB.caption,
+        is_hidden: postInDB.is_hidden,
+        created_at: postInDB.created_at,
+        type: postInDB.type,
+        options_groups: {
+          groups: [
+            {
+              id: postInDB.groups[0].uuid,
+              name: postInDB.groups[0].name,
+              options: [
+                {
+                  id: postInDB.groups[0].options[0].uuid,
+                  body: postInDB.groups[0].options[0].body,
+                  vote_count: postInDB.groups[0].options[0].vote_count,
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const expectedPosts = {
+        postsCount: 1,
+        posts: [{ ...expectedPost }],
+      };
+
+      // mocks
+      postRepo.getAllPosts = jest.fn().mockResolvedValueOnce(postsInDB);
+
+      // actions
+      const result = await service.getAllPosts();
+
+      // assertions
+      expect(result).toEqual(expectedPosts);
     });
   });
 
   describe('getSinglePosts function', () => {
     it('should return post object', async () => {
-      const result = await service.getSinglePost('post6-uuid');
-      const mockedReturnedPost = {
-        id: 'post6-uuid',
-        caption: 'post 6',
+      // data
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        created: true,
+        caption: 'test-post-caption',
         is_hidden: false,
-        created_at: '2021-06-01',
+        created_at: 'test-creation-time',
         type: 'text poll',
-        options_groups: { groups: [{ id: 'group1-uuid', options: [] }] },
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            options: [
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option-uuid',
+              },
+            ],
+          },
+        ],
       };
-      expect(result).toEqual(mockedReturnedPost);
-      expect(postRepo.getSinglePost).toBeCalledWith('post6-uuid');
-    });
-  });
+      const expectedPost = {
+        id: postInDB.uuid,
+        caption: postInDB.caption,
+        is_hidden: postInDB.is_hidden,
+        created_at: postInDB.created_at,
+        type: postInDB.type,
+        options_groups: {
+          groups: [
+            {
+              id: postInDB.groups[0].uuid,
+              name: postInDB.groups[0].name,
+              options: [
+                {
+                  id: postInDB.groups[0].options[0].uuid,
+                  body: postInDB.groups[0].options[0].body,
+                  vote_count: postInDB.groups[0].options[0].vote_count,
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const postId = 'test-post-uuid';
 
-  describe('flagPost method', () => {
-    it('should call postRepository.flagPost with dto & postid', async () => {
-      const dto = { finished: true };
-      const params = new PostIdParam();
-      await service.flagPost(params, dto);
-      expect(postRepo.flagPostCreation).toBeCalledWith(
-        dto.finished,
-        params.postid,
+      // mocks
+      postRepo.getSinglePost = jest.fn().mockResolvedValueOnce(postInDB);
+
+      // actions
+      const result = await service.getSinglePost(postId);
+
+      // assertions
+      expect(result).toEqual(expectedPost);
+    });
+
+    it('should throw error if post not found', () => {
+      // data
+      const postId = 'test-post-uuid';
+
+      // mocks
+      postRepo.getSinglePost = jest.fn().mockResolvedValueOnce(undefined);
+
+      // actions
+      const result = service.getSinglePost(postId);
+
+      // assertions
+      expect(result).rejects.toThrowError(
+        new NotFoundException(`Post with id: ${postId} not found`),
       );
     });
   });
-  describe('deletePost', () => {
-    it('should return undefined', async () => {
-      const res = await service.deletePost('uuid', 3);
-      expect(res).toBeUndefined();
+
+  it('should throw error if post not created yet', () => {
+    // data
+    const postInDB = {
+      uuid: 'test-post-uuid',
+      created: false,
+      caption: 'test-post-caption',
+      is_hidden: false,
+      created_at: 'test-creation-time',
+      type: 'text poll',
+      groups: [
+        {
+          uuid: 'test-group-uuid',
+          name: 'test-group-name',
+          options: [
+            {
+              vote_count: 2,
+              body: 'test-option-body',
+              uuid: 'test-option-uuid',
+            },
+          ],
+        },
+      ],
+    };
+    const postId = 'test-post-uuid';
+
+    // mocks
+    postRepo.getSinglePost = jest.fn().mockResolvedValueOnce(postInDB);
+
+    // actions
+    const result = service.getSinglePost(postId);
+
+    // assertions
+    expect(result).rejects.toThrowError(
+      new HttpException(`Post with id: ${postId} still under creation...`, 423),
+    );
+  });
+
+  describe('flagPost method', () => {
+    it('should return undefined', () => {
+      // data
+      const dto = { finished: true };
+      const params = { postid: 'test-post-uuid' };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce({ id: 1 });
+
+      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      const data = service.flagPost(params, dto);
+
+      // assertions
+      expect(data).resolves.toBeUndefined();
     });
-    it('should call repository fn with post uuid and user id', async () => {
-      await service.deletePost('uuid', 3);
-      expect(postRepo.deletePost).toHaveBeenCalledWith('uuid', 3);
+
+    it('should have findPostById method that is called with post id', async () => {
+      // data
+      const dto = { finished: true };
+      const params = { postid: 'test-post-uuid' };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce({ id: 1 });
+
+      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      await service.flagPost(params, dto);
+
+      // assertions
+      expect(postRepo.findPostById).toBeCalledWith(params.postid);
+    });
+
+    it('should throw error if post is not found', () => {
+      // data
+      const dto = { finished: true };
+      const params = { postid: 'test-post-uuid' };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(undefined);
+
+      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      const data = service.flagPost(params, dto);
+
+      // assertions
+      expect(data).rejects.toThrowError(
+        new NotFoundException('Post with id: test-post-uuid not found'),
+      );
+    });
+
+    it('should have flagPostCreation method that is called with finished flag and the found post', async () => {
+      // data
+      const dto = { finished: true };
+      const params = { postid: 'test-post-uuid' };
+      const foundPost = { id: 1 };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+
+      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      await service.flagPost(params, dto);
+
+      // assertions
+      expect(postRepo.flagPostCreation).toBeCalledWith(dto.finished, foundPost);
+    });
+  });
+  describe('deletePost', () => {
+    it('should return undefined', () => {
+      // data
+      const userId = 2;
+      const postId = 'test-post-id';
+
+      //mocks
+      postRepo.findPostById = jest
+        .fn()
+        .mockResolvedValueOnce({ id: 1, user_id: userId });
+      postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      const res = service.deletePost(postId, userId);
+
+      // assertions
+      expect(res).resolves.toBeUndefined();
+    });
+
+    it('should have findPostById method that is called with post id', async () => {
+      // data
+      const userId = 2;
+      const postId = 'test-post-id';
+
+      //mocks
+      postRepo.findPostById = jest
+        .fn()
+        .mockResolvedValueOnce({ id: 1, user_id: userId });
+      postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      await service.deletePost(postId, userId);
+
+      // assertions
+      expect(postRepo.findPostById).toBeCalledWith(postId);
+    });
+
+    it('should throw error if post is not found', () => {
+      // data
+      const userId = 2;
+      const postId = 'test-post-uuid';
+
+      //mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(undefined);
+      postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      const res = service.deletePost(postId, userId);
+
+      // assertions
+      expect(res).rejects.toThrowError(
+        new NotFoundException('Post with id: test-post-uuid not found'),
+      );
+    });
+
+    it('should throw error if user is not owner of post', () => {
+      // data
+      const userId = 2;
+      const postId = 'test-post-uuid';
+
+      //mocks
+      postRepo.findPostById = jest
+        .fn()
+        .mockResolvedValueOnce({ uuid: 'test-uuid', user_id: 1 });
+      postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      const res = service.deletePost(postId, userId);
+
+      // assertions
+      expect(res).rejects.toThrowError(
+        new UnauthorizedException('Unauthorized'),
+      );
+    });
+
+    it('should call postRepository.remove with the found post', async () => {
+      // data
+      const userId = 2;
+      const postId = 'test-post-uuid';
+      const foundPost = { uuid: 'test-uuid', user_id: userId };
+
+      //mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      await service.deletePost(postId, userId);
+
+      // assertions
+      expect(postRepo.remove).toBeCalledWith(foundPost);
     });
   });
 });

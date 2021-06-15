@@ -50,34 +50,12 @@ export class PostRepository extends Repository<Post> {
   /**
    * flagPostCreation
    */
-  public async flagPostCreation(flag: boolean, postid: string): Promise<void> {
-    const post = await this.findOne({
-      where: { uuid: postid },
-      relations: ['groups', 'groups.options'],
-    });
-    if (!post) throw new NotFoundException(`Post with id: ${postid} not found`);
+  public async flagPostCreation(flag: boolean, post: Post): Promise<void> {
     post.created = flag;
     post.ready = true;
     await this.save(post);
   }
 
-  public async deletePost(postid: string, userId: number): Promise<void> {
-    // get post from DB
-    const post = await this.findOne({ where: { uuid: postid } });
-
-    // Check whether there is a post with the passed id
-    if (!post) {
-      throw new NotFoundException(`Post with id:${postid} not found`);
-    }
-
-    // Check if current user is the owner of the post
-    if (post.user_id !== userId) {
-      throw new UnauthorizedException('Unauthorized');
-    }
-
-    // remove post
-    await Post.remove(post);
-  }
   public async getSinglePost(postid: string): Promise<Post> {
     const post = await this.createQueryBuilder('posts')
       .select([
@@ -98,14 +76,14 @@ export class PostRepository extends Repository<Post> {
       .where('posts.uuid = :uuid', { uuid: postid })
       .getOne();
 
-    if (!post) throw new NotFoundException(`Post with id: ${postid} not found`);
-
-    // don't return post if post.created = false
-    if (!post.created)
-      throw new HttpException(
-        `Post with id: ${postid} still under creation...`,
-        423,
-      );
     return post;
+  }
+
+  public async findPostById(postId: string): Promise<Post> {
+    return await this.createQueryBuilder('post')
+      .where('post.uuid = :postId', {
+        postId,
+      })
+      .getOne();
   }
 }
