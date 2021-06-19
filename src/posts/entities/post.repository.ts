@@ -52,7 +52,11 @@ export class PostRepository extends Repository<Post> {
    */
   public async flagPostCreation(flag: boolean, post: Post): Promise<void> {
     post.created = flag;
-    post.ready = true;
+    // for now add ready = true whenever flag = true
+    // this should be changed later whenever we have implementation for media in post
+    if (flag) {
+      post.ready = true;
+    }
     await this.save(post);
   }
 
