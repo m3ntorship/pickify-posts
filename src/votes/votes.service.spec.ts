@@ -9,65 +9,14 @@ import { OptionRepository } from '../posts/entities/option.repository';
 import { VoteRepository } from './entities/votes.repository';
 import { VotesService } from './votes.service';
 
-// const mockOptionDB = {
-//   id: 1,
-//   uuid: 'test-uuid',
-//   vote_count: 2,
-//   optionsGroup: {
-//     post: {
-//       created: true,
-//     },
-//     options: [
-//       { uuid: 'option1-test-uuis', vote_count: 2 },
-//       { uuid: 'option2-test-uuis', vote_count: 0 },
-//     ],
-//   },
-//   votes: [
-//     { id: 1, user_id: 1 },
-//     { id: 2, user_id: 1 },
-//   ],
-// };
-
-// const mockVoteRepo = {
-//   addVote: jest.fn().mockResolvedValueOnce(undefined),
-// };
-
-// const mockOptionRepo = {
-//   findOptionById: jest.fn().mockImplementation((optionId) => {
-//     return new Promise((resolve) => {
-//       if (optionId === mockOptionDB) {
-//         resolve(mockOptionDB);
-//       }
-//       resolve(undefined);
-//     });
-//   }),
-//   incrementVoteCount: jest.fn().mockImplementation((option: Option) => {
-//     option.vote_count++;
-//     return Promise.resolve(option);
-//   }),
-// };
-let votesService: VotesService;
-
 describe('VotesService', () => {
-  let service: VotesService;
+  let votesService: VotesService;
   let optionRepo: OptionRepository;
   let voteRepo: VoteRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        VotesService,
-        VoteRepository,
-        OptionRepository,
-        // {
-        //   provide: VoteRepository,
-        //   useValue: mockVoteRepo,
-        // },
-        // {
-        //   provide: OptionRepository,
-        //   useValue: mockOptionRepo,
-        // },
-      ],
+      providers: [VotesService, VoteRepository, OptionRepository],
     }).compile();
 
     votesService = module.get<VotesService>(VotesService);
