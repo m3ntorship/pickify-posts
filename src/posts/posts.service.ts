@@ -7,12 +7,12 @@ import { OptionsGroupRepository } from './entities/optionsGroup.repository';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import type { Group, Post, Posts } from './interfaces/getPosts.interface';
 import {
-  HttpException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { isUserAuthorized } from '../shared/authorization/userAuthorization';
+import { LockedException } from '../shared/exceptions/locked.exception';
 
 @Injectable()
 export class PostsService {
@@ -154,9 +154,8 @@ export class PostsService {
 
     // don't return post if post.created = false
     if (!post.created) {
-      throw new HttpException(
+      throw new LockedException(
         `Post with id: ${postId} still under creation...`,
-        423,
       );
     }
     const postUuid = post.uuid;

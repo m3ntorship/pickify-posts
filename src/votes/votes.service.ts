@@ -1,10 +1,10 @@
 import {
   ConflictException,
-  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LockedException } from '../shared/exceptions/locked.exception';
 import { Option } from '../posts/entities/option.entity';
 import { OptionRepository } from '../posts/entities/option.repository';
 import { Vote } from './entities/vote.entity';
@@ -27,9 +27,8 @@ export class VotesService {
     }
     // if post of option still under creation
     if (!option.optionsGroup.post.created) {
-      throw new HttpException(
+      throw new LockedException(
         `Post:${option.optionsGroup.post.uuid} with option:${optionId} still under creation...`,
-        423,
       );
     }
 
