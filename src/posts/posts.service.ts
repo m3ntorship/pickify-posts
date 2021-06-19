@@ -12,6 +12,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { isUserAuthorized } from '../shared/authorization/userAuthorization';
 
 @Injectable()
 export class PostsService {
@@ -57,7 +58,7 @@ export class PostsService {
     }
 
     // Allw only post owner to continue
-    if (post.user_id !== userId) {
+    if (!isUserAuthorized(post, userId)) {
       throw new UnauthorizedException('Unauthorized');
     }
 
@@ -74,7 +75,7 @@ export class PostsService {
     }
 
     // Check if current user is the owner of the post
-    if (post.user_id !== userId) {
+    if (!isUserAuthorized(post, userId)) {
       throw new UnauthorizedException('Unauthorized');
     }
 
@@ -97,7 +98,7 @@ export class PostsService {
     }
 
     // Allw only post owner to continue
-    if (post.user_id !== userId) {
+    if (!isUserAuthorized(post, userId)) {
       throw new UnauthorizedException('Unauthorized');
     }
 
