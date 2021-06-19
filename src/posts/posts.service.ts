@@ -5,7 +5,14 @@ import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
-import type { Group, Post, Posts } from './interfaces/getPosts.interface';
+import type {
+  Group,
+  Post,
+  Posts,
+  Option,
+} from './interfaces/getPosts.interface';
+import { Option as OptionEntity } from './entities/option.entity';
+import { OptiosnGroup as OptionGroupEntity } from './entities/optionsGroup.entity';
 import {
   Injectable,
   NotFoundException,
@@ -22,17 +29,21 @@ export class PostsService {
     private groupRepository: OptionsGroupRepository,
   ) {}
 
-  private modifyGroupsData(post): Group[] {
-    const groups: Group[] = post.groups.map((obj) => {
-      const groupUuid = obj['uuid'];
-      delete obj['uuid'];
-      const options = obj.options.map((option) => {
-        const optionUuid = option['uuid'];
-        delete option['uuid'];
-        return { id: optionUuid, ...(option as any) };
-      });
-      delete obj['options'];
-      return { id: groupUuid, options: options, ...(obj as any) };
+  private modifyGroupsData(currGroups: OptionGroupEntity[]): Group[] {
+    const groups: Group[] = currGroups.map((group: OptionGroupEntity) => {
+      // Loop through all options in each group and return a new option as found in the interface
+      const options: Option[] = group.options.map((option: OptionEntity) => ({
+        id: option.uuid,
+        body: option.body,
+        vote_count: option.vote_count,
+      }));
+
+      // return each group as found in interface
+      return {
+        id: group.uuid,
+        name: group.name,
+        options,
+      };
     });
     return groups;
   }
@@ -126,25 +137,25 @@ export class PostsService {
     return response;
   }
   async getAllPosts(): Promise<Posts> {
-    let currentPosts = await this.postRepository.getAllPosts();
+    // get all posts from DB
+    const currentPosts = await this.postRepository.getAllPosts();
 
-    currentPosts = currentPosts.filter((post) => post.created);
-
-    const response: Posts = { postsCount: currentPosts.length, posts: [] };
-    for (let i = 0; i < currentPosts.length; i++) {
-      const post = currentPosts[i];
-      // call function to modify group data
-      const groups: Group[] = this.modifyGroupsData(post);
-      response.posts.push({
-        id: post.uuid,
-        caption: post.caption,
-        is_hidden: post.is_hidden,
-        created_at: post.created_at,
-        type: post.type,
-        options_groups: { groups: groups },
-      });
-    }
-    return response;
+    return {
+      postsCount: currentPosts.length,
+      // return all posts after modifiying each one as found in openAPI
+      posts: currentPosts.map((post) => {
+        // Get the modified groups for each post
+        const groups: Group[] = this.modifyGroupsData(post.groups);
+        return {
+          id: post.uuid,
+          caption: post.caption,
+          is_hidden: post.is_hidden,
+          created_at: post.created_at,
+          type: post.type,
+          options_groups: { groups: groups },
+        };
+      }),
+    };
   }
   async getSinglePost(postId: string): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);
@@ -162,7 +173,7 @@ export class PostsService {
     delete post['uuid'];
     delete post['created'];
     //calling function to modify groups data
-    const groups: Group[] = this.modifyGroupsData(post);
+    const groups: Group[] = this.modifyGroupsData(post.groups);
 
     //deleting old groups
     delete post['groups'];

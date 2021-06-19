@@ -445,7 +445,9 @@ describe('PostsService', () => {
       };
 
       // mocks
-      postRepo.getAllPosts = jest.fn().mockResolvedValueOnce(postsInDB);
+      postRepo.getAllPosts = jest
+        .fn()
+        .mockResolvedValueOnce(postsInDB.filter((post) => post.created));
 
       // actions
       const result = await service.getAllPosts();
