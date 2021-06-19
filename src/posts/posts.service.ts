@@ -86,6 +86,7 @@ export class PostsService {
   async createOptionGroup(
     postid: string,
     groupsCreationDto: OptionsGroupCreationDto,
+    userId: number,
   ): Promise<OptionsGroups> {
     const response: OptionsGroups = { groups: [] };
 
@@ -95,6 +96,11 @@ export class PostsService {
     // check whether post found
     if (!post) {
       throw new NotFoundException(`Post with id: ${postid} not found`);
+    }
+
+    // Allw only post owner to continue
+    if (post.user_id !== userId) {
+      throw new UnauthorizedException('Unauthorized');
     }
 
     // Loop through all groups

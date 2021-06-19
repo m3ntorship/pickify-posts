@@ -6,9 +6,6 @@ import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import { PostRepository } from './entities/post.repository';
 import { PostsService } from './posts.service';
 import { PostCreationDto } from './dto/postCreation.dto';
-import { Post } from './entities/post.entity';
-import { PostIdParam } from '../shared/validations/uuid.validator';
-import { async } from 'rxjs';
 import {
   HttpException,
   NotFoundException,
@@ -42,12 +39,17 @@ describe('PostsService', () => {
     expect(service).toHaveProperty('createPost');
     expect(service).toHaveProperty('createOptionGroup');
     expect(service).toHaveProperty('flagPost');
+    expect(service).toHaveProperty('deletePost');
+    expect(service).toHaveProperty('getAllPosts');
+    expect(service).toHaveProperty('getSinglePost');
   });
 
   describe('createOptionGroup method', () => {
     it('should return the ids of the created groups & options', async () => {
       // data
-      const postid = 'test post id';
+      const postId = 'test post id';
+      const userId = 3;
+      const foundPost = { id: 1, user_id: userId };
       const dto: OptionsGroupCreationDto = {
         groups: [
           {
@@ -76,7 +78,7 @@ describe('PostsService', () => {
       };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce({ id: 1 });
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
@@ -85,7 +87,7 @@ describe('PostsService', () => {
         .mockResolvedValue({ uuid: 'created-option-uuid' });
 
       // action
-      const data = await service.createOptionGroup(postid, dto);
+      const data = await service.createOptionGroup(postId, dto, userId);
 
       // assertions
       expect(data).toEqual(createdOptionsGroups);
@@ -93,7 +95,8 @@ describe('PostsService', () => {
 
     it('should throw error if post not found', async () => {
       // data
-      const postid = 'test post id';
+      const postId = 'test post id';
+      const userId = 3;
       const dto: OptionsGroupCreationDto = {
         groups: [
           {
@@ -116,7 +119,7 @@ describe('PostsService', () => {
         .mockResolvedValue({ uuid: 'created-option-uuid' });
 
       // action
-      const data = service.createOptionGroup(postid, dto);
+      const data = service.createOptionGroup(postId, dto, userId);
 
       // assertions
       expect(data).rejects.toThrowError(
@@ -124,9 +127,46 @@ describe('PostsService', () => {
       );
     });
 
+    it('should throw error if user is not post owner', async () => {
+      // data
+      const postId = 'test post id';
+      const userId = 3;
+      const foundPost = { id: 1, user_id: 2 };
+      const dto: OptionsGroupCreationDto = {
+        groups: [
+          {
+            name: 'test group name',
+            options: [
+              { body: 'test option 1 body' },
+              { body: 'test option 2 body' },
+            ],
+          },
+        ],
+      };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      groupRepo.createGroup = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-group-uuid' });
+      optionRepo.createOption = jest
+        .fn()
+        .mockResolvedValue({ uuid: 'created-option-uuid' });
+
+      // action
+      const data = service.createOptionGroup(postId, dto, userId);
+
+      // assertions
+      expect(data).rejects.toThrowError(
+        new UnauthorizedException('Unauthorized'),
+      );
+    });
+
     it('should call groupRepo.createGroup & optionRepo.createOption with correct parameters', async () => {
       // data
-      const postid = 'test post id';
+      const postId = 'test post id';
+      const userId = 3;
+      const foundPost = { id: 1, user_id: userId };
       const dto: OptionsGroupCreationDto = {
         groups: [
           {
@@ -142,8 +182,6 @@ describe('PostsService', () => {
         uuid: 'created-group-uuid',
       };
 
-      const foundPost = { id: 1 };
-
       // mocks
       postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
       groupRepo.createGroup = jest
@@ -154,7 +192,7 @@ describe('PostsService', () => {
         .mockResolvedValue({ uuid: 'created-option-uuid' });
 
       // action
-      await service.createOptionGroup(postid, dto);
+      await service.createOptionGroup(postId, dto, userId);
 
       // assertions
       expect(groupRepo.createGroup).toBeCalledWith(
@@ -169,7 +207,9 @@ describe('PostsService', () => {
 
     it('should call groupRepo.createGroup & optionRepo.createOption methods equal to no of groups & options bassed in dto', async () => {
       // data
-      const postid = 'test post id';
+      const postId = 'test post id';
+      const userId = 3;
+      const foundPost = { id: 1, user_id: userId };
       const dto: OptionsGroupCreationDto = {
         groups: [
           {
@@ -190,7 +230,6 @@ describe('PostsService', () => {
           },
         ],
       };
-      const foundPost = { id: 1 };
 
       // mocks
       postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
@@ -201,7 +240,7 @@ describe('PostsService', () => {
         .fn()
         .mockResolvedValue({ uuid: 'created-option-uuid' });
 
-      await service.createOptionGroup(postid, dto);
+      await service.createOptionGroup(postId, dto, userId);
 
       // assertions
       expect(optionRepo.createOption).toHaveBeenCalledTimes(6);
@@ -489,43 +528,46 @@ describe('PostsService', () => {
         new NotFoundException(`Post with id: ${postId} not found`),
       );
     });
-  });
 
-  it('should throw error if post not created yet', () => {
-    // data
-    const postInDB = {
-      uuid: 'test-post-uuid',
-      created: false,
-      caption: 'test-post-caption',
-      is_hidden: false,
-      created_at: 'test-creation-time',
-      type: 'text poll',
-      groups: [
-        {
-          uuid: 'test-group-uuid',
-          name: 'test-group-name',
-          options: [
-            {
-              vote_count: 2,
-              body: 'test-option-body',
-              uuid: 'test-option-uuid',
-            },
-          ],
-        },
-      ],
-    };
-    const postId = 'test-post-uuid';
+    it('should throw error if post not created yet', () => {
+      // data
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        created: false,
+        caption: 'test-post-caption',
+        is_hidden: false,
+        created_at: 'test-creation-time',
+        type: 'text poll',
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            options: [
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option-uuid',
+              },
+            ],
+          },
+        ],
+      };
+      const postId = 'test-post-uuid';
 
-    // mocks
-    postRepo.getSinglePost = jest.fn().mockResolvedValueOnce(postInDB);
+      // mocks
+      postRepo.getSinglePost = jest.fn().mockResolvedValueOnce(postInDB);
 
-    // actions
-    const result = service.getSinglePost(postId);
+      // actions
+      const result = service.getSinglePost(postId);
 
-    // assertions
-    expect(result).rejects.toThrowError(
-      new HttpException(`Post with id: ${postId} still under creation...`, 423),
-    );
+      // assertions
+      expect(result).rejects.toThrowError(
+        new HttpException(
+          `Post with id: ${postId} still under creation...`,
+          423,
+        ),
+      );
+    });
   });
 
   describe('flagPost method', () => {

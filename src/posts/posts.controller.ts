@@ -53,10 +53,13 @@ export class PostsController {
   async createOptionGroup(
     @Param() params: PostIdParam,
     @Body() createGroupsDto: OptionsGroupCreationDto,
+    @Headers() headers: { Authorization: string },
   ): Promise<OptionsGroups> {
+    const userId = headers.Authorization;
     const createdGroups = await this.postsService.createOptionGroup(
       params.postid,
       createGroupsDto,
+      +userId,
     );
     return createdGroups;
   }

@@ -70,9 +70,8 @@ describe('PostsController', () => {
 
   describe('createOptionGroup function', () => {
     it('should call service.createOptionGroup with proper parameters and return its return', async () => {
-      // mocks
-
       // data
+      const headers = { Authorization: '3' };
       const param: PostIdParam = { postid: 'test postId' };
       const dto: OptionsGroupCreationDto = {
         groups: [
@@ -82,8 +81,16 @@ describe('PostsController', () => {
           },
         ],
       };
-      const data = await controller.createOptionGroup(param, dto);
-      expect(service.createOptionGroup).toBeCalledWith(param.postid, dto);
+
+      // actions
+      const data = await controller.createOptionGroup(param, dto, headers);
+
+      // assertions
+      expect(service.createOptionGroup).toBeCalledWith(
+        param.postid,
+        dto,
+        +headers.Authorization,
+      );
       expect(data).toEqual('test creating groups');
     });
   });
