@@ -78,7 +78,7 @@ describe('PostsService', () => {
       };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
@@ -110,7 +110,7 @@ describe('PostsService', () => {
       };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(undefined);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(undefined);
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
@@ -145,7 +145,7 @@ describe('PostsService', () => {
       };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
@@ -183,7 +183,7 @@ describe('PostsService', () => {
       };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
@@ -232,7 +232,7 @@ describe('PostsService', () => {
       };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
@@ -504,7 +504,7 @@ describe('PostsService', () => {
       const postId = 'test-post-uuid';
 
       // mocks
-      postRepo.getSinglePost = jest.fn().mockResolvedValueOnce(postInDB);
+      postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
       const result = await service.getSinglePost(postId);
@@ -518,7 +518,7 @@ describe('PostsService', () => {
       const postId = 'test-post-uuid';
 
       // mocks
-      postRepo.getSinglePost = jest.fn().mockResolvedValueOnce(undefined);
+      postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(undefined);
 
       // actions
       const result = service.getSinglePost(postId);
@@ -555,7 +555,7 @@ describe('PostsService', () => {
       const postId = 'test-post-uuid';
 
       // mocks
-      postRepo.getSinglePost = jest.fn().mockResolvedValueOnce(postInDB);
+      postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
       const result = service.getSinglePost(postId);
@@ -579,7 +579,7 @@ describe('PostsService', () => {
       const foundPost = { id: 1, user_id: userId };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
 
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
@@ -590,7 +590,7 @@ describe('PostsService', () => {
       expect(data).resolves.toBeUndefined();
     });
 
-    it('should have findPostById method that is called with post id', async () => {
+    it('should have getPostById method that is called with post id', async () => {
       // data
       const flag = true;
       const postid = 'test-post-uuid';
@@ -598,7 +598,7 @@ describe('PostsService', () => {
       const foundPost = { id: 1, user_id: userId };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
 
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
@@ -606,7 +606,7 @@ describe('PostsService', () => {
       await service.flagPost(postid, flag, userId);
 
       // assertions
-      expect(postRepo.findPostById).toBeCalledWith(postid);
+      expect(postRepo.getPostById).toBeCalledWith(postid);
     });
 
     it('should throw error if post is not found', () => {
@@ -616,7 +616,7 @@ describe('PostsService', () => {
       const userId = 3;
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(undefined);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(undefined);
 
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
@@ -637,7 +637,7 @@ describe('PostsService', () => {
       const foundPost = { id: 1, user_id: 2 };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
 
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
@@ -658,7 +658,7 @@ describe('PostsService', () => {
       const foundPost = { id: 1, user_id: userId };
 
       // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
 
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
@@ -676,7 +676,7 @@ describe('PostsService', () => {
       const postId = 'test-post-id';
 
       //mocks
-      postRepo.findPostById = jest
+      postRepo.getPostById = jest
         .fn()
         .mockResolvedValueOnce({ id: 1, user_id: userId });
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
@@ -688,13 +688,13 @@ describe('PostsService', () => {
       expect(res).resolves.toBeUndefined();
     });
 
-    it('should have findPostById method that is called with post id', async () => {
+    it('should have getPostById method that is called with post id', async () => {
       // data
       const userId = 2;
       const postId = 'test-post-id';
 
       //mocks
-      postRepo.findPostById = jest
+      postRepo.getPostById = jest
         .fn()
         .mockResolvedValueOnce({ id: 1, user_id: userId });
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
@@ -703,7 +703,7 @@ describe('PostsService', () => {
       await service.deletePost(postId, userId);
 
       // assertions
-      expect(postRepo.findPostById).toBeCalledWith(postId);
+      expect(postRepo.getPostById).toBeCalledWith(postId);
     });
 
     it('should throw error if post is not found', () => {
@@ -712,7 +712,7 @@ describe('PostsService', () => {
       const postId = 'test-post-uuid';
 
       //mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(undefined);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(undefined);
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
@@ -730,7 +730,7 @@ describe('PostsService', () => {
       const postId = 'test-post-uuid';
 
       //mocks
-      postRepo.findPostById = jest
+      postRepo.getPostById = jest
         .fn()
         .mockResolvedValueOnce({ uuid: 'test-uuid', user_id: 1 });
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
@@ -751,7 +751,7 @@ describe('PostsService', () => {
       const foundPost = { uuid: 'test-uuid', user_id: userId };
 
       //mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
 
       // action

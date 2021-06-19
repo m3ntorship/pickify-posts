@@ -54,7 +54,7 @@ export class PostRepository extends Repository<Post> {
     await this.save(post);
   }
 
-  public async getSinglePost(postid: string): Promise<Post> {
+  public async getDetailedPostById(postid: string): Promise<Post> {
     const post = await this.createQueryBuilder('post')
       .select([
         'post.uuid',
@@ -77,7 +77,7 @@ export class PostRepository extends Repository<Post> {
     return post;
   }
 
-  public async findPostById(postId: string): Promise<Post> {
+  public async getPostById(postId: string): Promise<Post> {
     return await this.createQueryBuilder('post')
       .where('post.uuid = :postId', {
         postId,
