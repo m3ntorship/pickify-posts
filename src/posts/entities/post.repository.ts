@@ -1,10 +1,4 @@
-import {
-  InternalServerErrorException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
-import { HttpException } from '@nestjs/common';
 import { PostCreationDto } from '../dto/postCreation.dto';
 import { Post } from './post.entity';
 
@@ -28,23 +22,23 @@ export class PostRepository extends Repository<Post> {
     return await this.save(post);
   }
   public async getAllPosts(): Promise<Post[]> {
-    return await this.createQueryBuilder('posts')
+    return await this.createQueryBuilder('post')
       .select([
-        'posts.uuid',
-        'posts.created',
-        'posts.caption',
-        'posts.is_hidden',
-        'posts.created_at',
-        'posts.type',
-        'groups.uuid',
-        'groups.name',
-        'options.uuid',
-        'options.vote_count',
-        'options.body',
+        'post.uuid',
+        'post.created',
+        'post.caption',
+        'post.is_hidden',
+        'post.created_at',
+        'post.type',
+        'group.uuid',
+        'group.name',
+        'option.uuid',
+        'option.vote_count',
+        'option.body',
       ])
-      .where('posts.created = :created', { created: true })
-      .leftJoin('posts.groups', 'groups')
-      .leftJoin('groups.options', 'options')
+      .where('post.created = :created', { created: true })
+      .leftJoin('post.groups', 'group')
+      .leftJoin('group.options', 'option')
       .getMany();
   }
   /**
@@ -61,23 +55,23 @@ export class PostRepository extends Repository<Post> {
   }
 
   public async getSinglePost(postid: string): Promise<Post> {
-    const post = await this.createQueryBuilder('posts')
+    const post = await this.createQueryBuilder('post')
       .select([
-        'posts.uuid',
-        'posts.created',
-        'posts.caption',
-        'posts.is_hidden',
-        'posts.created_at',
-        'posts.type',
-        'groups.uuid',
-        'groups.name',
-        'options.uuid',
-        'options.vote_count',
-        'options.body',
+        'post.uuid',
+        'post.created',
+        'post.caption',
+        'post.is_hidden',
+        'post.created_at',
+        'post.type',
+        'group.uuid',
+        'group.name',
+        'option.uuid',
+        'option.vote_count',
+        'option.body',
       ])
-      .leftJoin('posts.groups', 'groups')
-      .leftJoin('groups.options', 'options')
-      .where('posts.uuid = :uuid', { uuid: postid })
+      .leftJoin('post.groups', 'group')
+      .leftJoin('group.options', 'option')
+      .where('post.uuid = :uuid', { uuid: postid })
       .getOne();
 
     return post;

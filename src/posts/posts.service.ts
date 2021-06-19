@@ -12,8 +12,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PostIdParam } from '../shared/validations/uuid.validator';
-import { FlagPostFinishedDto } from './dto/flag-post-finished';
 
 @Injectable()
 export class PostsService {
