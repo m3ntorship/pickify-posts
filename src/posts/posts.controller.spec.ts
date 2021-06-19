@@ -1,4 +1,3 @@
-import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostIdParam } from '../shared/validations/uuid.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
@@ -91,10 +90,20 @@ describe('PostsController', () => {
 
   describe('flagPost function', () => {
     it('should call service.flagpost with dto & postid', async () => {
+      // data
       const dto: FlagPostFinishedDto = { finished: true };
       const params: PostIdParam = { postid: '23242' };
-      await controller.flagPost(params, dto);
-      expect(service.flagPost).toBeCalledWith(params, dto);
+      const headers = { Authorization: '3' };
+
+      // actions
+      await controller.flagPost(params, dto, headers);
+
+      // assertions
+      expect(service.flagPost).toBeCalledWith(
+        params.postid,
+        dto.finished,
+        +headers.Authorization,
+      );
     });
   });
 

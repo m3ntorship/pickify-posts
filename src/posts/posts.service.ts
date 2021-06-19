@@ -49,19 +49,21 @@ export class PostsService {
     return { id: createdPost.uuid };
   }
 
-  async flagPost(
-    params: PostIdParam,
-    flagPostDto: FlagPostFinishedDto,
-  ): Promise<void> {
+  async flagPost(postId: string, flag: boolean, userId: number): Promise<void> {
     // get post
-    const post = await this.postRepository.findPostById(params.postid);
+    const post = await this.postRepository.findPostById(postId);
 
     // check whether post is found
     if (!post) {
-      throw new NotFoundException(`Post with id: ${params.postid} not found`);
+      throw new NotFoundException(`Post with id: ${postId} not found`);
     }
 
-    await this.postRepository.flagPostCreation(flagPostDto.finished, post);
+    // Allw only post owner to continue
+    if (post.user_id !== userId) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    await this.postRepository.flagPostCreation(flag, post);
   }
 
   async deletePost(postid: string, userId: number): Promise<void> {

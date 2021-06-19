@@ -531,62 +531,10 @@ describe('PostsService', () => {
   describe('flagPost method', () => {
     it('should return undefined', () => {
       // data
-      const dto = { finished: true };
-      const params = { postid: 'test-post-uuid' };
-
-      // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce({ id: 1 });
-
-      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
-
-      // action
-      const data = service.flagPost(params, dto);
-
-      // assertions
-      expect(data).resolves.toBeUndefined();
-    });
-
-    it('should have findPostById method that is called with post id', async () => {
-      // data
-      const dto = { finished: true };
-      const params = { postid: 'test-post-uuid' };
-
-      // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce({ id: 1 });
-
-      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
-
-      // action
-      await service.flagPost(params, dto);
-
-      // assertions
-      expect(postRepo.findPostById).toBeCalledWith(params.postid);
-    });
-
-    it('should throw error if post is not found', () => {
-      // data
-      const dto = { finished: true };
-      const params = { postid: 'test-post-uuid' };
-
-      // mocks
-      postRepo.findPostById = jest.fn().mockResolvedValueOnce(undefined);
-
-      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
-
-      // action
-      const data = service.flagPost(params, dto);
-
-      // assertions
-      expect(data).rejects.toThrowError(
-        new NotFoundException('Post with id: test-post-uuid not found'),
-      );
-    });
-
-    it('should have flagPostCreation method that is called with finished flag and the found post', async () => {
-      // data
-      const dto = { finished: true };
-      const params = { postid: 'test-post-uuid' };
-      const foundPost = { id: 1 };
+      const flag = true;
+      const postid = 'test-post-uuid';
+      const userId = 3;
+      const foundPost = { id: 1, user_id: userId };
 
       // mocks
       postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
@@ -594,10 +542,89 @@ describe('PostsService', () => {
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      await service.flagPost(params, dto);
+      const data = service.flagPost(postid, flag, userId);
 
       // assertions
-      expect(postRepo.flagPostCreation).toBeCalledWith(dto.finished, foundPost);
+      expect(data).resolves.toBeUndefined();
+    });
+
+    it('should have findPostById method that is called with post id', async () => {
+      // data
+      const flag = true;
+      const postid = 'test-post-uuid';
+      const userId = 3;
+      const foundPost = { id: 1, user_id: userId };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+
+      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      await service.flagPost(postid, flag, userId);
+
+      // assertions
+      expect(postRepo.findPostById).toBeCalledWith(postid);
+    });
+
+    it('should throw error if post is not found', () => {
+      // data
+      const flag = true;
+      const postid = 'test-post-uuid';
+      const userId = 3;
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(undefined);
+
+      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      const data = service.flagPost(postid, flag, userId);
+
+      // assertions
+      expect(data).rejects.toThrowError(
+        new NotFoundException('Post with id: test-post-uuid not found'),
+      );
+    });
+
+    it('should throw error if user is not post owner', () => {
+      // data
+      const flag = true;
+      const postid = 'test-post-uuid';
+      const userId = 3;
+      const foundPost = { id: 1, user_id: 2 };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+
+      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      const data = service.flagPost(postid, flag, userId);
+
+      // assertions
+      expect(data).rejects.toThrowError(
+        new UnauthorizedException('Unauthorized'),
+      );
+    });
+
+    it('should have flagPostCreation method that is called with finished flag and the found post', async () => {
+      // data
+      const flag = true;
+      const postid = 'test-post-uuid';
+      const userId = 3;
+      const foundPost = { id: 1, user_id: userId };
+
+      // mocks
+      postRepo.findPostById = jest.fn().mockResolvedValueOnce(foundPost);
+
+      postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
+
+      // action
+      await service.flagPost(postid, flag, userId);
+
+      // assertions
+      expect(postRepo.flagPostCreation).toBeCalledWith(flag, foundPost);
     });
   });
   describe('deletePost', () => {

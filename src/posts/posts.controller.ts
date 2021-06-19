@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -67,8 +66,14 @@ export class PostsController {
   async flagPost(
     @Param() params: PostIdParam,
     @Body() flagPostDto: FlagPostFinishedDto,
+    @Headers() headers: { Authorization: string },
   ): Promise<void> {
-    await this.postsService.flagPost(params, flagPostDto);
+    const userId = headers.Authorization;
+    await this.postsService.flagPost(
+      params.postid,
+      flagPostDto.finished,
+      +userId,
+    );
   }
 
   @Delete('/:postid')
