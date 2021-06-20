@@ -6,16 +6,26 @@ import { OptionDto } from '../dto/optionGroupCreation.dto';
 @EntityRepository(Option)
 export class OptionRepository extends Repository<Option> {
   /**
-   * createOption   */
-  public async createOption(
+   * create bulk options with one to many relation to optionsGroup entity
+   */
+
+  public async createBulk(
+    optionsData: OptionDto[],
     group: OptiosnGroup,
-    optionData: OptionDto,
-  ): Promise<Option> {
-    const option = this.create();
-    option.optionsGroup = group;
-    option.body = optionData.body;
-    option.vote_count = 0;
-    return await this.save(option);
+  ): Promise<Option[]> {
+    // create option object with each optionData
+    const options = optionsData.map((option) => {
+      const newOption = this.create();
+      newOption.body = option.body;
+      newOption.vote_count = 0;
+      if (group) {
+        newOption.optionsGroup = group;
+      }
+      return newOption;
+    });
+
+    // save all option objects into DB
+    return await this.save(options);
   }
 
   /**

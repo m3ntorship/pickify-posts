@@ -82,9 +82,12 @@ describe('PostsService', () => {
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
-      optionRepo.createOption = jest
+      optionRepo.createBulk = jest
         .fn()
-        .mockResolvedValue({ uuid: 'created-option-uuid' });
+        .mockResolvedValue([
+          { uuid: 'created-option-uuid' },
+          { uuid: 'created-option-uuid' },
+        ]);
 
       // action
       const data = await service.createOptionGroup(postId, dto, userId);
@@ -160,91 +163,6 @@ describe('PostsService', () => {
       expect(data).rejects.toThrowError(
         new UnauthorizedException('Unauthorized'),
       );
-    });
-
-    it('should call groupRepo.createGroup & optionRepo.createOption with correct parameters', async () => {
-      // data
-      const postId = 'test post id';
-      const userId = 3;
-      const foundPost = { id: 1, user_id: userId };
-      const dto: OptionsGroupCreationDto = {
-        groups: [
-          {
-            name: 'test group name',
-            options: [
-              { body: 'test option 1 body' },
-              { body: 'test option 2 body' },
-            ],
-          },
-        ],
-      };
-      const createdGroup = {
-        uuid: 'created-group-uuid',
-      };
-
-      // mocks
-      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
-      groupRepo.createGroup = jest
-        .fn()
-        .mockResolvedValue({ uuid: 'created-group-uuid' });
-      optionRepo.createOption = jest
-        .fn()
-        .mockResolvedValue({ uuid: 'created-option-uuid' });
-
-      // action
-      await service.createOptionGroup(postId, dto, userId);
-
-      // assertions
-      expect(groupRepo.createGroup).toBeCalledWith(
-        foundPost,
-        dto.groups[0].name,
-      );
-      expect(optionRepo.createOption).toBeCalledWith(
-        createdGroup,
-        dto.groups[0].options[0],
-      );
-    });
-
-    it('should call groupRepo.createGroup & optionRepo.createOption methods equal to no of groups & options bassed in dto', async () => {
-      // data
-      const postId = 'test post id';
-      const userId = 3;
-      const foundPost = { id: 1, user_id: userId };
-      const dto: OptionsGroupCreationDto = {
-        groups: [
-          {
-            name: 'test group name',
-            options: [
-              { body: 'test option 1 body' },
-              { body: 'test option 2 body' },
-              { body: 'test option 2 body' },
-            ],
-          },
-          {
-            name: 'test group name',
-            options: [
-              { body: 'test option 1 body' },
-              { body: 'test option 2 body' },
-              { body: 'test option 2 body' },
-            ],
-          },
-        ],
-      };
-
-      // mocks
-      postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
-      groupRepo.createGroup = jest
-        .fn()
-        .mockResolvedValue({ uuid: 'created-group-uuid' });
-      optionRepo.createOption = jest
-        .fn()
-        .mockResolvedValue({ uuid: 'created-option-uuid' });
-
-      await service.createOptionGroup(postId, dto, userId);
-
-      // assertions
-      expect(optionRepo.createOption).toHaveBeenCalledTimes(6);
-      expect(groupRepo.createGroup).toHaveBeenCalledTimes(2);
     });
   });
 

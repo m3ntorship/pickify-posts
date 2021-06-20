@@ -113,27 +113,24 @@ export class PostsService {
       throw new UnauthorizedException('Unauthorized');
     }
 
-    // Loop through all groups
-    for (let i = 0; i < groupsCreationDto.groups.length; i++) {
-      const group = groupsCreationDto.groups[i];
-      const createdGroup = await this.groupRepository.createGroup(
-        post,
-        group.name,
+    // Add each group to DB along with its options
+    for (const group of groupsCreationDto.groups) {
+      // create group
+      const createdGroup = await this.groupRepository.createGroup(post, group);
+
+      // create options
+      const options = await this.optionRepository.createBulk(
+        group.options,
+        createdGroup,
       );
 
-      // Add the group uuid to the response
-      response.groups.push({ id: createdGroup.uuid, options: [] });
-
-      // Create Multiple options for the group
-      for (let j = 0; j < group.options.length; j++) {
-        const option = group.options[j];
-        const createdOption = await this.optionRepository.createOption(
-          createdGroup,
-          option,
-        );
-        response.groups[i].options.push({ id: createdOption.uuid });
-      }
+      // Add the group uuid and options uuids to the response
+      response.groups.push({
+        id: createdGroup.uuid,
+        options: options.map((option: OptionEntity) => ({ id: option.uuid })),
+      });
     }
+
     return response;
   }
   async getAllPosts(): Promise<Posts> {
