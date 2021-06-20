@@ -1,7 +1,13 @@
+@postId = 473be085-aa74-4026-9ee7-e5e29bf13535
+@groupId = 48cf88df-e3cf-4caa-aae5-cc1ade55bcb5
+@optionId = 3184c41b-4a30-48d9-b0d8-747039493001
+@userId = 1
+
 // POST /api/posts
 //////////////////
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {
     "type": "text_poll",
@@ -12,6 +18,7 @@ content-type: application/json
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "caption": "post 2 caption",
@@ -23,6 +30,7 @@ content-type: application/json
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "caption": "post caption",
@@ -33,6 +41,7 @@ content-type: application/json
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "caption": "post caption",
@@ -42,8 +51,9 @@ content-type: application/json
 
 ##################
 // POST /api/posts/:postid/groups
-POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
+POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "groups": [
@@ -60,8 +70,9 @@ content-type: application/json
 
 ###
 
-POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
+POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "groups": [
@@ -77,8 +88,9 @@ content-type: application/json
 
 ###
 
-POST http://localhost:3000/api/posts/ba858c96-ddeb-4523-8f10-71030d88807f/groups HTTP/1.1
+POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {   
     "groups": [
@@ -101,30 +113,41 @@ content-type: application/json
 
 ##################
 // PATCH /api/posts/:postid
-PATCH http://localhost:3000/api/posts/98dcb0da-972b-4d25-950a-10c62ba8a78f
+PATCH http://localhost:3000/api/posts/{{postId}}
 Content-Type: application/json
+Authorization: Bearer {{userId}}
 
 {
     "finished": true
 }
 ###
 // DELETE /api/posts/:postid
-DELETE http://localhost:3000/api/posts/219e9e3d-f209-4f64-b816-6bba8e0d2e43 HTTP/1.1
+DELETE http://localhost:3000/api/posts/{{postId}} HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 
 ##################
 // PATCH /api/posts/:postid
+PATCH  http://localhost:3000/api/posts/{{postId}} HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{userId}}
 
+{
+    "finished": true
+}
 
 ##################
 // GET /api/posts
 GET http://localhost:3000/api/posts
+Authorization: Bearer {{userId}}
 
 ##################
 // GET /api/posts/:postid
-GET http://localhost:3000/api/posts/28f465dd-55dd-488c-8995-d427cef0cc2
+GET http://localhost:3000/api/posts/{{postId}}
+Authorization: Bearer {{userId}}
 
 ##################
 // PUT /api/votes/:optionid
-PUT http://localhost:3000/api/votes/a502658a-d92f-4759-a0fc-8fd79e656172 HTTP/1.1
+PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
+Authorization: Bearer {{userId}}

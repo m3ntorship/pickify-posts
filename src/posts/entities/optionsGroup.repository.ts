@@ -1,27 +1,20 @@
-import { NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
+import { OptionsGroupDto } from '../dto/optionGroupCreation.dto';
 import { OptiosnGroup } from './optionsGroup.entity';
 import { Post } from './post.entity';
 @EntityRepository(OptiosnGroup)
 export class OptionsGroupRepository extends Repository<OptiosnGroup> {
   /**
-   * createGroup
+   * add a new group in DB
    */
   public async createGroup(
-    postid: string,
-    name: string,
+    post: Post,
+    groupDto: OptionsGroupDto,
   ): Promise<OptiosnGroup> {
-    try {
-      const post = await this.manager
-        .getRepository(Post)
-        .findOne({ where: { uuid: postid } });
-      if (!post) throw new NotFoundException('post not found');
-      const group = this.create();
-      group.name = name;
-      group.post = post;
-      return await this.save(group);
-    } catch (err) {
-      throw err;
-    }
+    const group = this.create();
+    group.name = groupDto.name;
+    group.post = post;
+
+    return await this.save(group);
   }
 }

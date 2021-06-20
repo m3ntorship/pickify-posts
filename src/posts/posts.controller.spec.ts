@@ -1,4 +1,3 @@
-import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostIdParam } from '../shared/validations/uuid.validator';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
@@ -41,12 +40,14 @@ describe('PostsController', () => {
         is_hidden: false,
       };
 
-      const result = await controller.createPost(dto);
+      const headers = { Authorization: '3' };
+
+      const result = await controller.createPost(dto, headers);
 
       expect(result).toEqual({ uuid: 'test id' });
 
       expect(service.createPost).toBeCalledTimes(1);
-      expect(service.createPost).toBeCalledWith(dto);
+      expect(service.createPost).toBeCalledWith(dto, +headers.Authorization);
     });
   });
 
@@ -69,9 +70,8 @@ describe('PostsController', () => {
 
   describe('createOptionGroup function', () => {
     it('should call service.createOptionGroup with proper parameters and return its return', async () => {
-      // mocks
-
       // data
+      const headers = { Authorization: '3' };
       const param: PostIdParam = { postid: 'test postId' };
       const dto: OptionsGroupCreationDto = {
         groups: [
@@ -81,27 +81,55 @@ describe('PostsController', () => {
           },
         ],
       };
-      const data = await controller.createOptionGroup(param, dto);
-      expect(service.createOptionGroup).toBeCalledWith(param.postid, dto);
+
+      // actions
+      const data = await controller.createOptionGroup(param, dto, headers);
+
+      // assertions
+      expect(service.createOptionGroup).toBeCalledWith(
+        param.postid,
+        dto,
+        +headers.Authorization,
+      );
       expect(data).toEqual('test creating groups');
     });
   });
 
   describe('flagPost function', () => {
     it('should call service.flagpost with dto & postid', async () => {
+      // data
       const dto: FlagPostFinishedDto = { finished: true };
       const params: PostIdParam = { postid: '23242' };
-      await controller.flagPost(params, dto);
-      expect(service.flagPost).toBeCalledWith(params, dto);
+      const headers = { Authorization: '3' };
+
+      // actions
+      await controller.flagPost(params, dto, headers);
+
+      // assertions
+      expect(service.flagPost).toBeCalledWith(
+        params.postid,
+        dto.finished,
+        +headers.Authorization,
+      );
     });
   });
 
   describe('deletePost function', () => {
-    it('should call service function with postid', async () => {
+    it('does not return anything', async () => {
       const params = { postid: 'uuid' };
-      const res = await controller.deletePost(params);
+      const headers = { Authorization: '3' };
+      const res = await controller.deletePost(params, headers);
       expect(res).toBeUndefined();
-      expect(service.deletePost).toBeCalledWith(params.postid);
+    });
+
+    it('should call service function with postid and authroization header', async () => {
+      const params = { postid: 'uuid' };
+      const headers = { Authorization: '3' };
+      await controller.deletePost(params, headers);
+      expect(service.deletePost).toBeCalledWith(
+        params.postid,
+        +headers.Authorization,
+      );
     });
   });
 });

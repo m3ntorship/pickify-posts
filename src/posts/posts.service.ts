@@ -5,10 +5,21 @@ import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
-import type { Group, Post, Posts } from './interfaces/getPosts.interface';
-import { Injectable } from '@nestjs/common';
-import { PostIdParam } from '../shared/validations/uuid.validator';
-import { FlagPostFinishedDto } from './dto/flag-post-finished';
+import type {
+  Group,
+  Post,
+  Posts,
+  Option,
+} from './interfaces/getPosts.interface';
+import { Option as OptionEntity } from './entities/option.entity';
+import { OptiosnGroup as OptionGroupEntity } from './entities/optionsGroup.entity';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { isUserAuthorized } from '../shared/authorization/userAuthorization';
+import { LockedException } from '../shared/exceptions/locked.exception';
 
 @Injectable()
 export class PostsService {
@@ -18,93 +29,148 @@ export class PostsService {
     private groupRepository: OptionsGroupRepository,
   ) {}
 
-  private modifyGroupsData(post): Group[] {
-    const groups: Group[] = post.groups.map((obj) => {
-      const groupUuid = obj['uuid'];
-      delete obj['uuid'];
-      const options = obj.options.map((option) => {
-        const optionUuid = option['uuid'];
-        delete option['uuid'];
-        return { id: optionUuid, ...(option as any) };
-      });
-      delete obj['options'];
-      return { id: groupUuid, options: options, ...(obj as any) };
+  private modifyGroupsData(currGroups: OptionGroupEntity[]): Group[] {
+    const groups: Group[] = currGroups.map((group: OptionGroupEntity) => {
+      // Loop through all options in each group and return a new option as found in the interface
+      const options: Option[] = group.options.map((option: OptionEntity) => ({
+        id: option.uuid,
+        body: option.body,
+        vote_count: option.vote_count,
+      }));
+
+      // return each group as found in interface
+      return {
+        id: group.uuid,
+        name: group.name,
+        options,
+      };
     });
     return groups;
   }
 
   async createPost(
     postCreationDto: PostCreationDto,
+    userId: number,
   ): Promise<PostCreationInterface> {
-    const createdPost = await this.postRepository.createPost(postCreationDto);
+    const createdPost = await this.postRepository.createPost(
+      postCreationDto,
+      userId,
+    );
     return { id: createdPost.uuid };
   }
 
-  async flagPost(
-    params: PostIdParam,
-    flagPostDto: FlagPostFinishedDto,
-  ): Promise<void> {
-    await this.postRepository.flagPostCreation(
-      flagPostDto.finished,
-      params.postid,
-    );
+  async flagPost(postId: string, flag: boolean, userId: number): Promise<void> {
+    // get post
+    const post = await this.postRepository.getPostById(postId);
+
+    // check whether post is found
+    if (!post) {
+      throw new NotFoundException(`Post with id: ${postId} not found`);
+    }
+
+    // Allw only post owner to continue
+    if (!isUserAuthorized(post, userId)) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    await this.postRepository.flagPostCreation(flag, post);
   }
 
-  async deletePost(postid: string): Promise<void> {
-    await this.postRepository.deletePost(postid);
+  async deletePost(postid: string, userId: number): Promise<void> {
+    // get post
+    const post = await this.postRepository.getPostById(postid);
+
+    // check whether post is found
+    if (!post) {
+      throw new NotFoundException(`Post with id: ${postid} not found`);
+    }
+
+    // Check if current user is the owner of the post
+    if (!isUserAuthorized(post, userId)) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    await this.postRepository.remove(post);
   }
 
   async createOptionGroup(
     postid: string,
     groupsCreationDto: OptionsGroupCreationDto,
+    userId: number,
   ): Promise<OptionsGroups> {
     const response: OptionsGroups = { groups: [] };
-    // Loop through all groups
-    for (let i = 0; i < groupsCreationDto.groups.length; i++) {
-      const group = groupsCreationDto.groups[i];
-      const createdGroup = await this.groupRepository.createGroup(
-        postid,
-        group.name,
-      );
-      // Add the group uuid to the response
-      response.groups.push({ id: createdGroup.uuid, options: [] });
-      // Create Multiple options for the group
-      for (let j = 0; j < group.options.length; j++) {
-        const option = group.options[j];
-        const createdOption = await this.optionRepository.createOption(
-          createdGroup,
-          option,
-        );
-        response.groups[i].options.push({ id: createdOption.uuid });
-      }
+
+    // get post
+    const post = await this.postRepository.getPostById(postid);
+
+    // check whether post found
+    if (!post) {
+      throw new NotFoundException(`Post with id: ${postid} not found`);
     }
+
+    // Allw only post owner to continue
+    if (!isUserAuthorized(post, userId)) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    // Add each group to DB along with its options
+    for (const group of groupsCreationDto.groups) {
+      // create group
+      const createdGroup = await this.groupRepository.createGroup(post, group);
+
+      // create options
+      const options = await this.optionRepository.createBulk(
+        group.options,
+        createdGroup,
+      );
+
+      // Add the group uuid and options uuids to the response
+      response.groups.push({
+        id: createdGroup.uuid,
+        options: options.map((option: OptionEntity) => ({ id: option.uuid })),
+      });
+    }
+
     return response;
   }
   async getAllPosts(): Promise<Posts> {
+    // get all posts from DB
     const currentPosts = await this.postRepository.getAllPosts();
 
-    const response: Posts = { postsCount: currentPosts.length, posts: [] };
-    for (let i = 0; i < currentPosts.length; i++) {
-      const post = currentPosts[i];
-      // call function to modify group data
-      const groups: Group[] = this.modifyGroupsData(post);
-      response.posts.push({
-        id: post.uuid,
-        caption: post.caption,
-        is_hidden: post.is_hidden,
-        created_at: post.created_at,
-        type: post.type,
-        options_groups: { groups: groups },
-      });
-    }
-    return response;
+    return {
+      postsCount: currentPosts.length,
+      // return all posts after modifiying each one as found in openAPI
+      posts: currentPosts.map((post) => {
+        // Get the modified groups for each post
+        const groups: Group[] = this.modifyGroupsData(post.groups);
+        return {
+          id: post.uuid,
+          caption: post.caption,
+          is_hidden: post.is_hidden,
+          created_at: post.created_at,
+          type: post.type,
+          options_groups: { groups: groups },
+        };
+      }),
+    };
   }
   async getSinglePost(postId: string): Promise<Post> {
-    const post = await this.postRepository.getSinglePost(postId);
+    const post = await this.postRepository.getDetailedPostById(postId);
+
+    // check whether post is found
+    if (!post) throw new NotFoundException(`Post with id: ${postId} not found`);
+
+    // don't return post if post.created = false
+    if (!post.created) {
+      throw new LockedException(
+        `Post with id: ${postId} still under creation...`,
+      );
+    }
     const postUuid = post.uuid;
     delete post['uuid'];
+    delete post['created'];
     //calling function to modify groups data
-    const groups: Group[] = this.modifyGroupsData(post);
+    const groups: Group[] = this.modifyGroupsData(post.groups);
 
     //deleting old groups
     delete post['groups'];
