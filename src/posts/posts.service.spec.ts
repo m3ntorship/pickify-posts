@@ -117,9 +117,12 @@ describe('PostsService', () => {
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
-      optionRepo.createOption = jest
+      optionRepo.createBulk = jest
         .fn()
-        .mockResolvedValue({ uuid: 'created-option-uuid' });
+        .mockResolvedValue([
+          { uuid: 'created-option-uuid' },
+          { uuid: 'created-option-uuid' },
+        ]);
 
       // action
       const data = service.createOptionGroup(postId, dto, userId);
@@ -152,9 +155,12 @@ describe('PostsService', () => {
       groupRepo.createGroup = jest
         .fn()
         .mockResolvedValue({ uuid: 'created-group-uuid' });
-      optionRepo.createOption = jest
+      optionRepo.createBulk = jest
         .fn()
-        .mockResolvedValue({ uuid: 'created-option-uuid' });
+        .mockResolvedValue([
+          { uuid: 'created-option-uuid' },
+          { uuid: 'created-option-uuid' },
+        ]);
 
       // action
       const data = service.createOptionGroup(postId, dto, userId);
