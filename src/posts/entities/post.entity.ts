@@ -1,3 +1,4 @@
+import { Media } from '../../media/entities/media.entity';
 import { Entity, Column, OneToMany } from 'typeorm';
 
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
@@ -26,4 +27,8 @@ export class Post extends Model {
   // one to many relation with options_group entity
   @OneToMany(() => OptiosnGroup, (group) => group.post)
   groups: OptiosnGroup[];
+
+  // one to many relation with media entity
+  @OneToMany(() => Media, (media) => media.post)
+  media: Media[];
 }
