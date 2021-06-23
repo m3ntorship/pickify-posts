@@ -1,7 +1,8 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, ManyToOne } from 'typeorm';
 
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { OptiosnGroup } from './optionsGroup.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'posts', schema: POSTS_SCHEMA })
 export class Post extends Model {
@@ -15,9 +16,6 @@ export class Post extends Model {
   is_hidden: boolean;
 
   @Column()
-  user_id: number;
-
-  @Column()
   ready: boolean;
 
   @Column()
@@ -26,4 +24,11 @@ export class Post extends Model {
   // one to many relation with options_group entity
   @OneToMany(() => OptiosnGroup, (group) => group.post)
   groups: OptiosnGroup[];
+
+  // many to one relation with user entity
+  @ManyToOne(() => User, (user) => user.posts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  user: User;
 }
