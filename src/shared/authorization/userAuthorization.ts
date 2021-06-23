@@ -2,9 +2,9 @@ import { ObjectLiteral } from '../interfaces/objectLiteral';
 
 export function isUserAuthorized<T extends ObjectLiteral>(
   entity: T,
-  userId: number,
+  userId: string,
 ): boolean {
-  if (entity.user_id !== userId) {
+  if (entity.user.uuid !== userId) {
     return false;
   }
   return true;
