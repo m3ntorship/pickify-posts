@@ -19,6 +19,6 @@ export class VotesController {
     @Headers() headers: { Authorization: string },
   ): Promise<OptionsVotes[]> {
     const userId = headers.Authorization;
-    return this.votesService.addVote(params.optionid, +userId);
+    return this.votesService.addVote(params.optionid, userId);
   }
 }
