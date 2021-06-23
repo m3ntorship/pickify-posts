@@ -4,7 +4,14 @@ export interface Post {
   is_hidden: boolean;
   created_at: Date;
   type: string;
+  user: User;
   options_groups: OptionsGroup;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  profile_pic: string;
 }
 export interface OptionsGroup {
   groups: Group[];

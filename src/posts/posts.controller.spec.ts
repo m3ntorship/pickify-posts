@@ -47,7 +47,7 @@ describe('PostsController', () => {
       expect(result).toEqual({ uuid: 'test id' });
 
       expect(service.createPost).toBeCalledTimes(1);
-      expect(service.createPost).toBeCalledWith(dto, +headers.Authorization);
+      expect(service.createPost).toBeCalledWith(dto, headers.Authorization);
     });
   });
 
@@ -89,7 +89,7 @@ describe('PostsController', () => {
       expect(service.createOptionGroup).toBeCalledWith(
         param.postid,
         dto,
-        +headers.Authorization,
+        headers.Authorization,
       );
       expect(data).toEqual('test creating groups');
     });
@@ -109,7 +109,7 @@ describe('PostsController', () => {
       expect(service.flagPost).toBeCalledWith(
         params.postid,
         dto.finished,
-        +headers.Authorization,
+        headers.Authorization,
       );
     });
   });
@@ -128,7 +128,7 @@ describe('PostsController', () => {
       await controller.deletePost(params, headers);
       expect(service.deletePost).toBeCalledWith(
         params.postid,
-        +headers.Authorization,
+        headers.Authorization,
       );
     });
   });
