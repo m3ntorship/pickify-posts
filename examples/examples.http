@@ -1,7 +1,7 @@
-@postId = 473be085-aa74-4026-9ee7-e5e29bf13535
+@postId = 0eff1e27-3bd6-4154-a292-0efc36f0be71
 @groupId = 48cf88df-e3cf-4caa-aae5-cc1ade55bcb5
-@optionId = 3184c41b-4a30-48d9-b0d8-747039493001
-@userId = 1
+@optionId = bc211b18-9be0-4822-b274-36ea24b9eb84
+@userId = 3ad4e0f5-1787-46fa-851f-d7dddbfaf2c3
 
 // POST /api/posts
 //////////////////

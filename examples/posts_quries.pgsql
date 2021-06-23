@@ -1,3 +1,5 @@
+SELECT * FROM pickify_posts.users;
+
 select * from pickify_posts.posts;
 
 SELECT * FROM pickify_posts.options_groups;
