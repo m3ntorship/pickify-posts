@@ -362,8 +362,10 @@ components:
         type:
           type: string
           enum: [text poll, image poll, mini survey]
-      maxProperties: 3
-      required: ["is_hidden", "type"]
+        media_count:
+          type: number
+      maxProperties: 4
+      required: ["is_hidden", "type", "media_count"]
     single_post_response:
       type: object
       properties:
