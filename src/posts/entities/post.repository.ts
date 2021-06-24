@@ -86,7 +86,7 @@ export class PostRepository extends Repository<Post> {
     return post;
   }
 
-  public async getPostWithUserById(postId: string): Promise<Post> {
+  public async getPostById(postId: string): Promise<Post> {
     return await this.createQueryBuilder('post')
       .where('post.uuid = :postId', {
         postId,

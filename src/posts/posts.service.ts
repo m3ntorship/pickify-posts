@@ -67,7 +67,7 @@ export class PostsService {
 
   async flagPost(postId: string, flag: boolean, userId: string): Promise<void> {
     // get post
-    const post = await this.postRepository.getPostWithUserById(postId);
+    const post = await this.postRepository.getPostById(postId);
 
     // check whether post is found
     if (!post) {
@@ -84,7 +84,7 @@ export class PostsService {
 
   async deletePost(postid: string, userId: string): Promise<void> {
     // get post
-    const post = await this.postRepository.getPostWithUserById(postid);
+    const post = await this.postRepository.getPostById(postid);
 
     // check whether post is found
     if (!post) {
@@ -107,7 +107,7 @@ export class PostsService {
     const response: OptionsGroups = { groups: [] };
 
     // get post
-    const post = await this.postRepository.getPostWithUserById(postid);
+    const post = await this.postRepository.getPostById(postid);
 
     // check whether post found
     if (!post) {
