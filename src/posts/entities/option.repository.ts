@@ -32,10 +32,11 @@ export class OptionRepository extends Repository<Option> {
    * get option with relation to vote, grous & post
    */
 
-  public async findOptionById(optionId: string): Promise<Option> {
+  public async findDetailedOptionById(optionId: string): Promise<Option> {
     return await this.createQueryBuilder('options')
       .where('options.uuid = :optionId', { optionId })
       .leftJoinAndSelect('options.votes', 'vote')
+      .leftJoinAndSelect('vote.user', 'user')
       .leftJoinAndSelect('options.optionsGroup', 'optionsGroup')
       .leftJoinAndSelect('optionsGroup.options', 'option')
       .leftJoinAndSelect('optionsGroup.post', 'post')

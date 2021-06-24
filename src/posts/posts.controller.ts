@@ -36,7 +36,7 @@ export class PostsController {
     @Headers() headers: { Authorization: string },
   ): Promise<PostCreationInterface> {
     const userId = headers.Authorization;
-    return this.postsService.createPost(postCreationDto, +userId);
+    return this.postsService.createPost(postCreationDto, userId);
   }
 
   @Get('/')
@@ -59,7 +59,7 @@ export class PostsController {
     const createdGroups = await this.postsService.createOptionGroup(
       params.postid,
       createGroupsDto,
-      +userId,
+      userId,
     );
     return createdGroups;
   }
@@ -75,7 +75,7 @@ export class PostsController {
     await this.postsService.flagPost(
       params.postid,
       flagPostDto.finished,
-      +userId,
+      userId,
     );
   }
 
@@ -86,6 +86,6 @@ export class PostsController {
     @Headers() headers: { Authorization: string },
   ) {
     const userId = headers.Authorization;
-    await this.postsService.deletePost(params.postid, +userId);
+    await this.postsService.deletePost(params.postid, userId);
   }
 }

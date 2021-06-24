@@ -1,6 +1,6 @@
 // import { OneToMany } from 'typeorm';
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Option } from './option.entity';
 import { Post } from './post.entity';
 
@@ -18,5 +18,6 @@ export class OptiosnGroup extends Model {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'post_id' })
   post: Post;
 }
