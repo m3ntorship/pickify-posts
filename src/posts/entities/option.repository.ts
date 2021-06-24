@@ -18,7 +18,7 @@ export class OptionRepository extends Repository<Option> {
       const newOption = this.create();
       newOption.body = option.body;
       newOption.vote_count = 0;
-      newOption.order = index + 1;
+      newOption.order = index;
 
       if (group) {
         newOption.optionsGroup = group;
