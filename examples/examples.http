@@ -1,6 +1,6 @@
-@postId = 0eff1e27-3bd6-4154-a292-0efc36f0be71
-@groupId = 48cf88df-e3cf-4caa-aae5-cc1ade55bcb5
-@optionId = bc211b18-9be0-4822-b274-36ea24b9eb84
+@postId = 5e7c2be5-922d-4ad1-94c0-23b820e4529d
+@groupId = 098836f8-aa60-461b-9f59-1d769001ec88
+@optionId = bdf0c500-f42c-47ba-87bb-d20bf80b74b5
 @userId = 3ad4e0f5-1787-46fa-851f-d7dddbfaf2c3
 
 // POST /api/posts
@@ -61,7 +61,7 @@ Authorization: Bearer {{userId}}
             "name": "group 1 name",
             "options": [
                 {
-                    "body":"option 1 body"
+                    "body": "option 1 body"
                 }
             ]
         }
@@ -95,7 +95,7 @@ Authorization: Bearer {{userId}}
 {   
     "groups": [
         {
-            "name": "group name",
+            "name": "NAME: latest post",
             "options": [
                 {
                     "body":"option 1 body"
