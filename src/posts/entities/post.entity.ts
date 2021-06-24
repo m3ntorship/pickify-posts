@@ -1,4 +1,4 @@
-import { Entity, Column, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { OptiosnGroup } from './optionsGroup.entity';
@@ -30,5 +30,6 @@ export class Post extends Model {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

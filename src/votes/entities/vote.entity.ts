@@ -1,5 +1,5 @@
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
-import { Entity, ManyToOne } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Option } from '../../posts/entities/option.entity';
 import { User } from '../../posts/entities/user.entity';
 
@@ -10,6 +10,7 @@ export class Vote extends Model {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'option_id' })
   option: Option;
 
   // many to one relation with user entity
@@ -17,5 +18,6 @@ export class Vote extends Model {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }
