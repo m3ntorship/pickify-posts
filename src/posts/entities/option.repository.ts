@@ -14,10 +14,12 @@ export class OptionRepository extends Repository<Option> {
     group: OptiosnGroup,
   ): Promise<Option[]> {
     // create option object with each optionData
-    const options = optionsData.map((option) => {
+    const options = optionsData.map((option, index) => {
       const newOption = this.create();
       newOption.body = option.body;
       newOption.vote_count = 0;
+      newOption.order = index + 1;
+
       if (group) {
         newOption.optionsGroup = group;
       }
