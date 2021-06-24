@@ -44,6 +44,10 @@ export class PostRepository extends Repository<Post> {
       .leftJoin('post.groups', 'group')
       .leftJoin('group.options', 'option')
       .leftJoin('post.user', 'user')
+      .orderBy({
+        'post.created_at': 'DESC',
+        'option.order': 'ASC',
+      })
       .getMany();
   }
   /**
