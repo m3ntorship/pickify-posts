@@ -1,4 +1,4 @@
-@postId = 5e7c2be5-922d-4ad1-94c0-23b820e4529d
+@postId = 215e4cf9-538a-4b8c-aaa9-50720a2b2341
 @groupId = 098836f8-aa60-461b-9f59-1d769001ec88
 @optionId = bdf0c500-f42c-47ba-87bb-d20bf80b74b5
 @userId = 3ad4e0f5-1787-46fa-851f-d7dddbfaf2c3
@@ -95,16 +95,41 @@ Authorization: Bearer {{userId}}
 {   
     "groups": [
         {
-            "name": "NAME: latest post",
+            "name": "group1",
             "options": [
                 {
-                    "body":"option 1 body"
+                    "body":"g1o1"
                 },
                 {
-                    "body":"option 2 body"
+                    "body":"g1o2"
                 },
                 {
-                    "body":"option 3 body"
+                    "body":"g1o3"
+                }
+            ]
+        },
+        {
+            "name": "group2",
+            "options": [
+                {
+                    "body":"g2o1"
+                },
+                {
+                    "body":"g2o2"
+                }
+            ]
+        },
+        {
+            "name": "group3",
+            "options": [
+                {
+                    "body":"g3o1"
+                },
+                {
+                    "body":"g3o2"
+                },
+                {
+                    "body":"g3o3"
                 }
             ]
         }
