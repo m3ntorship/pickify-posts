@@ -10,10 +10,13 @@ export class OptionsGroupRepository extends Repository<OptiosnGroup> {
   public async createGroup(
     post: Post,
     groupDto: OptionsGroupDto,
+    groupOrder: number,
   ): Promise<OptiosnGroup> {
     const group = this.create();
+
     group.name = groupDto.name;
     group.post = post;
+    group.order = groupOrder;
 
     return await this.save(group);
   }

@@ -119,10 +119,16 @@ export class PostsService {
       throw new UnauthorizedException('Unauthorized');
     }
 
+    let groupOrder = 0;
+
     // Add each group to DB along with its options
     for (const group of groupsCreationDto.groups) {
       // create group
-      const createdGroup = await this.groupRepository.createGroup(post, group);
+      const createdGroup = await this.groupRepository.createGroup(
+        post,
+        group,
+        groupOrder++,
+      );
 
       // create options
       const options = await this.optionRepository.createBulk(
