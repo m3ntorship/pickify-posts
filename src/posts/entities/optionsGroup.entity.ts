@@ -9,6 +9,9 @@ export class OptiosnGroup extends Model {
   @Column()
   name: string;
 
+  @Column({ default: 0 })
+  order: number;
+
   // one to many relation with option entity
   @OneToMany(() => Option, (option) => option.optionsGroup)
   options: Option[];
