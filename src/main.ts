@@ -10,9 +10,27 @@ import { AllExceptionsFilterLogger } from './shared/exception-filters/http-excep
 import { winstonLoggerOptions } from './logging/winston.options';
 import { LoggingInterceptor } from './logging/logging.interceptor';
 import { ValidationPipe } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
+  // Create application listens for HTTP requests
   const app = await NestFactory.create(AppModule);
+
+  // initialize configService to get data from it
+  const configService = app.get(ConfigService);
+
+  // Make the application a microservice also
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get('rabbitURL') as string],
+      queue: 'media_queue',
+      queueOptions: {
+        // the queue will survive broker restarts
+        durable: true,
+      },
+    },
+  });
 
   // add global prefix to all endpoints
   app.setGlobalPrefix('api');
@@ -48,8 +66,13 @@ async function bootstrap() {
     res.send({ status: true });
   });
 
-  const configService = app.get(ConfigService);
+  // get port from configService
   const port = configService.get('port');
+
+  // start microservices
+  await app.startAllMicroservicesAsync();
+
+  // start http app
   await app.listen(port);
 }
 bootstrap();
