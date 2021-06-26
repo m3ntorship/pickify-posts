@@ -23,6 +23,8 @@ spec:
               value: {{{M3_ELEPHANTSQL_URL}}}
             - name: NODE_ENV
               value: {{{M3_NODE_ENV}}}
+            - name: RABBITMQ_URL
+              value: {{{M3_RABBITMQ_URL}}}
           ports:
             - name: web
               containerPort: 3000
