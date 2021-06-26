@@ -15,8 +15,8 @@ export class ExtendHeadersMiddleware implements NestMiddleware {
       throw new UnauthorizedException('No user id');
     }
     const userId = req.headers.authorization.split(' ')[1];
-    // check if authorization is sent on form 'Bearer X' where X is number
-    if (req.headers.authorization.startsWith('Bearer ') && +userId) {
+    // check if authorization is sent on form 'Bearer X'
+    if (req.headers.authorization.startsWith('Bearer ')) {
       req.headers = {
         ...req.headers,
         Authorization: userId,

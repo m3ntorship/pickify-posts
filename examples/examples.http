@@ -1,7 +1,7 @@
-@postId = 473be085-aa74-4026-9ee7-e5e29bf13535
-@groupId = 48cf88df-e3cf-4caa-aae5-cc1ade55bcb5
-@optionId = 3184c41b-4a30-48d9-b0d8-747039493001
-@userId = 1
+@postId = 215e4cf9-538a-4b8c-aaa9-50720a2b2341
+@groupId = 098836f8-aa60-461b-9f59-1d769001ec88
+@optionId = bdf0c500-f42c-47ba-87bb-d20bf80b74b5
+@userId = 3ad4e0f5-1787-46fa-851f-d7dddbfaf2c3
 
 // POST /api/posts
 //////////////////
@@ -61,7 +61,7 @@ Authorization: Bearer {{userId}}
             "name": "group 1 name",
             "options": [
                 {
-                    "body":"option 1 body"
+                    "body": "option 1 body"
                 }
             ]
         }
@@ -95,16 +95,41 @@ Authorization: Bearer {{userId}}
 {   
     "groups": [
         {
-            "name": "group name",
+            "name": "group1",
             "options": [
                 {
-                    "body":"option 1 body"
+                    "body":"g1o1"
                 },
                 {
-                    "body":"option 2 body"
+                    "body":"g1o2"
                 },
                 {
-                    "body":"option 3 body"
+                    "body":"g1o3"
+                }
+            ]
+        },
+        {
+            "name": "group2",
+            "options": [
+                {
+                    "body":"g2o1"
+                },
+                {
+                    "body":"g2o2"
+                }
+            ]
+        },
+        {
+            "name": "group3",
+            "options": [
+                {
+                    "body":"g3o1"
+                },
+                {
+                    "body":"g3o2"
+                },
+                {
+                    "body":"g3o3"
                 }
             ]
         }

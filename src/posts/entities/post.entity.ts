@@ -1,8 +1,9 @@
 import { Media } from '../../media/entities/media.entity';
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { OptiosnGroup } from './optionsGroup.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'posts', schema: POSTS_SCHEMA })
 export class Post extends Model {
@@ -14,9 +15,6 @@ export class Post extends Model {
 
   @Column()
   is_hidden: boolean;
-
-  @Column()
-  user_id: number;
 
   @Column()
   ready: boolean;
@@ -31,4 +29,12 @@ export class Post extends Model {
   // one to many relation with media entity
   @OneToMany(() => Media, (media) => media.post)
   media: Media[];
+
+  // many to one relation with user entity
+  @ManyToOne(() => User, (user) => user.posts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

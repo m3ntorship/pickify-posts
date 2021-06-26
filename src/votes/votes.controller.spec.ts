@@ -29,7 +29,7 @@ describe('VotesController', () => {
     const params = { optionid: 'uuid' };
     it('should call service function with optionId', async () => {
       controller.addVote(params, { Authorization: '3' });
-      expect(mockService.addVote).toBeCalledWith(params.optionid, 3);
+      expect(mockService.addVote).toBeCalledWith(params.optionid, '3');
     });
     it('should return whatever service method returns', () => {
       const res = controller.addVote(params, { Authorization: '3' });

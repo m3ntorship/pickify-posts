@@ -20,6 +20,7 @@ import {
 } from '@nestjs/common';
 import { isUserAuthorized } from '../shared/authorization/userAuthorization';
 import { LockedException } from '../shared/exceptions/locked.exception';
+import { UserRepository } from './entities/user.repository';
 
 @Injectable()
 export class PostsService {
@@ -27,6 +28,7 @@ export class PostsService {
     private postRepository: PostRepository,
     private optionRepository: OptionRepository,
     private groupRepository: OptionsGroupRepository,
+    private userRepository: UserRepository,
   ) {}
 
   private modifyGroupsData(currGroups: OptionGroupEntity[]): Group[] {
@@ -50,16 +52,20 @@ export class PostsService {
 
   async createPost(
     postCreationDto: PostCreationDto,
-    userId: number,
+    userId: string,
   ): Promise<PostCreationInterface> {
+    // get user to add post to it
+    const user = await this.userRepository.findOne({ where: { uuid: userId } });
+
+    // create the post
     const createdPost = await this.postRepository.createPost(
       postCreationDto,
-      userId,
+      user,
     );
     return { id: createdPost.uuid };
   }
 
-  async flagPost(postId: string, flag: boolean, userId: number): Promise<void> {
+  async flagPost(postId: string, flag: boolean, userId: string): Promise<void> {
     // get post
     const post = await this.postRepository.getPostById(postId);
 
@@ -76,7 +82,7 @@ export class PostsService {
     await this.postRepository.flagPostCreation(flag, post);
   }
 
-  async deletePost(postid: string, userId: number): Promise<void> {
+  async deletePost(postid: string, userId: string): Promise<void> {
     // get post
     const post = await this.postRepository.getPostById(postid);
 
@@ -96,7 +102,7 @@ export class PostsService {
   async createOptionGroup(
     postid: string,
     groupsCreationDto: OptionsGroupCreationDto,
-    userId: number,
+    userId: string,
   ): Promise<OptionsGroups> {
     const response: OptionsGroups = { groups: [] };
 
@@ -113,10 +119,16 @@ export class PostsService {
       throw new UnauthorizedException('Unauthorized');
     }
 
+    let groupOrder = 0;
+
     // Add each group to DB along with its options
     for (const group of groupsCreationDto.groups) {
       // create group
-      const createdGroup = await this.groupRepository.createGroup(post, group);
+      const createdGroup = await this.groupRepository.createGroup(
+        post,
+        group,
+        groupOrder++,
+      );
 
       // create options
       const options = await this.optionRepository.createBulk(
@@ -133,6 +145,7 @@ export class PostsService {
 
     return response;
   }
+
   async getAllPosts(): Promise<Posts> {
     // get all posts from DB
     const currentPosts = await this.postRepository.getAllPosts();
@@ -145,6 +158,11 @@ export class PostsService {
         const groups: Group[] = this.modifyGroupsData(post.groups);
         return {
           id: post.uuid,
+          user: {
+            id: post.user.uuid,
+            name: post.user.name,
+            profile_pic: post.user.profile_pic,
+          },
           caption: post.caption,
           is_hidden: post.is_hidden,
           created_at: post.created_at,
@@ -154,6 +172,7 @@ export class PostsService {
       }),
     };
   }
+
   async getSinglePost(postId: string): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);
 
@@ -166,18 +185,21 @@ export class PostsService {
         `Post with id: ${postId} still under creation...`,
       );
     }
-    const postUuid = post.uuid;
-    delete post['uuid'];
-    delete post['created'];
+
     //calling function to modify groups data
     const groups: Group[] = this.modifyGroupsData(post.groups);
 
-    //deleting old groups
-    delete post['groups'];
-
     return {
-      id: postUuid,
-      ...(post as any),
+      id: post.uuid,
+      user: {
+        id: post.user.uuid,
+        name: post.user.name,
+        profile_pic: post.user.profile_pic,
+      },
+      caption: post.caption,
+      is_hidden: post.is_hidden,
+      created_at: post.created_at,
+      type: post.type,
       options_groups: { groups: groups },
     };
   }

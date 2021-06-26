@@ -1,6 +1,6 @@
 // import { OneToMany } from 'typeorm';
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Option } from './option.entity';
 import { Post } from './post.entity';
 import { Media } from '../../media/entities/media.entity';
@@ -9,6 +9,9 @@ import { Media } from '../../media/entities/media.entity';
 export class OptiosnGroup extends Model {
   @Column()
   name: string;
+
+  @Column({ default: 0 })
+  order: number;
 
   // one to many relation with option entity
   @OneToMany(() => Option, (option) => option.optionsGroup)
@@ -19,6 +22,7 @@ export class OptiosnGroup extends Model {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'post_id' })
   post: Post;
 
   // one to many relation with media entity

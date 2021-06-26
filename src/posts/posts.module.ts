@@ -5,6 +5,7 @@ import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { OptionRepository } from './entities/option.repository';
 import { OptionsGroupRepository } from './entities/optionsGroup.repository';
+import { UserRepository } from './entities/user.repository';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { OptionsGroupRepository } from './entities/optionsGroup.repository';
       PostRepository,
       OptionsGroupRepository,
       OptionRepository,
+      UserRepository,
     ]),
   ],
   controllers: [PostsController],

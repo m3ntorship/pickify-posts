@@ -3,23 +3,22 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { LockedException } from '../shared/exceptions/locked.exception';
-import { Option } from '../posts/entities/option.entity';
 import { OptionRepository } from '../posts/entities/option.repository';
-import { Vote } from './entities/vote.entity';
 import { VoteRepository } from './entities/votes.repository';
 import { OptionsVotes } from './interfaces/optionsVotes.interface';
+import { UserRepository } from '../posts/entities/user.repository';
 
 @Injectable()
 export class VotesService {
   constructor(
-    @InjectRepository(Vote) private voteRepository: VoteRepository,
-    @InjectRepository(Option) private optionRepository: OptionRepository,
+    private voteRepository: VoteRepository,
+    private optionRepository: OptionRepository,
+    private userRepository: UserRepository,
   ) {}
-  async addVote(optionId: string, userId: number): Promise<OptionsVotes[]> {
+  async addVote(optionId: string, userId: string): Promise<OptionsVotes[]> {
     // get the option with relation to vote, group & post
-    let option = await this.optionRepository.findOptionById(optionId);
+    let option = await this.optionRepository.findDetailedOptionById(optionId);
 
     // if option not found
     if (!option) {
@@ -33,7 +32,7 @@ export class VotesService {
     }
 
     // check if user has voted for this option before
-    const isUserVoted = option.votes.some((vote) => vote.user_id === userId);
+    const isUserVoted = option.votes.some((vote) => vote.user.uuid === userId);
     if (isUserVoted) {
       throw new ConflictException('User has already voted for this option');
     }
@@ -42,8 +41,11 @@ export class VotesService {
     // as it cuase error when adding option to a vote in voteRepository.addVote
     delete option.votes;
 
+    // get user so we can relate it when adding a vote
+    const user = await this.userRepository.findOne({ where: { uuid: userId } });
+
     // add vote
-    await this.voteRepository.addVote(option, userId);
+    await this.voteRepository.addVote(option, user);
 
     // Increment vote_count in option entity
     option = await this.optionRepository.incrementVoteCount(option);
