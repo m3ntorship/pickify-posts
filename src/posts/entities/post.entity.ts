@@ -22,6 +22,9 @@ export class Post extends Model {
   @Column()
   created: boolean;
 
+  @Column({ default: 0 })
+  unhandled_media: number;
+
   // one to many relation with options_group entity
   @OneToMany(() => OptiosnGroup, (group) => group.post)
   groups: OptiosnGroup[];
