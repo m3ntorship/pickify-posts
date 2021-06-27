@@ -47,7 +47,7 @@ export class MediaService {
     const entity = await this.getEntity(mediaData);
 
     // add the data to media table in DB
-    await this.mediaRepo.add(entity, mediaData.file_url, mediaData.entity_type);
+    await this.mediaRepo.add(entity, mediaData.file_id, mediaData.entity_type);
 
     // change post rediness if all media files in post got handled
     // TODO
