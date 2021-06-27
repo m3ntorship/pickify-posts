@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Option } from 'src/posts/entities/option.entity';
-import { OptionRepository } from 'src/posts/entities/option.repository';
-import { OptiosnGroup } from 'src/posts/entities/optionsGroup.entity';
-import { OptionsGroupRepository } from 'src/posts/entities/optionsGroup.repository';
-import { Post } from 'src/posts/entities/post.entity';
-import { PostRepository } from 'src/posts/entities/post.repository';
-import { mediaType } from 'src/shared/enums/mediaType.enum';
+import { Option } from '../posts/entities/option.entity';
+import { OptionRepository } from '../posts/entities/option.repository';
+import { OptiosnGroup } from '../posts/entities/optionsGroup.entity';
+import { OptionsGroupRepository } from '../posts/entities/optionsGroup.repository';
+import { Post } from '../posts/entities/post.entity';
+import { PostRepository } from '../posts/entities/post.repository';
+import { mediaType } from '../shared/enums/mediaType.enum';
 import { MediaDataMessageDto } from './dto/mediaDataMessage-dto';
 import { MediaRepository } from './entities/media.repository';
 

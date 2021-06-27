@@ -12,6 +12,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserRepository } from './entities/user.repository';
+import { Post } from './interfaces/getPosts.interface';
+import { getNow } from '../shared/utils/datetime';
 
 describe('PostsService', () => {
   let service: PostsService;
@@ -274,13 +276,14 @@ describe('PostsService', () => {
         created: true,
         caption: 'test-post-caption',
         is_hidden: false,
-        created_at: 'test-creation-time',
+        created_at: getNow().toDate(),
         type: 'text poll',
         user: {
           uuid: 'test-user-uuid',
           name: 'test',
           profile_pic: 'test-url',
         },
+        media: [{ url: 'test-media-url' }],
         groups: [
           {
             uuid: 'test-group-uuid',
@@ -295,27 +298,8 @@ describe('PostsService', () => {
           },
         ],
       };
-      const postsInDB = [
-        {
-          ...postInDB,
-          groups: [
-            {
-              ...postInDB.groups[0],
-              options: [{ ...postInDB.groups[0].options[0] }],
-            },
-          ],
-        },
-        {
-          ...postInDB,
-          groups: [
-            {
-              ...postInDB.groups[0],
-              options: [{ ...postInDB.groups[0].options[0] }],
-            },
-          ],
-        },
-      ];
-      const expectedPost = {
+      const postsInDB = [postInDB, postInDB];
+      const expectedPost: Post = {
         id: postInDB.uuid,
         caption: postInDB.caption,
         is_hidden: postInDB.is_hidden,
@@ -326,6 +310,7 @@ describe('PostsService', () => {
           name: postInDB.user.name,
           profile_pic: postInDB.user.profile_pic,
         },
+        media: postInDB.media,
         options_groups: {
           groups: [
             {
@@ -344,7 +329,7 @@ describe('PostsService', () => {
       };
       const expectedPosts = {
         postsCount: postsInDB.length,
-        posts: [{ ...expectedPost }, { ...expectedPost }],
+        posts: [expectedPost, expectedPost],
       };
 
       // mocks
@@ -364,7 +349,7 @@ describe('PostsService', () => {
         created: false,
         caption: 'test-post-caption',
         is_hidden: false,
-        created_at: 'test-creation-time',
+        created_at: getNow().toDate(),
         type: 'text poll',
         user: {
           uuid: 'test-user-uuid',
@@ -451,7 +436,7 @@ describe('PostsService', () => {
     });
   });
 
-  describe('getSinglePosts function', () => {
+  describe('getSinglePost function', () => {
     it('should return post object', async () => {
       // data
       const postInDB = {
@@ -459,22 +444,25 @@ describe('PostsService', () => {
         created: true,
         caption: 'test-post-caption',
         is_hidden: false,
-        created_at: 'test-creation-time',
+        created_at: getNow().toDate(),
         type: 'text poll',
         user: {
           uuid: 'test-user-uuid',
           name: 'test',
           profile_pic: 'test-url',
         },
+        media: [{ url: 'test-media-url' }],
         groups: [
           {
             uuid: 'test-group-uuid',
             name: 'test-group-name',
+            media: [],
             options: [
               {
                 vote_count: 2,
                 body: 'test-option-body',
                 uuid: 'test-option-uuid',
+                media: [],
               },
             ],
           },
@@ -491,16 +479,19 @@ describe('PostsService', () => {
           name: postInDB.user.name,
           profile_pic: postInDB.user.profile_pic,
         },
+        media: postInDB.media,
         options_groups: {
           groups: [
             {
               id: postInDB.groups[0].uuid,
               name: postInDB.groups[0].name,
+              media: postInDB.groups[0].media,
               options: [
                 {
                   id: postInDB.groups[0].options[0].uuid,
                   body: postInDB.groups[0].options[0].body,
                   vote_count: postInDB.groups[0].options[0].vote_count,
+                  media: postInDB.groups[0].options[0].media,
                 },
               ],
             },
@@ -542,7 +533,7 @@ describe('PostsService', () => {
         created: false,
         caption: 'test-post-caption',
         is_hidden: false,
-        created_at: 'test-creation-time',
+        created_at: getNow().toDate(),
         type: 'text poll',
         groups: [
           {

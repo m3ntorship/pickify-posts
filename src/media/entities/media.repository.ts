@@ -1,9 +1,9 @@
 import { Option } from '../../posts/entities/option.entity';
-import { OptiosnGroup } from 'src/posts/entities/optionsGroup.entity';
+import { OptiosnGroup } from '../../posts/entities/optionsGroup.entity';
 import { Post } from '../../posts/entities/post.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { Media } from './media.entity';
-import { mediaType } from 'src/shared/enums/mediaType.enum';
+import { mediaType } from '../../shared/enums/mediaType.enum';
 
 @EntityRepository(Media)
 export class MediaRepository extends Repository<Media> {

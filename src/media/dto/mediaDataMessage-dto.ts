@@ -1,5 +1,5 @@
 import { IsIn, IsUUID } from 'class-validator';
-import { mediaType } from 'src/shared/enums/mediaType.enum';
+import { mediaType } from '../../shared/enums/mediaType.enum';
 
 export class MediaDataMessageDto {
   @IsUUID(4, { message: 'entity id is not uuid valid' })

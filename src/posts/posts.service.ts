@@ -38,12 +38,14 @@ export class PostsService {
         id: option.uuid,
         body: option.body,
         vote_count: option.vote_count,
+        media: option.media,
       }));
 
       // return each group as found in interface
       return {
         id: group.uuid,
         name: group.name,
+        media: group.media,
         options,
       };
     });
@@ -163,6 +165,7 @@ export class PostsService {
             name: post.user.name,
             profile_pic: post.user.profile_pic,
           },
+          media: post.media,
           caption: post.caption,
           is_hidden: post.is_hidden,
           created_at: post.created_at,
@@ -196,6 +199,7 @@ export class PostsService {
         name: post.user.name,
         profile_pic: post.user.profile_pic,
       },
+      media: post.media,
       caption: post.caption,
       is_hidden: post.is_hidden,
       created_at: post.created_at,
