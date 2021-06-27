@@ -3,24 +3,25 @@ import { OptiosnGroup } from 'src/posts/entities/optionsGroup.entity';
 import { Post } from '../../posts/entities/post.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { Media } from './media.entity';
+import { mediaType } from 'src/shared/enums/mediaType.enum';
 
 @EntityRepository(Media)
 export class MediaRepository extends Repository<Media> {
   public async add(
     entity: Post | Option | OptiosnGroup,
-    url: string,
+    id: string,
     entityType: string,
   ): Promise<Media> {
     const media = this.create();
-    media.url = url;
+    media.url = id;
     switch (entityType) {
-      case 'post':
+      case mediaType.POST:
         media.post = entity as Post;
         break;
-      case 'optionsGroup':
+      case mediaType.OPTION_GROUP:
         media.optionsGroup = entity as OptiosnGroup;
         break;
-      case 'option':
+      case mediaType.OPTION:
         media.option = entity as Option;
         break;
 
