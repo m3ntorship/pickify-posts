@@ -12,11 +12,12 @@ export class PostRepository extends Repository<Post> {
     postCreationDto: PostCreationDto,
     user: User,
   ): Promise<Post> {
-    const { caption, type, is_hidden } = postCreationDto;
+    const { caption, type, is_hidden, media_count } = postCreationDto;
     const post = this.create();
     post.caption = caption;
     post.type = type;
     post.is_hidden = is_hidden;
+    post.unhandled_media = media_count;
     post.user = user;
     post.created = false;
     post.ready = false;
@@ -62,9 +63,9 @@ export class PostRepository extends Repository<Post> {
    */
   public async flagPostCreation(flag: boolean, post: Post): Promise<void> {
     post.created = flag;
-    // for now add ready = true whenever flag = true
-    // this should be changed later whenever we have implementation for media in post
-    if (flag) {
+
+    // make post ready if it has no media or all media got handled
+    if (post.unhandled_media === 0) {
       post.ready = true;
     }
     await this.save(post);
@@ -110,5 +111,18 @@ export class PostRepository extends Repository<Post> {
       })
       .leftJoinAndSelect('post.user', 'user')
       .getOne();
+  }
+
+  // handles post ready column
+  public async handleReadiness(post: Post): Promise<void> {
+    // decrease unhandled media by 1
+    post.unhandled_media = post.unhandled_media - 1;
+
+    // if all media files are handled, make post ready
+    if (post.unhandled_media === 0) {
+      post.ready = true;
+    }
+
+    await this.save(post);
   }
 }
