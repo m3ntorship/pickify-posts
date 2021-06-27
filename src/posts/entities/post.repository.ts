@@ -31,19 +31,25 @@ export class PostRepository extends Repository<Post> {
         'post.is_hidden',
         'post.created_at',
         'post.type',
+        'post_media.url',
         'user.uuid',
         'user.name',
         'user.profile_pic',
         'group.uuid',
         'group.name',
+        'group_media.url',
         'option.uuid',
         'option.vote_count',
         'option.body',
+        'option_media.url',
       ])
       .where('post.created = :created', { created: true })
       .leftJoin('post.groups', 'group')
       .leftJoin('group.options', 'option')
       .leftJoin('post.user', 'user')
+      .leftJoin('post.media', 'post_media')
+      .leftJoin('option.media', 'option_media')
+      .leftJoin('group.media', 'group_media')
       .orderBy({
         'post.created_at': 'DESC',
         'group.order': 'ASC',
@@ -73,18 +79,24 @@ export class PostRepository extends Repository<Post> {
         'post.is_hidden',
         'post.created_at',
         'post.type',
+        'post_media.url',
         'user.uuid',
         'user.name',
         'user.profile_pic',
         'group.uuid',
         'group.name',
+        'group_media.url',
         'option.uuid',
         'option.vote_count',
         'option.body',
+        'option_media.url',
       ])
       .leftJoin('post.groups', 'group')
       .leftJoin('group.options', 'option')
       .leftJoin('post.user', 'user')
+      .leftJoin('post.media', 'post_media')
+      .leftJoin('option.media', 'option_media')
+      .leftJoin('group.media', 'group_media')
       .where('post.uuid = :uuid', { uuid: postid })
       .getOne();
 
