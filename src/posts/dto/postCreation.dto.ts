@@ -1,6 +1,14 @@
-import { IsBoolean, IsNotEmpty } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class PostCreationDto {
+  @IsOptional()
+  @IsString()
   caption?: string;
 
   @IsNotEmpty()
@@ -8,4 +16,7 @@ export class PostCreationDto {
 
   @IsBoolean()
   is_hidden: boolean;
+
+  @IsNumber()
+  media_count: number;
 }

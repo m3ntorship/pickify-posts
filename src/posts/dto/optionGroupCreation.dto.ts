@@ -1,13 +1,15 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsNotEmpty } from 'class-validator';
+import { ValidateNested, IsNotEmpty, IsString } from 'class-validator';
 
 export class OptionDto {
   @IsNotEmpty()
+  @IsString()
   body: string;
 }
 
 export class OptionsGroupDto {
   @IsNotEmpty()
+  @IsString()
   name: string;
   @ValidateNested({ each: true })
   @Type(() => OptionDto)
