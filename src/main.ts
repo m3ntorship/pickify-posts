@@ -8,7 +8,7 @@ import * as compression from 'compression';
 import { AppModule } from './app.module';
 import { AllExceptionsFilterLogger } from './shared/exception-filters/http-exceptions-logger.filter';
 import { winstonLoggerOptions } from './logging/winston.options';
-import { LoggingInterceptor } from './logging/logging.interceptor';
+import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
@@ -59,7 +59,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const logger = winston.createLogger(winstonLoggerOptions);
-  app.useGlobalInterceptors(new LoggingInterceptor(logger));
+  app.useGlobalInterceptors(new HttpLoggingInterceptor(logger));
   app.useGlobalFilters(new AllExceptionsFilterLogger(logger));
 
   app.use('/health', (req: any, res: any) => {
