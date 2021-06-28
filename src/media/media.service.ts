@@ -1,8 +1,5 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { OptionRepository } from '../posts/entities/option.repository';
 import { OptionsGroupRepository } from '../posts/entities/optionsGroup.repository';
 import { PostRepository } from '../posts/entities/post.repository';
@@ -85,14 +82,14 @@ export class MediaService {
         const post = await this.postRepo.getPostById(mediaData.entity_id);
 
         if (!post) {
-          throw new NotFoundException(
+          throw new RpcException(
             `Post with id:${mediaData.entity_id} not found`,
           );
         }
 
         // if all media files got handled before
         if (post.unhandled_media === 0) {
-          throw new BadRequestException(
+          throw new RpcException(
             `post with id:${post.uuid} does not have unhandled media files`,
           );
         }
@@ -118,14 +115,14 @@ export class MediaService {
 
         // if optionsGroup is not found
         if (!optionsGroup) {
-          throw new NotFoundException(
+          throw new RpcException(
             `options_group with id:${mediaData.entity_id} not found`,
           );
         }
 
         // if all media files got handled before
         if (optionsGroup.post.unhandled_media === 0) {
-          throw new BadRequestException(
+          throw new RpcException(
             `post with id:${optionsGroup.post.uuid} does not have unhandled media files`,
           );
         }
@@ -155,14 +152,14 @@ export class MediaService {
         );
         // if option is not found
         if (!option) {
-          throw new NotFoundException(
+          throw new RpcException(
             `option with id:${mediaData.entity_id} not found`,
           );
         }
 
         // if all media files got handled before
         if (option.optionsGroup.post.unhandled_media === 0) {
-          throw new BadRequestException(
+          throw new RpcException(
             `post with id:${option.optionsGroup.post.uuid} does not have unhandled media files`,
           );
         }
