@@ -38,6 +38,7 @@ describe('PostsController', () => {
         caption: 'test dto',
         type: 'text_poll',
         is_hidden: false,
+        media_count: 3,
       };
 
       const headers = { Authorization: '3' };

@@ -185,6 +185,7 @@ describe('PostsService', () => {
         type: 'text_poll',
         caption: 'test caption',
         is_hidden: false,
+        media_count: 3,
       };
       const userId = 'test-user-uuid';
 
@@ -214,6 +215,7 @@ describe('PostsService', () => {
         type: 'text_poll',
         caption: 'test caption',
         is_hidden: false,
+        media_count: 3,
       };
       const userId = 'test-user-uuid';
 
@@ -238,12 +240,36 @@ describe('PostsService', () => {
       expect(userRepo.findOne).toBeCalledTimes(1);
     });
 
+    it('should thorw error if user not found', async () => {
+      // data
+      const dto: PostCreationDto = {
+        type: 'text_poll',
+        caption: 'test caption',
+        is_hidden: false,
+        media_count: 3,
+      };
+      const userId = 'test-user-uuid';
+
+      // mocks
+      postRepo.createPost = jest
+        .fn()
+        .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
+
+      userRepo.findOne = jest.fn().mockResolvedValue(undefined);
+
+      // assertions
+      expect(service.createPost(dto, userId)).rejects.toThrowError(
+        new NotFoundException(`User with id: ${userId} not found`),
+      );
+    });
+
     it('should call postRepo.createPost with the appropriate parameters', async () => {
       // data
       const dto: PostCreationDto = {
         type: 'text_poll',
         caption: 'test caption',
         is_hidden: false,
+        media_count: 3,
       };
       const userId = 'test-user-uuid';
 
@@ -268,6 +294,7 @@ describe('PostsService', () => {
       expect(postRepo.createPost).toBeCalledTimes(1);
     });
   });
+
   describe('getAllPosts function ', () => {
     it('should return object contains postsCount and array of posts', async () => {
       // data

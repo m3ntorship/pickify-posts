@@ -59,6 +59,11 @@ export class PostsService {
     // get user to add post to it
     const user = await this.userRepository.findOne({ where: { uuid: userId } });
 
+    // Check whether user exists
+    if (!user) {
+      throw new NotFoundException(`User with id: ${userId} not found`);
+    }
+
     // create the post
     const createdPost = await this.postRepository.createPost(
       postCreationDto,
