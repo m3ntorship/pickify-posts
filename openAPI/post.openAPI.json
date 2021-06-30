@@ -448,6 +448,10 @@
             "type": "string",
             "x-faker": "random.words"
           },
+          "voted": {
+            "type": "boolean",
+            "x-faker": "random.boolean"
+          },
           "media": {
             "type": "array",
             "items": {
