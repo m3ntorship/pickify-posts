@@ -20,10 +20,11 @@ export interface Option {
   id: string;
   body: string;
   vote_count: number;
+  voted?: boolean;
 }
 export interface Group {
   id: string;
-  name: string;
+  name?: string;
   options: Option[];
 }
 export interface Posts {
