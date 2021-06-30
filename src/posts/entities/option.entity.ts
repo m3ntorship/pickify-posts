@@ -14,6 +14,8 @@ export class Option extends Model {
   @Column({ default: 0 })
   order: number;
 
+  voted: boolean;
+
   @ManyToOne(() => OptiosnGroup, (optionsGroup) => optionsGroup.options, {
     cascade: true,
     onDelete: 'CASCADE',
