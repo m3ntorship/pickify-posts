@@ -8,7 +8,7 @@ env:
   M3_PROJECT: pickify
   M3_COMPONENT: posts
   M3_ENVIRONMENT: 'be-special'
-  M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-pr-special-${{ github.event.number }}'
+  M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-pr-special'
   M3_DEPLOYMENT_PATH: deploy/apply
   M3_TEMP_DIR: temp
   M3_REPLICAS: '1'
