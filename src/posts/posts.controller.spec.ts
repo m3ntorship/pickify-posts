@@ -61,10 +61,17 @@ describe('PostsController', () => {
 
   describe('getSinglePost function', () => {
     it('should throw not implemented', async () => {
+      // data
+      const headers = { Authorization: 'test-user-uuid' };
       const params = { postid: 'post1-id' };
-      const result = await controller.getSinglePost(params);
+
+      // actions
+      const result = await controller.getSinglePost(params, headers);
       expect(result).toEqual({ id: 'post1-id' });
-      expect(service.getSinglePost).toBeCalledWith(params.postid);
+      expect(service.getSinglePost).toBeCalledWith(
+        params.postid,
+        headers.Authorization,
+      );
     });
   });
 

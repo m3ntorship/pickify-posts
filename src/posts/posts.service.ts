@@ -173,7 +173,7 @@ export class PostsService {
     };
   }
 
-  async getSinglePost(postId: string): Promise<Post> {
+  async getSinglePost(postId: string, userId: string): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);
 
     // check whether post is found

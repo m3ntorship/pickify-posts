@@ -454,6 +454,7 @@ describe('PostsService', () => {
   describe('getSinglePosts function', () => {
     it('should return post object', async () => {
       // data
+      const userId = 'test-user-uuid';
       const postInDB = {
         uuid: 'test-post-uuid',
         created: true,
@@ -513,7 +514,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = await service.getSinglePost(postId);
+      const result = await service.getSinglePost(postId, userId);
 
       // assertions
       expect(result).toEqual(expectedPost);
@@ -521,13 +522,14 @@ describe('PostsService', () => {
 
     it('should throw error if post not found', () => {
       // data
+      const userId = 'test-user-uuid';
       const postId = 'test-post-uuid';
 
       // mocks
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(undefined);
 
       // actions
-      const result = service.getSinglePost(postId);
+      const result = service.getSinglePost(postId, userId);
 
       // assertions
       expect(result).rejects.toThrowError(
@@ -537,6 +539,7 @@ describe('PostsService', () => {
 
     it('should throw error if post not created yet', () => {
       // data
+      const userId = 'test-user-uuid';
       const postInDB = {
         uuid: 'test-post-uuid',
         created: false,
@@ -564,7 +567,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = service.getSinglePost(postId);
+      const result = service.getSinglePost(postId, userId);
 
       // assertions
       expect(result).rejects.toThrowError(
