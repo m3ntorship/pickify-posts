@@ -14,7 +14,9 @@ export class OptionsGroupRepository extends Repository<OptiosnGroup> {
   ): Promise<OptiosnGroup> {
     const group = this.create();
 
-    group.name = groupDto.name;
+    if (groupDto.name) {
+      group.name = groupDto.name;
+    }
     group.post = post;
     group.order = groupOrder;
 

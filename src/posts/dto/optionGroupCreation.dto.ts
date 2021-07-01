@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsNotEmpty } from 'class-validator';
+import { ValidateNested, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class OptionDto {
   @IsNotEmpty()
@@ -7,8 +7,9 @@ export class OptionDto {
 }
 
 export class OptionsGroupDto {
+  @IsOptional()
   @IsNotEmpty()
-  name: string;
+  name?: string;
   @ValidateNested({ each: true })
   @Type(() => OptionDto)
   options: OptionDto[];

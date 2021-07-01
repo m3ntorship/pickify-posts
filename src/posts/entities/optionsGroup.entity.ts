@@ -6,7 +6,7 @@ import { Post } from './post.entity';
 
 @Entity({ name: 'options_groups', schema: POSTS_SCHEMA })
 export class OptiosnGroup extends Model {
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
   @Column({ default: 0 })
