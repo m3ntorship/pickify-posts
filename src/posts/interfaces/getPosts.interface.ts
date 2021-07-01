@@ -4,7 +4,7 @@ export interface Post {
   is_hidden: boolean;
   created_at: Date;
   type: string;
-  user: User;
+  user?: User;
   options_groups: OptionsGroup;
 }
 
