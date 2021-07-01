@@ -252,7 +252,7 @@ export class PostsService {
     return response;
   }
 
-  async getAllPosts(): Promise<Posts> {
+  async getAllPosts(userId: string): Promise<Posts> {
     // get all posts from DB
     const currentPosts = await this.postRepository.getAllPosts();
 

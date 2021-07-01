@@ -40,8 +40,11 @@ export class PostsController {
   }
 
   @Get('/')
-  async getAllPosts(): Promise<Posts> {
-    return await this.postsService.getAllPosts();
+  async getAllPosts(
+    @Headers() headers: { Authorization: string },
+  ): Promise<Posts> {
+    const userId = headers.Authorization;
+    return await this.postsService.getAllPosts(userId);
   }
 
   @Get('/:postid')

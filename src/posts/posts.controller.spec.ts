@@ -53,9 +53,15 @@ describe('PostsController', () => {
 
   describe('getAllPosts function', () => {
     it('should return object with array of posts and post count', async () => {
-      const result = await controller.getAllPosts();
+      // data
+      const headers = { Authorization: 'test-user-uuid' };
+
+      // actions
+      const result = await controller.getAllPosts(headers);
+
+      // assertions
       expect(result).toEqual({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] });
-      expect(service.getAllPosts).toHaveBeenCalled();
+      expect(service.getAllPosts).toHaveBeenCalledWith(headers.Authorization);
     });
   });
 
