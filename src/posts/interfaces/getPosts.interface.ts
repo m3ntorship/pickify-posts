@@ -19,7 +19,7 @@ export interface OptionsGroup {
 export interface Option {
   id: string;
   body: string;
-  vote_count: number;
+  vote_count?: number;
   voted?: boolean;
 }
 export interface Group {
