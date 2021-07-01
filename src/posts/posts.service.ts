@@ -13,6 +13,7 @@ import type {
 } from './interfaces/getPosts.interface';
 import { Option as OptionEntity } from './entities/option.entity';
 import { OptiosnGroup as OptionGroupEntity } from './entities/optionsGroup.entity';
+import { Post as PostEntity } from './entities/post.entity';
 import {
   Injectable,
   NotFoundException,
@@ -31,6 +32,54 @@ export class PostsService {
     private userRepository: UserRepository,
   ) {}
 
+  private handleGroupsCoverage(
+    groups: OptionGroupEntity[],
+    userId: string,
+  ): Group[] {
+    function isUserVotedInGroup(group: OptionGroupEntity): boolean {
+      return group.options.some((option) => {
+        if (option.vote_count > 0) {
+          return option.votes.some((vote) => {
+            return vote.user.uuid === userId;
+          });
+        }
+        return false;
+      });
+    }
+    function isOptionVoted(option: OptionEntity, userId: string): boolean {
+      return option.votes.some((vote) => {
+        return vote.user.uuid === userId;
+      });
+    }
+
+    return groups.map((group: OptionGroupEntity) => {
+      let options: Option[];
+      // if voted in this group, return all vote_count with each option
+      if (isUserVotedInGroup(group)) {
+        options = group.options.map((option: OptionEntity) => {
+          const isVoted: boolean = isOptionVoted(option, userId);
+          return {
+            id: option.uuid,
+            body: option.body,
+            vote_count: option.vote_count,
+            voted: isVoted,
+          };
+        });
+      } else {
+        options = group.options.map((option: OptionEntity) => ({
+          id: option.uuid,
+          body: option.body,
+        }));
+      }
+      // return each group as found in interface
+      return {
+        id: group.uuid,
+        name: group.name,
+        options,
+      };
+    });
+  }
+
   private modifyGroupsData(currGroups: OptionGroupEntity[]): Group[] {
     const groups: Group[] = currGroups.map((group: OptionGroupEntity) => {
       // Loop through all options in each group and return a new option as found in the interface
@@ -48,6 +97,63 @@ export class PostsService {
       };
     });
     return groups;
+  }
+
+  private handlePostFeatures(post: PostEntity, userId: string): Post {
+    let returnedPost: Post;
+
+    // check whether user is post owner
+    const isPostOwner: boolean = isUserAuthorized(post, userId);
+
+    // if user is post owner
+    if (isPostOwner) {
+      returnedPost = {
+        id: post.uuid,
+        user: {
+          id: post.user.uuid,
+          name: post.user.name,
+          profile_pic: post.user.profile_pic,
+        },
+        caption: post.caption,
+        is_hidden: post.is_hidden,
+        created_at: post.created_at,
+        type: post.type,
+        options_groups: { groups: this.modifyGroupsData(post.groups) },
+      };
+    } else {
+      // handle group coverage as follow
+      // if user voted in a group, return vote_count with each option, else dont return vote_count
+      const groups = this.handleGroupsCoverage(post.groups, userId);
+
+      returnedPost = {
+        id: post.uuid,
+        user: {
+          id: post.user.uuid,
+          name: post.user.name,
+          profile_pic: post.user.profile_pic,
+        },
+        caption: post.caption,
+        is_hidden: post.is_hidden,
+        created_at: post.created_at,
+        type: post.type,
+        options_groups: { groups: groups },
+      };
+
+      // handle wether post is anynoumous
+      if (post.is_hidden) {
+        returnedPost = {
+          id: post.uuid,
+
+          caption: post.caption,
+          is_hidden: post.is_hidden,
+          created_at: post.created_at,
+          type: post.type,
+          options_groups: { groups: groups },
+        };
+      }
+    }
+
+    return returnedPost;
   }
 
   async createPost(
@@ -175,32 +281,16 @@ export class PostsService {
 
   async getSinglePost(postId: string, userId: string): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);
-
     // check whether post is found
     if (!post) throw new NotFoundException(`Post with id: ${postId} not found`);
 
-    // don't return post if post.created = false
-    if (!post.created) {
+    // don't return post if post.ready = false
+    if (!post.ready) {
       throw new LockedException(
         `Post with id: ${postId} still under creation...`,
       );
     }
 
-    //calling function to modify groups data
-    const groups: Group[] = this.modifyGroupsData(post.groups);
-
-    return {
-      id: post.uuid,
-      user: {
-        id: post.user.uuid,
-        name: post.user.name,
-        profile_pic: post.user.profile_pic,
-      },
-      caption: post.caption,
-      is_hidden: post.is_hidden,
-      created_at: post.created_at,
-      type: post.type,
-      options_groups: { groups: groups },
-    };
+    return this.handlePostFeatures(post, userId);
   }
 }

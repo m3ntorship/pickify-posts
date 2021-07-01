@@ -69,6 +69,7 @@ export class PostRepository extends Repository<Post> {
       .select([
         'post.uuid',
         'post.created',
+        'post.ready',
         'post.caption',
         'post.is_hidden',
         'post.created_at',
@@ -81,9 +82,13 @@ export class PostRepository extends Repository<Post> {
         'option.uuid',
         'option.vote_count',
         'option.body',
+        'vote.uuid',
+        'vote_user.uuid',
       ])
       .leftJoin('post.groups', 'group')
       .leftJoin('group.options', 'option')
+      .leftJoin('option.votes', 'vote')
+      .leftJoin('vote.user', 'vote_user')
       .leftJoin('post.user', 'user')
       .where('post.uuid = :uuid', { uuid: postid })
       .getOne();
