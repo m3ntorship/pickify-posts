@@ -260,21 +260,7 @@ export class PostsService {
       postsCount: currentPosts.length,
       // return all posts after modifiying each one as found in openAPI
       posts: currentPosts.map((post) => {
-        // Get the modified groups for each post
-        const groups: Group[] = this.modifyGroupsData(post.groups);
-        return {
-          id: post.uuid,
-          user: {
-            id: post.user.uuid,
-            name: post.user.name,
-            profile_pic: post.user.profile_pic,
-          },
-          caption: post.caption,
-          is_hidden: post.is_hidden,
-          created_at: post.created_at,
-          type: post.type,
-          options_groups: { groups: groups },
-        };
+        return this.handlePostFeatures(post, userId);
       }),
     };
   }

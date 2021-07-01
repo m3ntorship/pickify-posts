@@ -269,15 +269,16 @@ describe('PostsService', () => {
   describe('getAllPosts function ', () => {
     it('should return object contains postsCount and array of posts', async () => {
       // data
+      const userId = 'user1';
       const postInDB = {
         uuid: 'test-post-uuid',
-        created: true,
+        ready: true,
         caption: 'test-post-caption',
         is_hidden: false,
         created_at: 'test-creation-time',
         type: 'text poll',
         user: {
-          uuid: 'test-user-uuid',
+          uuid: userId,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -351,23 +352,24 @@ describe('PostsService', () => {
       postRepo.getAllPosts = jest.fn().mockResolvedValueOnce(postsInDB);
 
       // actions
-      const result = await service.getAllPosts();
+      const result = await service.getAllPosts(userId);
 
       // assertions
       expect(result).toEqual(expectedPosts);
     });
 
-    it('should return only the posts with created = true', async () => {
+    it('should return only the posts with ready = true', async () => {
       // data
+      const userId = 'user1';
       const postInDB = {
         uuid: 'test-post-uuid',
-        created: false,
+        ready: false,
         caption: 'test-post-caption',
         is_hidden: false,
         created_at: 'test-creation-time',
         type: 'text poll',
         user: {
-          uuid: 'test-user-uuid',
+          uuid: userId,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -388,7 +390,7 @@ describe('PostsService', () => {
       const postsInDB = [
         {
           ...postInDB,
-          created: true,
+          ready: true,
           groups: [
             {
               ...postInDB.groups[0],
@@ -441,10 +443,10 @@ describe('PostsService', () => {
       // mocks
       postRepo.getAllPosts = jest
         .fn()
-        .mockResolvedValueOnce(postsInDB.filter((post) => post.created));
+        .mockResolvedValueOnce(postsInDB.filter((post) => post.ready));
 
       // actions
-      const result = await service.getAllPosts();
+      const result = await service.getAllPosts(userId);
 
       // assertions
       expect(result).toEqual(expectedPosts);
