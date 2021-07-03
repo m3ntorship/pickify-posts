@@ -9,7 +9,9 @@ import {
   Patch,
   Post,
   UseFilters,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
@@ -40,6 +42,7 @@ export class PostsController {
   }
 
   @Get('/')
+  @UseGuards(AuthGuard('firebase-jwt'))
   async getAllPosts(): Promise<Posts> {
     return await this.postsService.getAllPosts();
   }
