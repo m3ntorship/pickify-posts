@@ -10,7 +10,7 @@ import {} from 'path-to-regexp';
 import config from './config/database';
 import * as swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from '../openAPI/post.openAPI.json';
-import { ExtendHeadersMiddleware } from './shared/middlewares/extendHeaders.middleware';
+// import { ExtendHeadersMiddleware } from './shared/middlewares/extendHeaders.middleware';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 

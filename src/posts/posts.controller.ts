@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   UseFilters,
-  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import * as winston from 'winston';
@@ -42,7 +41,6 @@ export class PostsController {
   }
 
   @Get('/')
-  @UseGuards(AuthGuard('firebase-jwt'))
   async getAllPosts(): Promise<Posts> {
     return await this.postsService.getAllPosts();
   }
