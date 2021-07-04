@@ -10,7 +10,6 @@ import {
   Post,
   UseFilters,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
