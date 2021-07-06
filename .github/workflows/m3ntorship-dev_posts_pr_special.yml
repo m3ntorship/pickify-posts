@@ -1,20 +1,14 @@
-name: Deploy PR's
+name: deploy service PR
 on:
-  pull_request:
+  push:
     branches:
-      - disabled
-    types:
-      - 'opened'
-      - 'reopened'
-      - 'synchronize'
-      - 'closed'
+      - receive-media-async
 
 env:
   M3_PROJECT: pickify
   M3_COMPONENT: posts
-  M3_ENVIRONMENT: 'pr-${{ github.event.number }}'
-  M3_VERSION: 'pr-${{ github.event.number }}-${{ github.run_number}}'
-  M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-pr-${{ github.event.number }}'
+  M3_ENVIRONMENT: 'be-special'
+  M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-pr-special'
   M3_DEPLOYMENT_PATH: deploy/apply
   M3_TEMP_DIR: temp
   M3_REPLICAS: '1'
@@ -26,10 +20,11 @@ env:
   M3_IMAGE: m3ntorshipci/posts-service
   M3_MOCK_IMAGE: m3ntorshipci/prism:latest
   M3_HOST_NAME: pickify.net
-  M3_ELEPHANTSQL_URL: ${{secrets.ELEPHANTSQL_URL_PR}}
+  M3_ELEPHANTSQL_URL: ${{secrets.ELEPHANTSQL_URL_PR_SPECIAL}}
   M3_RABBITMQ_URL: ${{secrets.RABBITMQ_URL}}
   M3_SERVICE_OPENAPI_SPECIFICATION: https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml
   M3_NODE_ENV: production
+  M3_MEDIA_QUEUE: media_queue_dev
   
 jobs:
   prepare:
@@ -59,13 +54,15 @@ jobs:
     needs:
       - prepare
     runs-on: ubuntu-latest
+    env:
+      M3_VERSION: ${{ needs.prepare.outputs.version }}
     steps:
       - uses: actions/checkout@v2
 
       - run: yarn
       - run: yarn build
       - run: yarn test
-
+      
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -81,7 +78,7 @@ jobs:
           context: .
           push: true
 
-  deploy-pr:
+  deploy-pr-special:
     if: ${{github.event.action != 'closed'}}
     needs:
       - prepare
@@ -104,56 +101,12 @@ jobs:
           sudo mv mo /usr/local/bin/
           echo "works" | mo
 
-      - name: deploy-pr
+      - name: deploy-pr-special
         env:
-          VERSION: ${{needs.prepare.outputs.version}}
+          M3_VERSION: ${{needs.prepare.outputs.version}}
           SHA: ${{needs.prepare.outputs.sha}}
         run: |
           echo $M3_VERSION
           mkdir -p $M3_TEMP_DIR
           for f in $M3_DEPLOYMENT_PATH/*; do mo -u "$f" > $M3_TEMP_DIR/"$(basename $f)"; done
           kubectl apply -f $M3_TEMP_DIR
-
-      - name: comment PR
-        uses: unsplash/comment-on-pr@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          msg: |
-            Check out this commit here: 
-            ${{env.M3_COMPONENT}}: ${{env.M3_PROJECT}}-${{env.M3_COMPONENT}}-${{env.M3_ENVIRONMENT}}.${{env.M3_HOST_NAME}}
-            ${{env.M3_COMPONENT}} mock: ${{env.M3_PROJECT}}-${{env.M3_COMPONENT}}-${{env.M3_ENVIRONMENT}}-mock.${{env.M3_HOST_NAME}}
-
-  undeploy-pr:
-    if: ${{github.event.action == 'closed'}}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: azure/setup-kubectl@v1
-
-      - name: Kubectl configuration
-        shell: bash
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d -i > ~/.kube/config
-
-      - name: delete pr namespace
-        run: kubectl delete namespace ${{env.M3_NAMESPACE}} --ignore-not-found
-
-  cleanup_docker_tags:
-    if: ${{github.event.action == 'closed'}}
-    needs:
-      - undeploy-pr
-    runs-on: ubuntu-latest
-    steps:
-      - id: delete_old_tags
-        name: Delete old docker image tags
-        uses: m3ntorship/action-dockerhub-cleanup@1.2
-        with:
-          token: ${{secrets.DOCKER_HUB_M3NTORSHIPCI_TOKEN}}
-          user: 'm3ntorshipci'
-          repos: '["pickly-posts"]'
-          keep-last: 0
-          force-full-cleanup: true
-          substrings: '["pr-${{ github.event.number }}"]'
-

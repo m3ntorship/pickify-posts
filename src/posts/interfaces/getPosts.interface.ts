@@ -5,7 +5,12 @@ export interface Post {
   created_at: Date;
   type: string;
   user: User;
+  media?: Media[];
   options_groups: OptionsGroup;
+}
+
+export interface Media {
+  url: string;
 }
 
 export interface User {
@@ -20,11 +25,13 @@ export interface Option {
   id: string;
   body: string;
   vote_count: number;
+  media?: Media[];
 }
 export interface Group {
   id: string;
   name: string;
   options: Option[];
+  media?: Media[];
 }
 export interface Posts {
   postsCount: number;
