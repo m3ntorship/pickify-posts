@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -24,18 +25,28 @@ export class VotesService {
     if (!option) {
       throw new NotFoundException(`Option with id:${optionId} not found`);
     }
-    // if post of option still under creation
-    if (!option.optionsGroup.post.created) {
+    // if post of option still not ready
+    if (!option.optionsGroup.post.ready) {
       throw new LockedException(
         `Post:${option.optionsGroup.post.uuid} with option:${optionId} still under creation...`,
       );
     }
 
-    // check if user has voted for this option before
-    const isUserVoted = option.votes.some((vote) => vote.user.uuid === userId);
-    if (isUserVoted) {
-      throw new ConflictException('User has already voted for this option');
+    // prevent post owner from voting
+    if (option.optionsGroup.post.user.uuid == userId) {
+      throw new BadRequestException(`You cannot vote on your own post`);
     }
+
+    // prevent user from voting twice on any option inside the group
+    let isUserVoted = false;
+    option.optionsGroup.options.forEach((option) => {
+      isUserVoted = option.votes.some((vote) => vote.user.uuid === userId);
+      if (isUserVoted) {
+        throw new ConflictException(
+          `User has already voted for option with id:${option.uuid}`,
+        );
+      }
+    });
 
     // delete votes from option
     // as it cuase error when adding option to a vote in voteRepository.addVote

@@ -35,13 +35,16 @@ export class OptionRepository extends Repository<Option> {
    */
 
   public async findDetailedOptionById(optionId: string): Promise<Option> {
-    return await this.createQueryBuilder('options')
-      .where('options.uuid = :optionId', { optionId })
-      .leftJoinAndSelect('options.votes', 'vote')
-      .leftJoinAndSelect('vote.user', 'user')
-      .leftJoinAndSelect('options.optionsGroup', 'optionsGroup')
-      .leftJoinAndSelect('optionsGroup.options', 'option')
-      .leftJoinAndSelect('optionsGroup.post', 'post')
+    return await this.createQueryBuilder('option')
+      .where('option.uuid = :optionId', { optionId })
+      .leftJoinAndSelect('option.votes', 'vote')
+      .leftJoinAndSelect('vote.user', 'vote_user')
+      .leftJoinAndSelect('option.optionsGroup', 'options_Group')
+      .leftJoinAndSelect('options_Group.post', 'post')
+      .leftJoinAndSelect('post.user', 'post_user')
+      .leftJoinAndSelect('options_Group.options', 'option_in_group')
+      .leftJoinAndSelect('option_in_group.votes', 'deep_vote')
+      .leftJoinAndSelect('deep_vote.user', 'deep_vote_user')
       .getOne();
 
     // or using findOne

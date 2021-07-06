@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   NotFoundException,
@@ -9,6 +10,7 @@ import { Option } from '../posts/entities/option.entity';
 import { OptionRepository } from '../posts/entities/option.repository';
 import { VoteRepository } from './entities/votes.repository';
 import { VotesService } from './votes.service';
+import { LockedException } from '../shared/exceptions/locked.exception';
 
 describe('VotesService', () => {
   let votesService: VotesService;
@@ -40,7 +42,7 @@ describe('VotesService', () => {
   describe('addVote method', () => {
     it('should add vote to option & return vote_count & ids of all options in the group', async () => {
       // data
-      const userId = 'test-user-uuid';
+      const userId = 'post-owner-user-uuid';
       const foundUser = { uuid: userId };
       const expectedResponse = [
         { votes_count: 3, optionId: 'option1-test-uuid' },
@@ -53,11 +55,19 @@ describe('VotesService', () => {
         vote_count: 2,
         optionsGroup: {
           post: {
-            created: true,
+            ready: true,
+            user: { uuid: 'test-user1-uuid' },
           },
           options: [
-            { uuid: 'option1-test-uuid', vote_count: 2 },
-            { uuid: 'option2-test-uuid', vote_count: 0 },
+            {
+              uuid: 'option1-test-uuid',
+              vote_count: 2,
+              votes: [
+                { user: { uuid: 'test-user4-uuid' } },
+                { user: { uuid: 'test-user5-uuid' } },
+              ],
+            },
+            { uuid: 'option2-test-uuid', vote_count: 0, votes: [] },
           ],
         },
         votes: [
@@ -87,6 +97,7 @@ describe('VotesService', () => {
         votesService.addVote('option1-test-uuid', userId),
       ).resolves.toEqual(expectedResponse);
     });
+
     it('should throw not found error if option not found', () => {
       // data
       const userId = 'test-user-uuid';
@@ -104,25 +115,34 @@ describe('VotesService', () => {
       );
     });
 
-    it('should throw locked error if post is not created yet', () => {
+    it('should throw locked error if post is not ready yet', () => {
       // data
       const userId = 'test-user-uuid';
+      const optionId = `option-test-uuid`;
       const optionInDB = {
         id: 1,
-        uuid: 'option1-test-uuid',
+        uuid: optionId,
         vote_count: 2,
         optionsGroup: {
           post: {
-            uuid: 'post-test-uuid',
-            created: false,
+            ready: false,
+            user: { uuid: 'test-user1-uuid' },
+            uuid: 'test-post-uuid',
           },
           options: [
-            { uuid: 'option1-test-uuid', vote_count: 2 },
-            { uuid: 'option2-test-uuid', vote_count: 0 },
+            {
+              uuid: 'option1-test-uuid',
+              vote_count: 2,
+              votes: [
+                { user: { uuid: 'test-user4-uuid' } },
+                { user: { uuid: 'test-user5-uuid' } },
+              ],
+            },
+            { uuid: 'option2-test-uuid', vote_count: 0, votes: [] },
           ],
         },
         votes: [
-          { id: 1, user: { uuid: userId } },
+          { id: 1, user: { uuid: 'test-user1-uuid' } },
           { id: 2, user: { uuid: 'test-user2-uuid' } },
         ],
       };
@@ -133,36 +153,85 @@ describe('VotesService', () => {
       });
 
       // assertions
-      expect(
-        votesService.addVote('option1-test-uuid', userId),
-      ).rejects.toThrowError(
-        new HttpException(
-          'Post:post-test-uuid with option:option1-test-uuid still under creation...',
-          423,
+      expect(votesService.addVote(optionId, userId)).rejects.toThrowError(
+        new LockedException(
+          `Post:${optionInDB.optionsGroup.post.uuid} with option:${optionId} still under creation...`,
         ),
       );
     });
 
-    it('should throw conflict error if user voted before', () => {
+    it('should throw locked error if user tries to vote on his own post', () => {
       // data
       const userId = 'test-user-uuid';
-      const foundUser = { uuid: userId };
+      const optionId = `option-test-uuid`;
       const optionInDB = {
         id: 1,
-        uuid: 'option1-test-uuid',
+        uuid: optionId,
         vote_count: 2,
         optionsGroup: {
           post: {
-            uuid: 'post-test-uuid',
-            created: true,
+            ready: true,
+            user: { uuid: userId },
+            uuid: 'test-post-uuid',
           },
           options: [
-            { uuid: 'option1-test-uuid', vote_count: 2 },
-            { uuid: 'option2-test-uuid', vote_count: 0 },
+            {
+              uuid: 'option1-test-uuid',
+              vote_count: 2,
+              votes: [
+                { user: { uuid: 'test-user4-uuid' } },
+                { user: { uuid: 'test-user5-uuid' } },
+              ],
+            },
+            { uuid: 'option2-test-uuid', vote_count: 0, votes: [] },
           ],
         },
         votes: [
-          { id: 1, user: { uuid: userId } },
+          { id: 1, user: { uuid: 'test-user1-uuid' } },
+          { id: 2, user: { uuid: 'test-user2-uuid' } },
+        ],
+      };
+
+      // mocks
+      optionRepo.findDetailedOptionById = jest.fn().mockImplementation(() => {
+        return Promise.resolve(optionInDB);
+      });
+
+      // assertions
+      expect(votesService.addVote(optionId, userId)).rejects.toThrowError(
+        new BadRequestException(`You cannot vote on your own post`),
+      );
+    });
+
+    it('should throw conflict error if user voted before in any option in one group', () => {
+      // data
+      const userId = 'test-user-uuid';
+      const optionId = `option-test-uuid`;
+      const foundUser = { uuid: userId };
+      const optionInDB = {
+        id: 1,
+        uuid: optionId,
+        vote_count: 2,
+        optionsGroup: {
+          post: {
+            ready: true,
+            user: { uuid: 'test-user1-uuid' },
+            uuid: 'test-post-uuid',
+          },
+          options: [
+            {
+              uuid: optionId,
+              vote_count: 2,
+              votes: [
+                { user: { uuid: userId } },
+                { user: { uuid: 'test-user5-uuid' } },
+              ],
+            },
+            { uuid: 'option2-test-uuid', vote_count: 0, votes: [] },
+          ],
+        },
+        votes: [
+          { id: 1, user: { uuid: 'test-user1-uuid' } },
           { id: 2, user: { uuid: 'test-user2-uuid' } },
         ],
       };
@@ -175,51 +244,46 @@ describe('VotesService', () => {
       userRepo.findOne = jest.fn().mockResolvedValue(foundUser);
 
       // assertions
-      expect(
-        votesService.addVote('option1-test-uuid', userId),
-      ).rejects.toThrowError(
-        new ConflictException('User has already voted for this option'),
+      expect(votesService.addVote(optionId, userId)).rejects.toThrowError(
+        new ConflictException(
+          `User has already voted for option with id:${optionInDB.uuid}`,
+        ),
       );
     });
 
     it('should call vote.Repository.addVote with needed parameters', async () => {
       // data
+      const optionId = `option-test-uuid`;
       const userId = 'test-user-uuid';
 
       const foundUser = { uuid: userId };
 
       const optionInDB = {
         id: 1,
-        uuid: 'option1-test-uuid',
+        uuid: optionId,
         vote_count: 2,
         optionsGroup: {
           post: {
-            created: true,
+            ready: true,
+            user: { uuid: 'test-user1-uuid' },
+            uuid: 'test-post-uuid',
           },
           options: [
-            { uuid: 'option1-test-uuid', vote_count: 2 },
-            { uuid: 'option2-test-uuid', vote_count: 0 },
+            {
+              uuid: 'test-option3-uuid',
+              vote_count: 2,
+              votes: [
+                { user: { uuid: 'test-user6-uuid' } },
+                { user: { uuid: 'test-user5-uuid' } },
+              ],
+            },
+            { uuid: 'option2-test-uuid', vote_count: 0, votes: [] },
           ],
         },
         votes: [
           { id: 1, user: { uuid: 'test-user1-uuid' } },
           { id: 2, user: { uuid: 'test-user2-uuid' } },
         ],
-      };
-
-      const passedOption = {
-        id: 1,
-        uuid: 'option1-test-uuid',
-        vote_count: 3,
-        optionsGroup: {
-          post: {
-            created: true,
-          },
-          options: [
-            { uuid: 'option1-test-uuid', vote_count: 2 },
-            { uuid: 'option2-test-uuid', vote_count: 0 },
-          ],
-        },
       };
 
       // mocks
@@ -241,7 +305,7 @@ describe('VotesService', () => {
       // actions
       await votesService.addVote('option1-test-uuid', userId);
       // assertions
-      expect(voteRepo.addVote).toBeCalledWith(passedOption, foundUser);
+      expect(voteRepo.addVote).toBeCalledWith(optionInDB, foundUser);
     });
   });
 });
