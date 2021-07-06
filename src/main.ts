@@ -24,7 +24,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [configService.get('rabbitURL') as string],
-      queue: 'media_queue',
+      queue: configService.get('rabbitMediaQueue') as string,
       queueOptions: {
         // the queue will survive broker restarts
         durable: true,
