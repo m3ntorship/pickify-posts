@@ -348,8 +348,7 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "options": {
             "type": "array",
@@ -358,7 +357,7 @@
             }
           }
         },
-        "required": ["name", "options"],
+        "required": ["options"],
         "maxProperties": 2
       },
       "options_creation_response": {

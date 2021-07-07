@@ -250,13 +250,11 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
         options:
           type: array
           items:
             $ref: "#/components/schemas/options_creation_request"
       required:
-        - "name"
         - "options"
       maxProperties: 2
     options_creation_response:
