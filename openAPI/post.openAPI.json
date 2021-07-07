@@ -625,7 +625,8 @@
                           "required": ["id"]
                         }
                       }
-                    }
+                    },
+                    "required": ["id", "options"]
                   }
                 }
               },

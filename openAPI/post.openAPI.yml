@@ -465,6 +465,7 @@ components:
                             x-faker: random.uuid
                         required:
                           - "id"
+                  required: ["id", "options"]
             required:
               - "groups"
     created_post:
