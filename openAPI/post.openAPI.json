@@ -486,7 +486,6 @@
           },
           "type": {
             "type": "string",
-            "enum": ["text poll", "image poll", "mini_survey"],
             "example": "text_poll"
           },
           "media": {
