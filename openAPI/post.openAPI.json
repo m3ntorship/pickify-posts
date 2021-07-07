@@ -3,7 +3,7 @@
   "info": {
     "description": "Post Service API Specs",
     "version": "1.0.0",
-    "title": "Pickly Post Service"
+    "title": "Pickify Post Service"
   },
   "tags": [
     {
@@ -12,9 +12,6 @@
     },
     {
       "name": "votes"
-    },
-    {
-      "name": "media"
     }
   ],
   "paths": {
@@ -239,49 +236,6 @@
         }
       }
     },
-    "/media": {
-      "post": {
-        "tags": ["media"],
-        "summary": "Add the media data related to a post",
-        "operationId": "uploadOneMedia",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/media_creation_request"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Media were added",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "acknowledged"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "$ref": "#/components/responses/error_bad_request"
-          },
-          "401": {
-            "description": "Unauthorized.",
-            "$ref": "#/components/responses/error_unauthorized"
-          }
-        }
-      }
-    },
     "/votes/{optionid}": {
       "put": {
         "tags": ["votes"],
@@ -449,23 +403,6 @@
         },
         "required": ["body"],
         "maxProperties": 1
-      },
-      "media_creation_request": {
-        "type": "object",
-        "properties": {
-          "file": {
-            "type": "string",
-            "format": "binary"
-          },
-          "entity_type": {
-            "type": "string",
-            "enum": ["post", "group", "option"]
-          },
-          "entity_id": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
       },
       "post_finished_flag_request": {
         "type": "object",
