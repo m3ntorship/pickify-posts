@@ -12,6 +12,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserRepository } from './entities/user.repository';
+import { Post } from './interfaces/getPosts.interface';
+import { getNow } from '../shared/utils/datetime';
 
 describe('PostsService', () => {
   let service: PostsService;
@@ -183,6 +185,7 @@ describe('PostsService', () => {
         type: 'text_poll',
         caption: 'test caption',
         is_hidden: false,
+        media_count: 3,
       };
       const userId = 'test-user-uuid';
 
@@ -212,6 +215,7 @@ describe('PostsService', () => {
         type: 'text_poll',
         caption: 'test caption',
         is_hidden: false,
+        media_count: 3,
       };
       const userId = 'test-user-uuid';
 
@@ -236,12 +240,36 @@ describe('PostsService', () => {
       expect(userRepo.findOne).toBeCalledTimes(1);
     });
 
+    it('should thorw error if user not found', async () => {
+      // data
+      const dto: PostCreationDto = {
+        type: 'text_poll',
+        caption: 'test caption',
+        is_hidden: false,
+        media_count: 3,
+      };
+      const userId = 'test-user-uuid';
+
+      // mocks
+      postRepo.createPost = jest
+        .fn()
+        .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
+
+      userRepo.findOne = jest.fn().mockResolvedValue(undefined);
+
+      // assertions
+      expect(service.createPost(dto, userId)).rejects.toThrowError(
+        new NotFoundException(`User with id: ${userId} not found`),
+      );
+    });
+
     it('should call postRepo.createPost with the appropriate parameters', async () => {
       // data
       const dto: PostCreationDto = {
         type: 'text_poll',
         caption: 'test caption',
         is_hidden: false,
+        media_count: 3,
       };
       const userId = 'test-user-uuid';
 
@@ -266,6 +294,7 @@ describe('PostsService', () => {
       expect(postRepo.createPost).toBeCalledTimes(1);
     });
   });
+
   describe('getAllPosts function ', () => {
     it('should return object contains postsCount and array of posts', async () => {
       // data
@@ -275,13 +304,14 @@ describe('PostsService', () => {
         ready: true,
         caption: 'test-post-caption',
         is_hidden: false,
-        created_at: 'test-creation-time',
+        created_at: getNow().toDate(),
         type: 'text poll',
         user: {
           uuid: userId,
           name: 'test',
           profile_pic: 'test-url',
         },
+        media: [{ url: 'test-media-url' }],
         groups: [
           {
             uuid: 'test-group-uuid',
@@ -296,27 +326,8 @@ describe('PostsService', () => {
           },
         ],
       };
-      const postsInDB = [
-        {
-          ...postInDB,
-          groups: [
-            {
-              ...postInDB.groups[0],
-              options: [{ ...postInDB.groups[0].options[0] }],
-            },
-          ],
-        },
-        {
-          ...postInDB,
-          groups: [
-            {
-              ...postInDB.groups[0],
-              options: [{ ...postInDB.groups[0].options[0] }],
-            },
-          ],
-        },
-      ];
-      const expectedPost = {
+      const postsInDB = [postInDB, postInDB];
+      const expectedPost: Post = {
         id: postInDB.uuid,
         caption: postInDB.caption,
         is_hidden: postInDB.is_hidden,
@@ -327,6 +338,7 @@ describe('PostsService', () => {
           name: postInDB.user.name,
           profile_pic: postInDB.user.profile_pic,
         },
+        media: postInDB.media,
         options_groups: {
           groups: [
             {
@@ -345,7 +357,7 @@ describe('PostsService', () => {
       };
       const expectedPosts = {
         postsCount: postsInDB.length,
-        posts: [{ ...expectedPost }, { ...expectedPost }],
+        posts: [expectedPost, expectedPost],
       };
 
       // mocks
@@ -366,7 +378,7 @@ describe('PostsService', () => {
         ready: false,
         caption: 'test-post-caption',
         is_hidden: false,
-        created_at: 'test-creation-time',
+        created_at: getNow().toDate(),
         type: 'text poll',
         user: {
           uuid: userId,
@@ -462,17 +474,19 @@ describe('PostsService', () => {
         ready: true,
         caption: 'test-post-caption',
         is_hidden: false,
-        created_at: 'test-creation-time',
+        created_at: getNow().toDate(),
         type: 'text poll',
         user: {
           uuid: userId,
           name: 'test',
           profile_pic: 'test-url',
         },
+        media: [{ url: 'test-media-url' }],
         groups: [
           {
             uuid: 'test-group-uuid',
             name: 'test-group-name',
+            media: [],
             options: [
               {
                 vote_count: 2,
@@ -510,6 +524,7 @@ describe('PostsService', () => {
         is_hidden: postInDB.is_hidden,
         created_at: postInDB.created_at,
         type: postInDB.type,
+        media: postInDB.media,
         user: {
           id: postInDB.user.uuid,
           name: postInDB.user.name,
@@ -520,6 +535,105 @@ describe('PostsService', () => {
             {
               id: postInDB.groups[0].uuid,
               name: postInDB.groups[0].name,
+              media: postInDB.groups[0].media,
+              options: [
+                {
+                  vote_count: postInDB.groups[0].options[0].vote_count,
+                  id: postInDB.groups[0].options[0].uuid,
+                  body: postInDB.groups[0].options[0].body,
+                },
+                {
+                  vote_count: postInDB.groups[0].options[1].vote_count,
+                  id: postInDB.groups[0].options[1].uuid,
+                  body: postInDB.groups[0].options[1].body,
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const postId = 'test-post-uuid';
+
+      // mocks
+      postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
+
+      // actions
+      const result = await service.getSinglePost(postId, userId);
+
+      // assertions
+      expect(result).toEqual(expectedPost);
+    });
+
+    it('Should return same media found in DB', async () => {
+      // data
+      const userId = 'test-post-owner-uuid';
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        ready: true,
+        caption: 'test-post-caption',
+        is_hidden: false,
+        created_at: getNow().toDate(),
+        type: 'text poll',
+        user: {
+          uuid: userId,
+          name: 'test',
+          profile_pic: 'test-url',
+        },
+        media: [{ url: 'test-media-url' }],
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            media: [],
+            options: [
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option32-uuid',
+                votes: [
+                  {
+                    uuid: 'vote12-test-uuid',
+                    user: { uuid: 'user15-test-uuid' },
+                  },
+                  {
+                    uuid: 'vote44-test-uuid',
+                    user: { uuid: 'user12-test-uuid' },
+                  },
+                ],
+              },
+              {
+                vote_count: 1,
+                body: 'test-option-body',
+                uuid: 'test-option22-uuid',
+                votes: [
+                  {
+                    uuid: 'vote11-test-uuid',
+                    user: { uuid: 'user34-test-uuid' },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+      const expectedPost = {
+        id: postInDB.uuid,
+        caption: postInDB.caption,
+        is_hidden: postInDB.is_hidden,
+        created_at: postInDB.created_at,
+        type: postInDB.type,
+        media: [{ url: 'test-media-url' }],
+        user: {
+          id: postInDB.user.uuid,
+          name: postInDB.user.name,
+          profile_pic: postInDB.user.profile_pic,
+        },
+        options_groups: {
+          groups: [
+            {
+              id: postInDB.groups[0].uuid,
+              name: postInDB.groups[0].name,
+              media: postInDB.groups[0].media,
               options: [
                 {
                   vote_count: postInDB.groups[0].options[0].vote_count,
@@ -558,6 +672,7 @@ describe('PostsService', () => {
         is_hidden: false,
         created_at: 'test-creation-time',
         type: 'text poll',
+        media: [],
         user: {
           uuid: 'user2',
           name: 'test',
@@ -567,6 +682,7 @@ describe('PostsService', () => {
           {
             uuid: 'test-group-uuid',
             name: 'test-group-name',
+            media: [],
             options: [
               {
                 vote_count: 2,
@@ -609,11 +725,13 @@ describe('PostsService', () => {
           name: postInDB.user.name,
           profile_pic: postInDB.user.profile_pic,
         },
+        media: postInDB.media,
         options_groups: {
           groups: [
             {
               id: postInDB.groups[0].uuid,
               name: postInDB.groups[0].name,
+              media: postInDB.groups[0].media,
               options: [
                 {
                   id: postInDB.groups[0].options[0].uuid,
@@ -870,7 +988,7 @@ describe('PostsService', () => {
         ready: false,
         caption: 'test-post-caption',
         is_hidden: false,
-        created_at: 'test-creation-time',
+        created_at: getNow().toDate(),
         type: 'text poll',
         groups: [
           {

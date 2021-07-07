@@ -21,8 +21,10 @@ env:
   M3_MOCK_IMAGE: m3ntorshipci/prism:latest
   M3_HOST_NAME: pickify.net
   M3_ELEPHANTSQL_URL: ${{secrets.ELEPHANTSQL_URL}}
+  M3_RABBITMQ_URL: ${{secrets.RABBITMQ_URL}}
   M3_SERVICE_OPENAPI_SPECIFICATION: https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml
   M3_NODE_ENV: production
+  M3_MEDIA_QUEUE: media_queue_dev
   
 jobs:
   prepare:

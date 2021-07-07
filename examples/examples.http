@@ -1,6 +1,6 @@
-@postId = 215e4cf9-538a-4b8c-aaa9-50720a2b2341
-@groupId = 098836f8-aa60-461b-9f59-1d769001ec88
-@optionId = bdf0c500-f42c-47ba-87bb-d20bf80b74b5
+@postId = 6c22e70b-33c5-406c-8cae-728b52530798
+@groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
+@optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
 @userId = 3ad4e0f5-1787-46fa-851f-d7dddbfaf2c3
 
 // POST /api/posts
@@ -11,7 +11,8 @@ Authorization: Bearer {{userId}}
 
 {
     "type": "text_poll",
-    "is_hidden": false
+    "is_hidden": false,
+    "media_count": 3
 }
 
 ###
@@ -23,7 +24,8 @@ Authorization: Bearer {{userId}}
 {   
     "caption": "post 2 caption",
     "type": "image_poll",
-    "is_hidden": true
+    "is_hidden": true,
+    "media_count": 3
 }
 
 ###
@@ -35,6 +37,7 @@ Authorization: Bearer {{userId}}
 {   
     "caption": "post caption",
     "type": "text_poll",
+    "media_count": 3
 }
 
 ###
@@ -46,7 +49,8 @@ Authorization: Bearer {{userId}}
 {   
     "caption": "post caption",
     "type": "text_poll",
-    "is_hidden": "false"
+    "is_hidden": "false",
+    "media_count": 3
 }
 
 ##################

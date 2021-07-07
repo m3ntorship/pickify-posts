@@ -1,3 +1,4 @@
+import { Media } from '../../media/entities/media.entity';
 import { Entity, Column, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
@@ -21,9 +22,16 @@ export class Post extends Model {
   @Column()
   created: boolean;
 
+  @Column({ default: 0 })
+  unhandled_media: number;
+
   // one to many relation with options_group entity
   @OneToMany(() => OptiosnGroup, (group) => group.post)
   groups: OptiosnGroup[];
+
+  // one to many relation with media entity
+  @OneToMany(() => Media, (media) => media.post)
+  media: Media[];
 
   // many to one relation with user entity
   @ManyToOne(() => User, (user) => user.posts, {

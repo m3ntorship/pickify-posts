@@ -1,19 +1,19 @@
 import { Type } from 'class-transformer';
 import {
   ValidateNested,
-  IsNotEmpty,
   IsOptional,
   ArrayMaxSize,
+  IsString,
 } from 'class-validator';
 
 export class OptionDto {
-  @IsNotEmpty()
+  @IsString()
   body: string;
 }
 
 export class OptionsGroupDto {
   @IsOptional()
-  @IsNotEmpty()
+  @IsString()
   name?: string;
 
   @ValidateNested({ each: true })

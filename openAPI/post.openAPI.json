@@ -537,12 +537,16 @@
               "image poll",
               "mini survey"
             ]
+          },
+          "media_count": {
+            "type": "number"
           }
         },
-        "maxProperties": 3,
+        "maxProperties": 4,
         "required": [
           "is_hidden",
-          "type"
+          "type",
+          "media_count"
         ]
       },
       "single_post_response": {

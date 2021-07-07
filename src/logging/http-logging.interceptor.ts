@@ -10,7 +10,7 @@ import { Logger } from 'winston';
 import * as dayjs from 'dayjs';
 
 @Injectable()
-export class LoggingInterceptor implements NestInterceptor {
+export class HttpLoggingInterceptor implements NestInterceptor {
   constructor(private readonly logger: Logger) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const httpContext = context.switchToHttp();
