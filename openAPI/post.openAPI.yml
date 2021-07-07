@@ -409,7 +409,7 @@ components:
                       x-faker: random.uuid
                     options:
                       type: array
-                      maxItems: 3
+                      maxItems: 4
                       items:
                         type: object
                         properties:
