@@ -449,6 +449,7 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/single_post_response"
+            required: ["postsCount", "posts"]
     single_post_deletion_response:
       description: Post deleted
     error_bad_request:

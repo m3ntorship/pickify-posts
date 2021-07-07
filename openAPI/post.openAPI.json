@@ -613,7 +613,8 @@
                     "$ref": "#/components/schemas/single_post_response"
                   }
                 }
-              }
+              },
+              "required": ["postsCount", "posts"]
             }
           }
         }
