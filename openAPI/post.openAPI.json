@@ -20,9 +20,7 @@
   "paths": {
     "/posts": {
       "post": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "Create a new post",
         "operationId": "createPost",
         "requestBody": {
@@ -51,9 +49,7 @@
         }
       },
       "get": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "Get posts",
         "operationId": "getPosts",
         "parameters": [
@@ -92,9 +88,7 @@
     },
     "/posts/{postid}/groups": {
       "post": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "add option group to post",
         "operationId": "createOptionsGroup",
         "requestBody": {
@@ -137,9 +131,7 @@
     },
     "/posts/{postid}": {
       "get": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "Get single post",
         "operationId": "getOnePost",
         "parameters": [
@@ -176,9 +168,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "patch post",
         "operationId": "flagPostAsFinished",
         "parameters": [
@@ -218,9 +208,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "Delete one post",
         "operationId": "deleteOnePost",
         "parameters": [
@@ -253,9 +241,7 @@
     },
     "/media": {
       "post": {
-        "tags": [
-          "media"
-        ],
+        "tags": ["media"],
         "summary": "Add the media data related to a post",
         "operationId": "uploadOneMedia",
         "requestBody": {
@@ -298,9 +284,7 @@
     },
     "/votes/{optionid}": {
       "put": {
-        "tags": [
-          "votes"
-        ],
+        "tags": ["votes"],
         "summary": "Add vote",
         "operationId": "addVote",
         "parameters": [
@@ -369,9 +353,7 @@
             }
           }
         },
-        "required": [
-          "groups"
-        ]
+        "required": ["groups"]
       },
       "options_group_creation_response": {
         "type": "object",
@@ -394,9 +376,7 @@
                   "x-faker": "image.imageUrl"
                 }
               },
-              "required": [
-                "url"
-              ]
+              "required": ["url"]
             },
             "maxItems": 4
           },
@@ -408,10 +388,7 @@
             "maxItems": 4
           }
         },
-        "required": [
-          "id",
-          "options"
-        ]
+        "required": ["id", "options"]
       },
       "options_group_creation_request": {
         "type": "object",
@@ -427,10 +404,7 @@
             }
           }
         },
-        "required": [
-          "name",
-          "options"
-        ],
+        "required": ["name", "options"],
         "maxProperties": 2
       },
       "options_creation_response": {
@@ -458,16 +432,12 @@
                   "x-faker": "image.imageUrl"
                 }
               },
-              "required": [
-                "url"
-              ]
+              "required": ["url"]
             },
             "maxItems": 4
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "options_creation_request": {
         "type": "object",
@@ -477,9 +447,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "body"
-        ],
+        "required": ["body"],
         "maxProperties": 1
       },
       "media_creation_request": {
@@ -491,11 +459,7 @@
           },
           "entity_type": {
             "type": "string",
-            "enum": [
-              "post",
-              "group",
-              "option"
-            ]
+            "enum": ["post", "group", "option"]
           },
           "entity_id": {
             "type": "string",
@@ -510,9 +474,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "finished"
-        ],
+        "required": ["finished"],
         "maxProperties": 1
       },
       "post_creation_request": {
@@ -527,23 +489,14 @@
             "example": false
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "text poll",
-              "image poll",
-              "mini survey"
-            ]
+            "type": "string"
           },
           "media_count": {
             "type": "number"
           }
         },
         "maxProperties": 4,
-        "required": [
-          "is_hidden",
-          "type",
-          "media_count"
-        ]
+        "required": ["is_hidden", "type", "media_count"]
       },
       "single_post_response": {
         "type": "object",
@@ -590,11 +543,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "text poll",
-              "image poll",
-              "mini_survey"
-            ],
+            "enum": ["text poll", "image poll", "mini_survey"],
             "example": "text_poll"
           },
           "media": {
@@ -607,9 +556,7 @@
                   "x-faker": "image.imageUrl"
                 }
               },
-              "required": [
-                "url"
-              ]
+              "required": ["url"]
             },
             "maxItems": 4
           },
@@ -624,18 +571,10 @@
                 "maxItems": 4
               }
             },
-            "required": [
-              "groups"
-            ]
+            "required": ["groups"]
           }
         },
-        "required": [
-          "created_at",
-          "is_hidden",
-          "id",
-          "type",
-          "options_groups"
-        ]
+        "required": ["created_at", "is_hidden", "id", "type", "options_groups"]
       },
       "generic_error": {
         "type": "object",
@@ -645,10 +584,7 @@
             "items": {
               "type": "string"
             },
-            "example": [
-              "error1",
-              "error2"
-            ]
+            "example": ["error1", "error2"]
           },
           "status_code": {
             "type": "number",
@@ -686,18 +622,14 @@
                               "x-faker": "random.uuid"
                             }
                           },
-                          "required": [
-                            "id"
-                          ]
+                          "required": ["id"]
                         }
                       }
                     }
                   }
                 }
               },
-              "required": [
-                "groups"
-              ]
+              "required": ["groups"]
             }
           }
         }
@@ -715,9 +647,7 @@
                   "x-faker": "random.uuid"
                 }
               },
-              "required": [
-                "id"
-              ]
+              "required": ["id"]
             }
           }
         }
