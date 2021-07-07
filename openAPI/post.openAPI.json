@@ -271,9 +271,13 @@
                       "optionId": {
                         "type": "string",
                         "x-faker": "random.uuid"
+                      },
+                      "voted": {
+                        "type": "boolean",
+                        "x-faker": "random.boolean"
                       }
                     },
-                    "maxProperties": 2
+                    "maxProperties": 3
                   }
                 }
               }
@@ -388,6 +392,9 @@
               "required": ["url"]
             },
             "maxItems": 4
+          },
+          "voted": {
+            "type": "boolean"
           }
         },
         "required": ["id"]

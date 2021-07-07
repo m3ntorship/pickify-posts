@@ -196,7 +196,10 @@ paths:
                     optionId:
                       type: string
                       x-faker: random.uuid
-                  maxProperties: 2
+                    voted: 
+                      type: boolean
+                      x-faker: random.boolean
+                  maxProperties: 3
         400:
           description: Bad request
           $ref: "#/components/responses/error_bad_request"
@@ -280,6 +283,8 @@ components:
             required:
               - "url"
           maxItems: 4
+        voted: 
+          type: boolean
       required:
         - "id"
     options_creation_request:
