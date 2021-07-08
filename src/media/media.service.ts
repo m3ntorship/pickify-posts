@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { OptionRepository } from '../posts/entities/option.repository';
 import { OptionsGroupRepository } from '../posts/entities/optionsGroup.repository';
@@ -6,6 +6,9 @@ import { PostRepository } from '../posts/entities/post.repository';
 import { mediaType } from '../shared/enums/mediaType.enum';
 import { MediaDataMessageDto } from './dto/mediaDataMessage-dto';
 import { MediaRepository } from './entities/media.repository';
+import { Logger } from 'winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { getNow } from 'src/shared/utils/datetime';
 
 @Injectable()
 export class MediaService {
@@ -14,6 +17,7 @@ export class MediaService {
     private postRepo: PostRepository,
     private optionRepo: OptionRepository,
     private optionsGroupRepo: OptionsGroupRepository,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   // private async getEntity(
@@ -101,6 +105,15 @@ export class MediaService {
           mediaData.entity_type,
         );
 
+        // log message
+        this.logger.info(
+          'rabbitMQ media message processing: after adding media to DB and before handling readiness',
+          {
+            data: mediaData,
+            timestamp: getNow(),
+          },
+        );
+
         // decrease unhandled_media column in posts table
         // & make post ready=true if unhandled_media = 0
         await this.postRepo.handleReadiness(post);
@@ -132,6 +145,15 @@ export class MediaService {
           optionsGroup,
           mediaData.file_id,
           mediaData.entity_type,
+        );
+
+        // log message
+        this.logger.info(
+          'rabbitMQ media message processing: after adding media to DB and before handling readiness',
+          {
+            data: mediaData,
+            timestamp: getNow(),
+          },
         );
 
         // get the post of the group
@@ -169,6 +191,15 @@ export class MediaService {
           option,
           mediaData.file_id,
           mediaData.entity_type,
+        );
+
+        // log message
+        this.logger.info(
+          'rabbitMQ media message processing: after adding media to DB and before handling readiness',
+          {
+            data: mediaData,
+            timestamp: getNow(),
+          },
         );
 
         // get the post of the option
