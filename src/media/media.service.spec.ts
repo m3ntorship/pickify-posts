@@ -10,6 +10,7 @@ import { MediaService } from './media.service';
 import { Post } from '../posts/entities/post.entity';
 import { OptiosnGroup } from '../posts/entities/optionsGroup.entity';
 import { Option } from '../posts/entities/option.entity';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 describe('Media Service', () => {
   let mediaService: MediaService;
@@ -20,12 +21,14 @@ describe('Media Service', () => {
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
+      // imports: [WinstonModule.forRoot(winstonLoggerOptions)],
       providers: [
         MediaService,
         MediaRepository,
         OptionRepository,
         PostRepository,
         OptionsGroupRepository,
+        { provide: WINSTON_MODULE_PROVIDER, useValue: { info: jest.fn() } },
       ],
     }).compile();
 

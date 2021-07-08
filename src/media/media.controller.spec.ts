@@ -7,6 +7,8 @@ import { MediaDataMessageDto } from './dto/mediaDataMessage-dto';
 import { MediaRepository } from './entities/media.repository';
 import { MediaController } from './media.controller';
 import { MediaService } from './media.service';
+import { WinstonModule } from 'nest-winston';
+import { winstonLoggerOptions } from '../logging/winston.options';
 
 describe('Media controller', () => {
   let mediaService: MediaService;
@@ -14,6 +16,7 @@ describe('Media controller', () => {
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
+      imports: [WinstonModule.forRoot(winstonLoggerOptions)],
       controllers: [MediaController],
       providers: [
         MediaService,

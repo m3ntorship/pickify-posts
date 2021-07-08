@@ -8,7 +8,7 @@ import { MediaDataMessageDto } from './dto/mediaDataMessage-dto';
 import { MediaRepository } from './entities/media.repository';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { getNow } from 'src/shared/utils/datetime';
+import { getNow } from '../shared/utils/datetime';
 
 @Injectable()
 export class MediaService {

@@ -8,7 +8,7 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Logger } from 'winston';
 import * as dayjs from 'dayjs';
-import { getNow } from 'src/shared/utils/datetime';
+import { getNow } from '../shared/utils/datetime';
 
 @Injectable()
 export class RpcLoggingInterceptor implements NestInterceptor {

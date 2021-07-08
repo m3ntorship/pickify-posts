@@ -32,7 +32,7 @@ const config: TypeOrmModuleOptions = {
     // max pool size connections
     max: process.env.DB_POOL_SIZE || 3,
     // connection timeout
-    connectionTimeoutMillis: 1000,
+    connectionTimeoutMillis: 2000,
   },
   entities: [process.env.DB_ENTITIES || 'dist/**/*.entity{.ts,.js}'],
   migrations: [process.env.DB_MIGRATIONS || 'dist/**/shared/migrations/*.js'],
