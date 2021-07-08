@@ -26,7 +26,7 @@ export class RpcLoggingInterceptor implements NestInterceptor {
       tap(() => {
         const end = dayjs();
         this.logger.info('rabbitMQ media message handled successfully', {
-          ...rpcData,
+          data: rpcData,
           timestamp: dayjs(start).format(),
           responseTime: end.diff(start),
         });
