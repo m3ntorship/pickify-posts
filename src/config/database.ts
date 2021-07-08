@@ -27,8 +27,12 @@ const config: TypeOrmModuleOptions = {
   database: process.env.DB_DATABASE || 'postgres',
   synchronize: (process.env.DB_SYNC === 'true' ? true : false) || false,
   logging: logging || false,
+  // Extra connection options to be passed to the underlying driver (pg).
   extra: {
+    // max pool size connections
     max: process.env.DB_POOL_SIZE || 3,
+    // connection timeout
+    connectionTimeoutMillis: 1000,
   },
   entities: [process.env.DB_ENTITIES || 'dist/**/*.entity{.ts,.js}'],
   migrations: [process.env.DB_MIGRATIONS || 'dist/**/shared/migrations/*.js'],
