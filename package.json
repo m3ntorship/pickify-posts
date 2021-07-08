@@ -49,6 +49,7 @@
     "dayjs": "^1.10.5",
     "express-rate-limit": "^5.2.6",
     "helmet": "^4.4.1",
+    "nest-winston": "^1.5.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.5.1",
