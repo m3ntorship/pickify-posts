@@ -27,6 +27,9 @@ const config: TypeOrmModuleOptions = {
   database: process.env.DB_DATABASE || 'postgres',
   synchronize: (process.env.DB_SYNC === 'true' ? true : false) || false,
   logging: logging || false,
+  extra: {
+    max: process.env.DB_POOL_SIZE || 3,
+  },
   entities: [process.env.DB_ENTITIES || 'dist/**/*.entity{.ts,.js}'],
   migrations: [process.env.DB_MIGRATIONS || 'dist/**/shared/migrations/*.js'],
   subscribers: [process.env.DB_SUBSCRIBERS || 'dist/**/subscriber/*.js'],
