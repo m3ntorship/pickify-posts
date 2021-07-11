@@ -1,0 +1,39 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db'
+  namespace: '{{{M3_NAMESPACE}}}'
+spec:
+  teamId: "pickify"
+  volume:
+    size: '{{{M3_DB_STORAGE}}}'
+    storageClass: hcloud-volumes
+  resources:
+    requests:
+      cpu: '{{{M3_DB_MEMORY}}}'
+      memory: '{{{M3_DB_CPU}}}'
+    limits:
+      cpu: '{{{M3_DB_CPU_LIMIT}}}'
+      memory: '{{{M3_DB_MEMORY_LIMIT}}}'  
+  numberOfInstances: '{{{M3_DB_INSTANCES}}}'
+  users:
+    pickify:  # database owner
+    - superuser
+    - createdb
+  databases:
+    posts: pickify  # dbname: owner
+  postgresql:
+    version: "13"
+  tolerations:
+    - key: db
+      value: dev
+      operator: "Equal"
+      effect: NoSchedule
+  nodeAffinity:
+   requiredDuringSchedulingIgnoredDuringExecution:
+     nodeSelectorTerms:
+       - matchExpressions:
+           - key: db
+             operator: In
+             values:
+               - dev
