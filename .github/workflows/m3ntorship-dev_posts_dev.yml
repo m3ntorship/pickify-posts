@@ -33,6 +33,7 @@ env:
   M3_DB_MEMORY_LIMIT: 1000Mi
   M3_DB_CPU: 100m
   M3_DB_CPU_LIMIT: 500m
+  M3_APP_USER: pickify
   
 jobs:
   prepare:

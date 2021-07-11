@@ -2,26 +2,29 @@ apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
   name: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db'
+  # pickify.pickify-posts-db.credentials.postgresql.acid.zalan.do
+  # M3_APP_USER
+
   namespace: '{{{M3_NAMESPACE}}}'
 spec:
-  teamId: "pickify"
+  teamId: "{{{M3_PROJECT}}}"
   volume:
     size: '{{{M3_DB_STORAGE}}}'
     storageClass: hcloud-volumes
   resources:
     requests:
-      cpu: '{{{M3_DB_MEMORY}}}'
-      memory: '{{{M3_DB_CPU}}}'
+      cpu: '{{{M3_DB_CPU}}}'
+      memory: '{{{M3_DB_MEMORY}}}'
     limits:
       cpu: '{{{M3_DB_CPU_LIMIT}}}'
       memory: '{{{M3_DB_MEMORY_LIMIT}}}'  
   numberOfInstances: {{{M3_DB_INSTANCES}}}
   users:
-    pickify:  # database owner
+    {{{M3_APP_USER}}}:  # database owner
     - superuser
     - createdb
   databases:
-    posts: pickify  # dbname: owner
+    posts: "{{{M3_APP_USER}}}"  # dbname: owner
   postgresql:
     version: "13"
   tolerations:
