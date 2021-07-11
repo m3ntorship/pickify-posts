@@ -1,4 +1,4 @@
-name: deploy service PR
+name: deploy posts service to dev
 on:
   push:
     branches:
