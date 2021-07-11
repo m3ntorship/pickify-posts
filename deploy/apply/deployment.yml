@@ -28,7 +28,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: "{{{M3_APP_USER}}}.{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db.credentials.postgresql.acid.zalan.do"
-                  key: username
+                  key: password
             - name: APP_DB_HOST
               value: "{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db.{{{M3_NAMESPACE}}}.svc.cluster.local"
 
