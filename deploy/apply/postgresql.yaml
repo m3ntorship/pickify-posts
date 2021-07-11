@@ -15,7 +15,7 @@ spec:
     limits:
       cpu: '{{{M3_DB_CPU_LIMIT}}}'
       memory: '{{{M3_DB_MEMORY_LIMIT}}}'  
-  numberOfInstances: '{{{M3_DB_INSTANCES}}}'
+  numberOfInstances: {{{M3_DB_INSTANCES}}}
   users:
     pickify:  # database owner
     - superuser

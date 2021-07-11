@@ -27,7 +27,7 @@ env:
   M3_MEDIA_QUEUE: media_queue_dev
   
   # db
-  M3_DB_INSTANCES: 2
+  M3_DB_INSTANCES: 1
   M3_DB_STORAGE: 10Gi
   M3_DB_MEMORY: 500Mi
   M3_DB_MEMORY_LIMIT: 1000Mi
