@@ -26,6 +26,14 @@ env:
   M3_NODE_ENV: production
   M3_MEDIA_QUEUE: media_queue_dev
   
+  # db
+  M3_DB_INSTANCES: 2
+  M3_DB_STORAGE: 10Gi
+  M3_DB_MEMORY: 500Mi
+  M3_DB_MEMORY_LIMIT: 1000Mi
+  M3_DB_CPU: 100m
+  M3_DB_CPU_LIMIT: 500m
+  
 jobs:
   prepare:
     runs-on: ubuntu-latest
