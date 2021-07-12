@@ -4,22 +4,22 @@ import { User } from './user.entity';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  public async createUser(user: any): Promise<User> {
-    const userToFind = await getRepository(User)
-      .createQueryBuilder('user')
+  private async checkUser(user: any): Promise<User> {
+    return await this.createQueryBuilder('user')
       .where('user.user_id = :id', { id: user.user_id })
       .getOne();
+  }
 
+  public async createUser(user: any): Promise<User> {
+    const userToFind = this.checkUser(user);
     if (userToFind) {
       return userToFind;
     }
-    console.log(user.user_id);
-    const newUser = new User();
-    console.log(newUser);
+
+    const newUser = this.create();
     newUser.name = user.name;
     newUser.profile_pic = user.picture;
     newUser.user_id = user.user_id;
-    console.log(newUser);
-    return await newUser.save();
+    return await this.save(newUser);
   }
 }
