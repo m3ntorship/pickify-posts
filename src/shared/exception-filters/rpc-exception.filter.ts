@@ -20,21 +20,19 @@ export class ExceptionFilter implements RpcExceptionFilter<RpcException> {
 
       // Add logging
       this.logger.error({
-        Error: 'RpcException validation error',
+        Error: 'RpcException validation error when receiving media data',
         message,
         stack,
         timestamp: getNow(),
       });
       return throwError(name);
-    }
-
-    // In case of RPCException for all other exceptions
-    if (exception.getError) {
+    } else {
+      // In case of RPCException for all other exceptions
       const { name, stack, message } = exception as RpcException;
 
       // Add logging
       this.logger.error({
-        Error: 'RpcException Error',
+        Error: 'RpcException Error when handling media data',
         message,
         stack,
         timestamp: getNow(),

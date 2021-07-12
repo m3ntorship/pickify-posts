@@ -45,12 +45,14 @@ async function bootstrap() {
   app.use(helmet());
 
   // Rate limit
-  app.use(
-    rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 100, // limit each IP to 100 requests per windowMs
-    }),
-  );
+  // Ahmed: disabled it as it casues some inconvinences during development
+  // should have a look before publishing the service live
+  // app.use(
+  //   rateLimit({
+  //     windowMs: 15 * 60 * 1000, // 15 minutes
+  //     max: 100, // limit each IP to 100 requests per windowMs
+  //   }),
+  // );
 
   // Compression
   app.use(compression());

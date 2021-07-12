@@ -3,7 +3,7 @@ import * as winston from 'winston';
 export const winstonLoggerOptions: winston.LoggerOptions = {
   level: 'info',
   format: winston.format.json(),
-  defaultMeta: { service: 'user-service-development' },
+  defaultMeta: { service: 'posts-microservice' },
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
