@@ -52,7 +52,6 @@ export class MediaService {
     // get the optionsGroup with relation to post
     const optionsGroup = await this.optionsGroupRepo.getByID(
       mediaData.entity_id,
-      'post',
     );
 
     // if optionsGroup is not found
@@ -88,7 +87,7 @@ export class MediaService {
 
   private async optionMedia(mediaData: MediaDataMessageDto): Promise<void> {
     // get the option with relation to post
-    const option = await this.optionRepo.getByID(mediaData.entity_id, 'post');
+    const option = await this.optionRepo.getByID(mediaData.entity_id);
     // if option is not found
     if (!option) {
       throw new RpcException(`option with id:${mediaData.entity_id} not found`);
