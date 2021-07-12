@@ -34,7 +34,7 @@ export class MediaService {
     }
 
     // add the data to media table in DB
-    await this.mediaRepo.add(post, mediaData.file_id, mediaData.entity_type);
+    await this.mediaRepo.addPostMedia(post, mediaData.file_id);
 
     // log message
     this.logger.info(
@@ -69,11 +69,7 @@ export class MediaService {
     }
 
     // add the data to media table in DB
-    await this.mediaRepo.add(
-      optionsGroup,
-      mediaData.file_id,
-      mediaData.entity_type,
-    );
+    await this.mediaRepo.addOptionsGroupMedia(optionsGroup, mediaData.file_id);
 
     // log message
     this.logger.info(
@@ -101,7 +97,7 @@ export class MediaService {
     }
 
     // add the data to media table in DB
-    await this.mediaRepo.add(option, mediaData.file_id, mediaData.entity_type);
+    await this.mediaRepo.addOptionMedia(option, mediaData.file_id);
 
     // log message
     this.logger.info(
