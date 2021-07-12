@@ -23,27 +23,20 @@ export class MediaService {
     const post = await this.postRepo.getPostById(mediaData.entity_id);
 
     if (!post) {
-      throw new RpcException(`Post with id:${mediaData.entity_id} not found`);
+      throw new RpcException(
+        `rabbitMQ media message: Post with id:${mediaData.entity_id} not found`,
+      );
     }
 
     // if all media files got handled before
     if (post.ready) {
       throw new RpcException(
-        `post with id:${post.uuid} does not have unhandled media files`,
+        `rabbitMQ media message: post with id:${post.uuid} does not have unhandled media files`,
       );
     }
 
     // add the data to media table in DB
     await this.mediaRepo.addPostMedia(post, mediaData.file_id);
-
-    // log message
-    this.logger.info(
-      'rabbitMQ media message processing: after adding media to DB and before handling readiness',
-      {
-        data: mediaData,
-        timestamp: getNow(),
-      },
-    );
   }
 
   private async option_groupMedia(
@@ -57,28 +50,19 @@ export class MediaService {
     // if optionsGroup is not found
     if (!optionsGroup) {
       throw new RpcException(
-        `options_group with id:${mediaData.entity_id} not found`,
+        `rabbitMQ media message: options_group with id:${mediaData.entity_id} not found`,
       );
     }
 
     // if all media files got handled before
     if (optionsGroup.post.ready) {
       throw new RpcException(
-        `post with id:${optionsGroup.post.uuid} does not have unhandled media files`,
+        `rabbitMQ media message: post with id:${optionsGroup.post.uuid} does not have unhandled media files`,
       );
     }
 
     // add the data to media table in DB
     await this.mediaRepo.addOptionsGroupMedia(optionsGroup, mediaData.file_id);
-
-    // log message
-    this.logger.info(
-      'rabbitMQ media message processing: after adding media to DB and before handling readiness',
-      {
-        data: mediaData,
-        timestamp: getNow(),
-      },
-    );
   }
 
   private async optionMedia(mediaData: MediaDataMessageDto): Promise<void> {
@@ -86,31 +70,30 @@ export class MediaService {
     const option = await this.optionRepo.getByID(mediaData.entity_id);
     // if option is not found
     if (!option) {
-      throw new RpcException(`option with id:${mediaData.entity_id} not found`);
+      throw new RpcException(
+        `rabbitMQ media message: option with id:${mediaData.entity_id} not found`,
+      );
     }
 
     // if all media files got handled before
     if (option.optionsGroup.post.ready) {
       throw new RpcException(
-        `post with id:${option.optionsGroup.post.uuid} does not have unhandled media files`,
+        `rabbitMQ media message: post with id:${option.optionsGroup.post.uuid} does not have unhandled media files`,
       );
     }
 
     // add the data to media table in DB
     await this.mediaRepo.addOptionMedia(option, mediaData.file_id);
-
-    // log message
-    this.logger.info(
-      'rabbitMQ media message processing: after adding media to DB and before handling readiness',
-      {
-        data: mediaData,
-        timestamp: getNow(),
-      },
-    );
   }
 
   async handleMedia(mediaData: MediaDataMessageDto): Promise<void> {
     // handle different media based on its type
     this[`${mediaData.entity_type}Media`](mediaData);
+
+    // log message
+    this.logger.info('rabbitMQ media message handled successfully', {
+      data: mediaData,
+      timestamp: getNow(),
+    });
   }
 }
