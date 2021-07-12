@@ -15,6 +15,7 @@ import { PassportModule } from '@nestjs/passport';
 import { WinstonModule } from 'nest-winston';
 import { winstonLoggerOptions } from './logging/winston.options';
 import { UsersModule } from './users/users.module';
+import { ExtendHeadersMiddleware } from './shared/middlewares/extendHeaders.middleware';
 
 const evnVariable = process.env.NODE_ENV;
 @Module({

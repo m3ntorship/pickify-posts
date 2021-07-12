@@ -1,13 +1,8 @@
-name: Deploy PR's
+name: build post service PR
 on:
   pull_request:
     branches:
       - development
-    types:
-      - 'opened'
-      - 'reopened'
-      - 'synchronize'
-      - 'closed'
 
 env:
   M3_PROJECT: pickify
@@ -19,12 +14,9 @@ env:
   M3_TEMP_DIR: temp
   M3_REPLICAS: '1'
   M3_MAIN_APP_PORT: 3000
-  M3_MOCK_APP_PORT: 4010
   M3_PORT_BACKEND: 80
-  M3_PORT_BACKEND_MOCK: 81
   M3_DOCKER_FILE: Dockerfile
   M3_IMAGE: m3ntorshipci/posts-service
-  M3_MOCK_IMAGE: m3ntorshipci/prism:latest
   M3_HOST_NAME: pickify.net
   M3_POSTS_DB_URL: ${{secrets.ELEPHANTSQL_URL_PR}}
   M3_RABBITMQ_URL: ${{secrets.RABBITMQ_URL}}
@@ -32,32 +24,7 @@ env:
   M3_NODE_ENV: production
   
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      sha: ${{ steps.prepare.outputs.sha }}
-      version: ${{ steps.prepare.outputs.version }}
-    steps:
-      - uses: actions/checkout@v2
-      - id: prepare
-        run: |
-          echo "::set-output name=sha::$(git rev-parse HEAD)"
-          echo "::set-output name=version::$(git rev-parse --short=4 HEAD)"
-
-  check-outputs:
-    needs:
-      - prepare
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "sha ${{needs.prepare.outputs.sha}}"
-          echo "version ${{needs.prepare.outputs.version}}"
-          echo "m3_version $M3_VERSION"
-
   build:
-    if: ${{github.event.action != 'closed'}}
-    needs:
-      - prepare
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

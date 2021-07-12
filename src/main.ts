@@ -81,6 +81,7 @@ async function bootstrap() {
 
   // get port from configService
   const port = configService.get('port');
+
   // start microservices
   await app.startAllMicroservicesAsync();
 

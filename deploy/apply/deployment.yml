@@ -19,6 +19,19 @@ spec:
         - name: "{{{M3_COMPONENT}}}-main-container"
           image: "{{{M3_IMAGE}}}:{{{M3_VERSION}}}"
           env:
+            - name: APP_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{{M3_APP_USER}}}.{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db.credentials.postgresql.acid.zalan.do"
+                  key: username
+            - name: APP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{{M3_APP_USER}}}.{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db.credentials.postgresql.acid.zalan.do"
+                  key: password
+            - name: APP_DB_HOST
+              value: "{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db.{{{M3_NAMESPACE}}}.svc.cluster.local"
+
             - name: DB_URL
               value: {{{M3_POSTS_DB_URL}}}
             - name: NODE_ENV
@@ -31,18 +44,4 @@ spec:
             - name: web
               containerPort: 3000
               protocol: TCP
-              
-        - name: "{{{M3_COMPONENT}}}-mock-container"
-          image: "{{{M3_MOCK_IMAGE}}}"
-          args:
-            [
-              'mock',
-              '-d',
-              '-h',
-              '0.0.0.0',
-              {{{M3_SERVICE_OPENAPI_SPECIFICATION}}},
-            ]
-          ports:
-            - name: web
-              containerPort: 4010
-              protocol: TCP
+
