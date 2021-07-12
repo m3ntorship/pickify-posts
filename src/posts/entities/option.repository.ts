@@ -35,13 +35,16 @@ export class OptionRepository extends Repository<Option> {
    */
 
   public async findDetailedOptionById(optionId: string): Promise<Option> {
-    return await this.createQueryBuilder('options')
-      .where('options.uuid = :optionId', { optionId })
-      .leftJoinAndSelect('options.votes', 'vote')
-      .leftJoinAndSelect('vote.user', 'user')
-      .leftJoinAndSelect('options.optionsGroup', 'optionsGroup')
-      .leftJoinAndSelect('optionsGroup.options', 'option')
-      .leftJoinAndSelect('optionsGroup.post', 'post')
+    return await this.createQueryBuilder('option')
+      .where('option.uuid = :optionId', { optionId })
+      .leftJoinAndSelect('option.votes', 'vote')
+      .leftJoinAndSelect('vote.user', 'vote_user')
+      .leftJoinAndSelect('option.optionsGroup', 'options_Group')
+      .leftJoinAndSelect('options_Group.post', 'post')
+      .leftJoinAndSelect('post.user', 'post_user')
+      .leftJoinAndSelect('options_Group.options', 'option_in_group')
+      .leftJoinAndSelect('option_in_group.votes', 'deep_vote')
+      .leftJoinAndSelect('deep_vote.user', 'deep_vote_user')
       .getOne();
 
     // or using findOne
@@ -60,5 +63,32 @@ export class OptionRepository extends Repository<Option> {
     option.vote_count++;
     await this.save(option);
     return option;
+  }
+
+  // this method returns an optionsGroup with relation to the passed entityType
+  // if no entityType is passed, it returns the optionsGroup without any relations
+  public async getByID(id: string, entityType?: string): Promise<Option> {
+    switch (entityType) {
+      case undefined:
+        return await this.createQueryBuilder('option')
+          .where('option.uuid = :id', { id: id })
+          .getOne();
+
+      case 'post':
+        return await this.createQueryBuilder('option')
+          .where('option.uuid = :id', { id: id })
+          .leftJoinAndSelect('option.optionsGroup', 'group')
+          .leftJoinAndSelect('group.post', 'post')
+          .getOne();
+
+      case 'optionsGroup':
+        return await this.createQueryBuilder('option')
+          .where('option.uuid = :id', { id: id })
+          .leftJoinAndSelect('option.group', 'group')
+          .getOne();
+
+      default:
+        break;
+    }
   }
 }

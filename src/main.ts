@@ -8,14 +8,32 @@ import * as compression from 'compression';
 import { AppModule } from './app.module';
 import { AllExceptionsFilterLogger } from './shared/exception-filters/http-exceptions-logger.filter';
 import { winstonLoggerOptions } from './logging/winston.options';
-import { LoggingInterceptor } from './logging/logging.interceptor';
+import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import admin from 'firebase-admin';
 import * as path from 'path';
 import { AuthGuard } from '@nestjs/passport';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
+  // Create application listens for HTTP requests
   const app = await NestFactory.create(AppModule);
+
+  // initialize configService to get data from it
+  const configService = app.get(ConfigService);
+
+  // Make the application a microservice also
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get('rabbitURL') as string],
+      queue: configService.get('rabbitMediaQueue') as string,
+      queueOptions: {
+        // the queue will survive broker restarts
+        durable: true,
+      },
+    },
+  });
 
   // add global prefix to all endpoints
   app.setGlobalPrefix('api');
@@ -30,12 +48,14 @@ async function bootstrap() {
   app.use(helmet());
 
   // Rate limit
-  app.use(
-    rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 100, // limit each IP to 100 requests per windowMs
-    }),
-  );
+  // Ahmed: disabled it as it casues some inconvinences during development
+  // should have a look before publishing the service live
+  // app.use(
+  //   rateLimit({
+  //     windowMs: 15 * 60 * 1000, // 15 minutes
+  //     max: 100, // limit each IP to 100 requests per windowMs
+  //   }),
+  // );
 
   // Compression
   app.use(compression());
@@ -44,7 +64,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const logger = winston.createLogger(winstonLoggerOptions);
-  app.useGlobalInterceptors(new LoggingInterceptor(logger));
+  app.useGlobalInterceptors(new HttpLoggingInterceptor(logger));
   app.useGlobalFilters(new AllExceptionsFilterLogger(logger));
   app.useGlobalGuards(new (AuthGuard('firebase-jwt'))());
 
@@ -59,8 +79,12 @@ async function bootstrap() {
     databaseURL: 'https://pick-291910.firebaseio.com',
   });
 
-  const configService = app.get(ConfigService);
+  // get port from configService
   const port = configService.get('port');
+  // start microservices
+  await app.startAllMicroservicesAsync();
+
+  // start http app
   await app.listen(port);
 }
 bootstrap();

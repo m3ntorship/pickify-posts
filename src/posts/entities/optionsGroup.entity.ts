@@ -3,6 +3,7 @@ import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Option } from './option.entity';
 import { Post } from './post.entity';
+import { Media } from '../../media/entities/media.entity';
 
 @Entity({ name: 'options_groups', schema: POSTS_SCHEMA })
 export class OptiosnGroup extends Model {
@@ -23,4 +24,8 @@ export class OptiosnGroup extends Model {
   })
   @JoinColumn({ name: 'post_id' })
   post: Post;
+
+  // one to many relation with media entity
+  @OneToMany(() => Media, (media) => media.optionsGroup)
+  media: Media[];
 }

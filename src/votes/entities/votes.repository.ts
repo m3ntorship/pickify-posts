@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Vote } from './vote.entity';
 import { Option } from '../../posts/entities/option.entity';
-import { User } from 'src/posts/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @EntityRepository(Vote)
 export class VoteRepository extends Repository<Vote> {
