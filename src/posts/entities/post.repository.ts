@@ -112,17 +112,4 @@ export class PostRepository extends Repository<Post> {
       .leftJoinAndSelect('post.user', 'user')
       .getOne();
   }
-
-  // handles post ready column
-  public async handleReadiness(post: Post): Promise<void> {
-    // decrease unhandled media by 1
-    post.unhandled_media = post.unhandled_media - 1;
-
-    // if all media files are handled, make post ready
-    if (post.unhandled_media === 0) {
-      post.ready = true;
-    }
-
-    await this.save(post);
-  }
 }

@@ -44,10 +44,6 @@ export class MediaService {
         timestamp: getNow(),
       },
     );
-
-    // decrease unhandled_media column in posts table
-    // & make post ready=true if unhandled_media = 0
-    await this.postRepo.handleReadiness(post);
   }
 
   private async option_groupMedia(
@@ -88,15 +84,6 @@ export class MediaService {
         timestamp: getNow(),
       },
     );
-
-    // get the post of the group
-    const optionGroupPost = await this.postRepo.getPostById(
-      optionsGroup.post.uuid,
-    );
-
-    // decrease unhandled_media column in posts table
-    // & make post ready=true if unhandled_media = 0
-    await this.postRepo.handleReadiness(optionGroupPost);
   }
 
   private async optionMedia(mediaData: MediaDataMessageDto): Promise<void> {
@@ -125,15 +112,6 @@ export class MediaService {
         timestamp: getNow(),
       },
     );
-
-    // get the post of the option
-    const optionPost = await this.postRepo.getPostById(
-      option.optionsGroup.post.uuid,
-    );
-
-    // decrease unhandled_media column in posts table
-    // & make post ready=true if unhandled_media = 0
-    await this.postRepo.handleReadiness(optionPost);
   }
 
   async handleMedia(mediaData: MediaDataMessageDto): Promise<void> {
