@@ -17,7 +17,7 @@ export class PostRepository extends Repository<Post> {
     post.caption = caption;
     post.type = type;
     post.is_hidden = is_hidden;
-    post.unhandled_media = media_count;
+    post.media_count = media_count;
     post.user = user;
     post.created = false;
     post.ready = false;
@@ -65,7 +65,7 @@ export class PostRepository extends Repository<Post> {
     post.created = flag;
 
     // make post ready if it has no media or all media got handled
-    if (post.unhandled_media === 0) {
+    if (post.media_count === 0) {
       post.ready = true;
     }
     await this.save(post);

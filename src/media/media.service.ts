@@ -27,7 +27,7 @@ export class MediaService {
     }
 
     // if all media files got handled before
-    if (post.unhandled_media === 0) {
+    if (post.ready) {
       throw new RpcException(
         `post with id:${post.uuid} does not have unhandled media files`,
       );
@@ -63,7 +63,7 @@ export class MediaService {
     }
 
     // if all media files got handled before
-    if (optionsGroup.post.unhandled_media === 0) {
+    if (optionsGroup.post.ready) {
       throw new RpcException(
         `post with id:${optionsGroup.post.uuid} does not have unhandled media files`,
       );
@@ -95,7 +95,7 @@ export class MediaService {
     }
 
     // if all media files got handled before
-    if (option.optionsGroup.post.unhandled_media === 0) {
+    if (option.optionsGroup.post.ready) {
       throw new RpcException(
         `post with id:${option.optionsGroup.post.uuid} does not have unhandled media files`,
       );
