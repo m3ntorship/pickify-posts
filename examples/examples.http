@@ -1,8 +1,182 @@
-POST http://localhost:3000/api/posts
+@postId = 6c22e70b-33c5-406c-8cae-728b52530798
+@groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
+@optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
+@userId = 3ad4e0f5-1787-46fa-851f-d7dddbfaf2c3
+
+// POST /api/posts
+//////////////////
+POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{userId}}
 
 {
-    "caption": "Hello world4",
-    "type": "ahmed4",
-    "is_hidden": true
+    "type": "text_poll",
+    "is_hidden": false,
+    "media_count": 3
 }
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{userId}}
+
+{   
+    "caption": "post 2 caption",
+    "type": "image_poll",
+    "is_hidden": true,
+    "media_count": 3
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{userId}}
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+    "media_count": 3
+}
+
+###
+
+POST http://localhost:3000/api/posts HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{userId}}
+
+{   
+    "caption": "post caption",
+    "type": "text_poll",
+    "is_hidden": "false",
+    "media_count": 3
+}
+
+##################
+// POST /api/posts/:postid/groups
+POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{userId}}
+
+{   
+    "groups": [
+        {
+            "name": "group 1 name",
+            "options": [
+                {
+                    "body": "option 1 body"
+                }
+            ]
+        }
+    ]
+}
+
+###
+
+POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{userId}}
+
+{   
+    "groups": [
+        {
+            "options": [
+                {
+                    "body":"option 1 body"
+                }
+            ]
+        }
+    ]
+}
+
+###
+
+POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{userId}}
+
+{   
+    "groups": [
+        {
+            "name": "group1",
+            "options": [
+                {
+                    "body":"g1o1"
+                },
+                {
+                    "body":"g1o2"
+                },
+                {
+                    "body":"g1o3"
+                }
+            ]
+        },
+        {
+            "name": "group2",
+            "options": [
+                {
+                    "body":"g2o1"
+                },
+                {
+                    "body":"g2o2"
+                }
+            ]
+        },
+        {
+            "name": "group3",
+            "options": [
+                {
+                    "body":"g3o1"
+                },
+                {
+                    "body":"g3o2"
+                },
+                {
+                    "body":"g3o3"
+                }
+            ]
+        }
+    ]
+}
+
+##################
+// PATCH /api/posts/:postid
+PATCH http://localhost:3000/api/posts/{{postId}}
+Content-Type: application/json
+Authorization: Bearer {{userId}}
+
+{
+    "finished": true
+}
+###
+// DELETE /api/posts/:postid
+DELETE http://localhost:3000/api/posts/{{postId}} HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{userId}}
+
+
+##################
+// PATCH /api/posts/:postid
+PATCH  http://localhost:3000/api/posts/{{postId}} HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{userId}}
+
+{
+    "finished": true
+}
+
+##################
+// GET /api/posts
+GET http://localhost:3000/api/posts
+Authorization: Bearer {{userId}}
+
+##################
+// GET /api/posts/:postid
+GET http://localhost:3000/api/posts/{{postId}}
+Authorization: Bearer {{userId}}
+
+##################
+// PUT /api/votes/:optionid
+PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
+Authorization: Bearer {{userId}}

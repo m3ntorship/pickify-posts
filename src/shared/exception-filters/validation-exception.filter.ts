@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Logger } from 'winston';
 import { getNow } from '../utils/datetime';
+import generateErrorBasedOnCurrentEnvironment from '../utils/Logging/generateErrorBasedOnEnvironment';
 
 @Catch(BadRequestException)
 export class ValidationExceptionFilter implements ExceptionFilter {
@@ -38,10 +39,13 @@ export class ValidationExceptionFilter implements ExceptionFilter {
       timestamp: getNow(),
     });
 
-    response.status(HttpStatus.BAD_REQUEST).json({
-      status_code: statusCode,
+    const errorToBeReturned = generateErrorBasedOnCurrentEnvironment(
+      statusCode,
       message,
       stack,
-    });
+      process.env.NODE_ENV,
+    );
+
+    response.status(HttpStatus.BAD_REQUEST).json(errorToBeReturned);
   }
 }
