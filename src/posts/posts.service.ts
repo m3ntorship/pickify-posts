@@ -38,12 +38,14 @@ export class PostsService {
         id: option.uuid,
         body: option.body,
         vote_count: option.vote_count,
+        media: option.media,
       }));
 
       // return each group as found in interface
       return {
         id: group.uuid,
         name: group.name,
+        media: group.media,
         options,
       };
     });
@@ -56,6 +58,11 @@ export class PostsService {
   ): Promise<PostCreationInterface> {
     // get user to add post to it
     const user = await this.userRepository.findOne({ where: { uuid: userId } });
+
+    // Check whether user exists
+    if (!user) {
+      throw new NotFoundException(`User with id: ${userId} not found`);
+    }
 
     // create the post
     const createdPost = await this.postRepository.createPost(
@@ -163,6 +170,7 @@ export class PostsService {
             name: post.user.name,
             profile_pic: post.user.profile_pic,
           },
+          media: post.media,
           caption: post.caption,
           is_hidden: post.is_hidden,
           created_at: post.created_at,
@@ -196,6 +204,7 @@ export class PostsService {
         name: post.user.name,
         profile_pic: post.user.profile_pic,
       },
+      media: post.media,
       caption: post.caption,
       is_hidden: post.is_hidden,
       created_at: post.created_at,

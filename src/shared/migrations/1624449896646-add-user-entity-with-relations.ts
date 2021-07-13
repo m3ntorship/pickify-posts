@@ -72,7 +72,7 @@ export class addUserEntityWithRelations1624449896646
     await queryRunner.query(`DROP TABLE "${POSTS_SCHEMA}"."users"`);
 
     await queryRunner.query(
-      `ALTER TABLE "${POSTS_SCHEMA}"."votes" ADD CONSTRAINT "FK_26c647863c296d49e748b5ef98f" FOREIGN KEY ("optionId") REFERENCES "pickify_posts"."options"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+      `ALTER TABLE "${POSTS_SCHEMA}"."votes" ADD CONSTRAINT "FK_26c647863c296d49e748b5ef98f" FOREIGN KEY ("optionId") REFERENCES "${POSTS_SCHEMA}"."options"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
     );
   }
 }

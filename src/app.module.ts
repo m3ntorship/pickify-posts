@@ -6,13 +6,15 @@ import { MediaModule } from './media/media.module';
 import { VotesModule } from './votes/votes.module';
 import { PostsModule } from './posts/posts.module';
 import configuration from './config/configuration';
-import {} from 'path-to-regexp';
-import config from './config/database';
+import dbConfig from './config/database';
 import * as swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from '../openAPI/post.openAPI.json';
 // import { ExtendHeadersMiddleware } from './shared/middlewares/extendHeaders.middleware';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { ExtendHeadersMiddleware } from './shared/middlewares/extendHeaders.middleware';
+import { WinstonModule } from 'nest-winston';
+import { winstonLoggerOptions } from './logging/winston.options';
 
 const evnVariable = process.env.NODE_ENV;
 @Module({
@@ -28,7 +30,8 @@ const evnVariable = process.env.NODE_ENV;
         enable: true,
       },
     }),
-    TypeOrmModule.forRoot(config),
+    TypeOrmModule.forRoot(dbConfig),
+    WinstonModule.forRoot(winstonLoggerOptions),
     MediaModule,
     VotesModule,
     PostsModule,

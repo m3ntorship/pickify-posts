@@ -8,25 +8,25 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Logger } from 'winston';
 import * as dayjs from 'dayjs';
+import { getNow } from '../shared/utils/datetime';
 
 @Injectable()
-export class LoggingInterceptor implements NestInterceptor {
+export class RpcLoggingInterceptor implements NestInterceptor {
   constructor(private readonly logger: Logger) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const httpContext = context.switchToHttp();
-    const { headers, method, originalUrl } = httpContext.getRequest();
-    delete headers.authorization;
+    const rpcContext = context.switchToRpc();
+    const rpcData = rpcContext.getData();
     const start = dayjs();
-    // const start = Date.now();
+    // log when to receive the broker message
+    this.logger.info('rabbitMQ media message received successfully', {
+      data: rpcData,
+      timestamp: getNow(),
+    });
     return next.handle().pipe(
       tap(() => {
         const end = dayjs();
-        this.logger.info({
-          request: {
-            headers,
-            method,
-            originalUrl,
-          },
+        this.logger.info('rabbitMQ media message handled successfully', {
+          data: rpcData,
           timestamp: dayjs(start).format(),
           responseTime: end.diff(start),
         });
