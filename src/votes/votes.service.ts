@@ -68,6 +68,7 @@ export class VotesService {
           currOption.uuid === optionId
             ? option.vote_count
             : currOption.vote_count,
+        voted: currOption.uuid === optionId ? true : false,
         optionId: currOption.uuid,
       };
     });

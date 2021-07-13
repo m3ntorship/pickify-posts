@@ -1,23 +1,32 @@
 import { Type } from 'class-transformer';
-import { ValidateNested, IsNotEmpty, IsString } from 'class-validator';
+import {
+  ValidateNested,
+  IsOptional,
+  ArrayMaxSize,
+  IsString,
+} from 'class-validator';
 
 export class OptionDto {
-  @IsNotEmpty()
   @IsString()
   body: string;
 }
 
 export class OptionsGroupDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
+
   @ValidateNested({ each: true })
   @Type(() => OptionDto)
+  @ArrayMaxSize(4, { message: `Max options number in a group is 4` })
   options: OptionDto[];
 }
 
 export class OptionsGroupCreationDto {
   @ValidateNested({ each: true })
   @Type(() => OptionsGroupDto)
+  @ArrayMaxSize(4, {
+    message: `Max groups number in a post is 4`,
+  })
   groups: OptionsGroupDto[];
 }

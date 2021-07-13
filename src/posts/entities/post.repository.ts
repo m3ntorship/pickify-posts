@@ -42,6 +42,7 @@ export class PostRepository extends Repository<Post> {
       .select([
         'post.uuid',
         'post.created',
+        'post.ready',
         'post.caption',
         'post.is_hidden',
         'post.created_at',
@@ -57,11 +58,15 @@ export class PostRepository extends Repository<Post> {
         'option.vote_count',
         'option.body',
         'option_media.url',
+        'vote.uuid',
+        'vote_user.uuid',
       ])
-      .where('post.created = :created', { created: true })
+      .where('post.ready = :ready', { ready: true })
       .leftJoin('post.groups', 'group')
       .leftJoin('group.options', 'option')
       .leftJoin('post.user', 'user')
+      .leftJoin('option.votes', 'vote')
+      .leftJoin('vote.user', 'vote_user')
       .leftJoin('post.media', 'post_media')
       .leftJoin('option.media', 'option_media')
       .leftJoin('group.media', 'group_media')
@@ -91,6 +96,7 @@ export class PostRepository extends Repository<Post> {
       .select([
         'post.uuid',
         'post.created',
+        'post.ready',
         'post.caption',
         'post.media_count',
         'post.ready',
@@ -108,9 +114,13 @@ export class PostRepository extends Repository<Post> {
         'option.vote_count',
         'option.body',
         'option_media.url',
+        'vote.uuid',
+        'vote_user.uuid',
       ])
       .leftJoin('post.groups', 'group')
       .leftJoin('group.options', 'option')
+      .leftJoin('option.votes', 'vote')
+      .leftJoin('vote.user', 'vote_user')
       .leftJoin('post.user', 'user')
       .leftJoin('post.media', 'post_media')
       .leftJoin('option.media', 'option_media')

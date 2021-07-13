@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  HttpException,
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -45,8 +44,8 @@ describe('VotesService', () => {
       const userId = 'post-owner-user-uuid';
       const foundUser = { uuid: userId };
       const expectedResponse = [
-        { votes_count: 3, optionId: 'option1-test-uuid' },
-        { votes_count: 0, optionId: 'option2-test-uuid' },
+        { votes_count: 3, optionId: 'option1-test-uuid', voted: true },
+        { votes_count: 0, optionId: 'option2-test-uuid', voted: false },
       ];
 
       const optionInDB = {

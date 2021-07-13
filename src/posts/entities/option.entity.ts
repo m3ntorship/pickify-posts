@@ -15,6 +15,8 @@ export class Option extends Model {
   @Column({ default: 0 })
   order: number;
 
+  voted: boolean;
+
   // many-to-one relation with OptionGroup entity
   @ManyToOne(() => OptiosnGroup, (optionsGroup) => optionsGroup.options, {
     cascade: true,
