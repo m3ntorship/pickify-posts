@@ -321,6 +321,7 @@ describe('PostsService', () => {
                 vote_count: 2,
                 body: 'test-option-body',
                 uuid: 'test-option-uuid',
+                voted: false,
               },
             ],
           },
@@ -349,6 +350,7 @@ describe('PostsService', () => {
                   id: postInDB.groups[0].options[0].uuid,
                   body: postInDB.groups[0].options[0].body,
                   vote_count: postInDB.groups[0].options[0].vote_count,
+                  voted: postInDB.groups[0].options[0].voted,
                 },
               ],
             },
@@ -394,6 +396,7 @@ describe('PostsService', () => {
                 vote_count: 2,
                 body: 'test-option-body',
                 uuid: 'test-option-uuid',
+                voted: false,
               },
             ],
           },
@@ -441,6 +444,7 @@ describe('PostsService', () => {
                   id: postInDB.groups[0].options[0].uuid,
                   body: postInDB.groups[0].options[0].body,
                   vote_count: postInDB.groups[0].options[0].vote_count,
+                  voted: postInDB.groups[0].options[0].voted,
                 },
               ],
             },
@@ -492,6 +496,7 @@ describe('PostsService', () => {
                 vote_count: 2,
                 body: 'test-option-body',
                 uuid: 'test-option32-uuid',
+                voted: false,
                 votes: [
                   {
                     uuid: 'vote12-test-uuid',
@@ -507,6 +512,7 @@ describe('PostsService', () => {
                 vote_count: 1,
                 body: 'test-option-body',
                 uuid: 'test-option22-uuid',
+                voted: false,
                 votes: [
                   {
                     uuid: 'vote11-test-uuid',
@@ -541,11 +547,13 @@ describe('PostsService', () => {
                   vote_count: postInDB.groups[0].options[0].vote_count,
                   id: postInDB.groups[0].options[0].uuid,
                   body: postInDB.groups[0].options[0].body,
+                  voted: postInDB.groups[0].options[0].voted,
                 },
                 {
                   vote_count: postInDB.groups[0].options[1].vote_count,
                   id: postInDB.groups[0].options[1].uuid,
                   body: postInDB.groups[0].options[1].body,
+                  voted: postInDB.groups[0].options[1].voted,
                 },
               ],
             },
@@ -590,6 +598,7 @@ describe('PostsService', () => {
                 vote_count: 2,
                 body: 'test-option-body',
                 uuid: 'test-option32-uuid',
+                voted: false,
                 votes: [
                   {
                     uuid: 'vote12-test-uuid',
@@ -605,6 +614,7 @@ describe('PostsService', () => {
                 vote_count: 1,
                 body: 'test-option-body',
                 uuid: 'test-option22-uuid',
+                voted: false,
                 votes: [
                   {
                     uuid: 'vote11-test-uuid',
@@ -639,11 +649,13 @@ describe('PostsService', () => {
                   vote_count: postInDB.groups[0].options[0].vote_count,
                   id: postInDB.groups[0].options[0].uuid,
                   body: postInDB.groups[0].options[0].body,
+                  voted: postInDB.groups[0].options[0].voted,
                 },
                 {
                   vote_count: postInDB.groups[0].options[1].vote_count,
                   id: postInDB.groups[0].options[1].uuid,
                   body: postInDB.groups[0].options[1].body,
+                  voted: postInDB.groups[0].options[1].voted,
                 },
               ],
             },

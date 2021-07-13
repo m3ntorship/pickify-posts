@@ -91,6 +91,7 @@ export class PostsService {
         body: option.body,
         vote_count: option.vote_count,
         media: option.media,
+        voted: false,
       }));
 
       // return each group as found in interface
