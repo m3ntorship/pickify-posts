@@ -3,7 +3,6 @@ import { NestFactory } from '@nestjs/core';
 import { config } from 'dotenv';
 import * as winston from 'winston';
 import * as helmet from 'helmet';
-import * as rateLimit from 'express-rate-limit';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import { AppModule } from './app.module';
