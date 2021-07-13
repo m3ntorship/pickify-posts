@@ -1,5 +1,4 @@
 import { EntityRepository, getRepository, Repository } from 'typeorm';
-import { UserCreationDto } from '../dto/userCreation.dto';
 import { User } from './user.entity';
 
 @EntityRepository(User)
