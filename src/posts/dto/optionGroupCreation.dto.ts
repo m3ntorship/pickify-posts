@@ -7,8 +7,9 @@ import {
 } from 'class-validator';
 
 export class OptionDto {
+  @IsOptional()
   @IsString()
-  body: string;
+  body?: string;
 }
 
 export class OptionsGroupDto {
