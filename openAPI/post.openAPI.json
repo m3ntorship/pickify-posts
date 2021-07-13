@@ -1,0 +1,680 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Post Service API Specs",
+    "version": "1.0.0",
+    "title": "Pickify Post Service"
+  },
+  "tags": [
+    {
+      "name": "posts",
+      "description": "Posts endpoints"
+    },
+    {
+      "name": "votes"
+    }
+  ],
+  "paths": {
+    "/posts": {
+      "post": {
+        "tags": ["posts"],
+        "summary": "Create a new post",
+        "operationId": "createPost",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/post_creation_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post Created Successfully",
+            "$ref": "#/components/responses/created_post"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      },
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get posts",
+        "operationId": "getPosts",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "number"
+            },
+            "description": "The number of items to skip before starting to collect the result set"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number"
+            },
+            "description": "The numbers of items to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all posts",
+            "$ref": "#/components/responses/feed_response"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
+    },
+    "/posts/{postid}/groups": {
+      "post": {
+        "tags": ["posts"],
+        "summary": "add option group to post",
+        "operationId": "createOptionsGroup",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/options_group_creation"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postid",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "id of post needed"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Group Created Successfully",
+            "$ref": "#/components/responses/created_options_group"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
+    },
+    "/posts/{postid}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get single post",
+        "operationId": "getOnePost",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postid",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "id of post needed"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get post with the provided id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/single_post_response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["posts"],
+        "summary": "patch post",
+        "operationId": "flagPostAsFinished",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postid",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "id of post needed"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/post_finished_flag_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Post Flagged Successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["posts"],
+        "summary": "Delete one post",
+        "operationId": "deleteOnePost",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "postid",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "id of post needed"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Delete one post",
+            "$ref": "#/components/responses/single_post_deletion_response"
+          },
+          "404": {
+            "description": "Not Found",
+            "$ref": "#/components/responses/error_not_found"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
+    },
+    "/votes/{optionid}": {
+      "put": {
+        "tags": ["votes"],
+        "summary": "Add vote",
+        "operationId": "addVote",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "optionid",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "id of option"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Add vote on option",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "votes_count": {
+                        "type": "number",
+                        "x-faker": "random.number"
+                      },
+                      "optionId": {
+                        "type": "string",
+                        "x-faker": "random.uuid"
+                      },
+                      "voted": {
+                        "type": "boolean",
+                        "x-faker": "random.boolean"
+                      }
+                    },
+                    "maxProperties": 3
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "$ref": "#/components/responses/error_unauthorized"
+          },
+          "409": {
+            "description": "Conflict when user votes twice on same option",
+            "$ref": "#/components/responses/error_conflict"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "options_group_creation": {
+        "type": "object",
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/options_group_creation_request"
+            }
+          }
+        },
+        "required": ["groups"]
+      },
+      "options_group_creation_response": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "x-faker": "random.uuid"
+          },
+          "name": {
+            "type": "string",
+            "x-faker": "name.findName"
+          },
+          "media": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "x-faker": "image.imageUrl"
+                }
+              },
+              "required": ["url"]
+            },
+            "maxItems": 4
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/options_creation_response"
+            },
+            "maxItems": 4
+          }
+        },
+        "required": ["id", "options"]
+      },
+      "options_group_creation_request": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/options_creation_request"
+            }
+          }
+        },
+        "required": ["options"],
+        "maxProperties": 2
+      },
+      "options_creation_response": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "x-faker": "random.uuid"
+          },
+          "votes_count": {
+            "type": "number",
+            "x-faker": "random.number"
+          },
+          "body": {
+            "type": "string",
+            "x-faker": "random.words"
+          },
+          "voted": {
+            "type": "boolean",
+            "x-faker": "random.boolean"
+          },
+          "media": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "x-faker": "image.imageUrl"
+                }
+              },
+              "required": ["url"]
+            },
+            "maxItems": 4
+          },
+          "voted": {
+            "type": "boolean"
+          }
+        },
+        "required": ["id"]
+      },
+      "options_creation_request": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["body"],
+        "maxProperties": 1
+      },
+      "post_finished_flag_request": {
+        "type": "object",
+        "properties": {
+          "finished": {
+            "type": "boolean"
+          }
+        },
+        "required": ["finished"],
+        "maxProperties": 1
+      },
+      "post_creation_request": {
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": "string",
+            "example": "test caption"
+          },
+          "is_hidden": {
+            "type": "boolean",
+            "example": false
+          },
+          "type": {
+            "type": "string"
+          },
+          "media_count": {
+            "type": "number"
+          }
+        },
+        "maxProperties": 4,
+        "required": ["is_hidden", "type", "media_count"]
+      },
+      "single_post_response": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "some-id",
+                "x-faker": "random.uuid"
+              },
+              "name": {
+                "type": "string",
+                "example": "John Doe",
+                "x-faker": "name.findName"
+              },
+              "profile_pic": {
+                "type": "string",
+                "example": "URL",
+                "x-faker": "image.imageUrl"
+              }
+            }
+          },
+          "id": {
+            "type": "string",
+            "example": "some-id",
+            "x-faker": "random.uuid"
+          },
+          "caption": {
+            "type": "string",
+            "example": "some-caption",
+            "x-faker": "random.words"
+          },
+          "is_hidden": {
+            "type": "boolean",
+            "example": false,
+            "x-faker": "random.boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-01-30T08:30:00Z"
+          },
+          "type": {
+            "type": "string",
+            "example": "text_poll"
+          },
+          "media": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "x-faker": "image.imageUrl"
+                }
+              },
+              "required": ["url"]
+            },
+            "maxItems": 4
+          },
+          "options_groups": {
+            "type": "object",
+            "properties": {
+              "groups": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/options_group_creation_response"
+                },
+                "maxItems": 4
+              }
+            },
+            "required": ["groups"]
+          }
+        },
+        "required": ["created_at", "is_hidden", "id", "type", "options_groups"]
+      },
+      "generic_error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["error1", "error2"]
+          },
+          "status_code": {
+            "type": "number",
+            "default": 123
+          }
+        }
+      }
+    },
+    "responses": {
+      "created_options_group": {
+        "description": "Group created successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "groups": {
+                  "type": "array",
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "x-faker": "random.uuid"
+                      },
+                      "options": {
+                        "type": "array",
+                        "maxItems": 4,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "x-faker": "random.uuid"
+                            }
+                          },
+                          "required": ["id"]
+                        }
+                      }
+                    },
+                    "required": ["id", "options"]
+                  }
+                }
+              },
+              "required": ["groups"]
+            }
+          }
+        }
+      },
+      "created_post": {
+        "description": "Post created successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "1208897f-6f13-4b97-af7b-882b79181eb7",
+                  "x-faker": "random.uuid"
+                }
+              },
+              "required": ["id"]
+            }
+          }
+        }
+      },
+      "feed_response": {
+        "description": "Get posts",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "postsCount": {
+                  "type": "number",
+                  "x-faker": "random.number"
+                },
+                "posts": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/single_post_response"
+                  }
+                }
+              },
+              "required": ["postsCount", "posts"]
+            }
+          }
+        }
+      },
+      "single_post_deletion_response": {
+        "description": "Post deleted"
+      },
+      "error_bad_request": {
+        "description": "Bad Request Error occured",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/generic_error"
+            }
+          }
+        }
+      },
+      "error_unauthorized": {
+        "description": "Unauthorized.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/generic_error"
+            }
+          }
+        }
+      },
+      "error_conflict": {
+        "description": "Conflict when user votes twice on same option.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/generic_error"
+            }
+          }
+        }
+      },
+      "error_internal_server_error": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/generic_error"
+            }
+          }
+        }
+      },
+      "error_not_found": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/generic_error"
+            }
+          }
+        }
+      }
+    }
+  }
+}
