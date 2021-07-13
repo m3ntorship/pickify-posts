@@ -5,6 +5,19 @@ import { User } from './user.entity';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
+  // check whether all media in post were received and stored or not
+  private mediaReadiness(post: Post): boolean {
+    const postMedia = [...post.media];
+    post.groups.forEach((group) => {
+      postMedia.push(...group.media);
+      group.options.forEach((option) => {
+        postMedia.push(...option.media);
+      });
+    });
+
+    return post.media_count === postMedia.length;
+  }
+
   /**
    * createPost
    */
@@ -23,6 +36,7 @@ export class PostRepository extends Repository<Post> {
     post.ready = false;
     return await this.save(post);
   }
+
   public async getAllPosts(): Promise<Post[]> {
     return await this.createQueryBuilder('post')
       .select([
@@ -77,6 +91,8 @@ export class PostRepository extends Repository<Post> {
         'post.uuid',
         'post.created',
         'post.caption',
+        'post.media_count',
+        'post.ready',
         'post.is_hidden',
         'post.created_at',
         'post.type',
@@ -111,5 +127,25 @@ export class PostRepository extends Repository<Post> {
       })
       .leftJoinAndSelect('post.user', 'user')
       .getOne();
+  }
+
+  public async handleReadiness(postId: string): Promise<void> {
+    // get detailed post
+    const post = await this.getDetailedPostById(postId);
+
+    // handle post readiness if all post media is received and handled successfully
+    const isMediaHandled = this.mediaReadiness(post);
+
+    // here to add any logic if post readiness will depend on it
+
+    // handle post readiness
+    if (isMediaHandled) {
+      post.ready = true;
+      await this.createQueryBuilder()
+        .update(Post)
+        .set({ ready: true })
+        .where('uuid = :uuid', { uuid: postId })
+        .execute();
+    }
   }
 }
