@@ -15,7 +15,7 @@ export class RpcLoggingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const rpcContext = context.switchToRpc();
     const rpcData = rpcContext.getData();
-    // const start = dayjs();
+
     // log when to receive the broker message
     this.logger.info('rabbitMQ media message received successfully', {
       data: rpcData,

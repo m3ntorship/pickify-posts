@@ -72,6 +72,7 @@ export class PostRepository extends Repository<Post> {
       })
       .getMany();
   }
+
   /**
    * flagPostCreation
    */
