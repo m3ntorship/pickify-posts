@@ -10,7 +10,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "prestart:dev": "docker-compose up -d db rabbitmq",
+    "prestart:dev": "docker-compose up -d",
     "start:dev": "NODE_ENV=development nest start --watch",
     "start:production": "NODE_ENV=production nest start --watch",
     "start:debug": "nest start --debug --watch",
