@@ -21,7 +21,6 @@ import { RpcLoggingInterceptor } from '../logging/rpc-logging.interceptor';
 )
 export class MediaController {
   constructor(private mediaService: MediaService) {}
-
   @EventPattern('added_media_data')
   async handleMedia(@Payload() mediaData: MediaDataMessageDto): Promise<void> {
     await this.mediaService.handleMedia(mediaData);

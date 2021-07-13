@@ -65,30 +65,12 @@ export class OptionRepository extends Repository<Option> {
     return option;
   }
 
-  // this method returns an optionsGroup with relation to the passed entityType
-  // if no entityType is passed, it returns the optionsGroup without any relations
-  public async getByID(id: string, entityType?: string): Promise<Option> {
-    switch (entityType) {
-      case undefined:
-        return await this.createQueryBuilder('option')
-          .where('option.uuid = :id', { id: id })
-          .getOne();
-
-      case 'post':
-        return await this.createQueryBuilder('option')
-          .where('option.uuid = :id', { id: id })
-          .leftJoinAndSelect('option.optionsGroup', 'group')
-          .leftJoinAndSelect('group.post', 'post')
-          .getOne();
-
-      case 'optionsGroup':
-        return await this.createQueryBuilder('option')
-          .where('option.uuid = :id', { id: id })
-          .leftJoinAndSelect('option.group', 'group')
-          .getOne();
-
-      default:
-        break;
-    }
+  // get option with related group and post
+  public async getByID(id: string): Promise<Option> {
+    return await this.createQueryBuilder('option')
+      .where('option.uuid = :id', { id: id })
+      .leftJoinAndSelect('option.optionsGroup', 'group')
+      .leftJoinAndSelect('group.post', 'post')
+      .getOne();
   }
 }

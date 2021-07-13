@@ -23,7 +23,7 @@ export class Post extends Model {
   created: boolean;
 
   @Column({ default: 0 })
-  unhandled_media: number;
+  media_count: number;
 
   // one to many relation with options_group entity
   @OneToMany(() => OptiosnGroup, (group) => group.post)
