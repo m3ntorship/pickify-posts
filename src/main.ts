@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { config } from 'dotenv';
 import * as winston from 'winston';
 import * as helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
@@ -14,6 +15,9 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 async function bootstrap() {
   // Create application listens for HTTP requests
   const app = await NestFactory.create(AppModule);
+
+  // load all env variable
+  config();
 
   // initialize configService to get data from it
   const configService = app.get(ConfigService);

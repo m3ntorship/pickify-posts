@@ -16,9 +16,10 @@ env:
   M3_PORT_BACKEND: 80
   M3_DOCKER_FILE: Dockerfile
   M3_IMAGE: m3ntorshipci/posts-service
-  M3_HOST_NAME: pickify.net
+  M3_HOST_NAME: m3ntorship.net
   M3_POSTS_DB_URL: ${{secrets.ELEPHANTSQL_URL}}
   M3_RABBITMQ_URL: ${{secrets.RABBITMQ_URL}}
+  M3_BROKER_QUEUE_PATTERN: added_media_data
   M3_SERVICE_OPENAPI_SPECIFICATION: https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml
   M3_NODE_ENV: production
   M3_MEDIA_QUEUE: media_queue_dev

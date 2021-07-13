@@ -44,10 +44,69 @@ describe('Media Service', () => {
   it('should be defined and have the necessary methods', async () => {
     expect(mediaService).toBeDefined();
     expect(mediaService).toHaveProperty('handleMedia');
+    expect(mediaService).toHaveProperty('postMedia');
+    expect(mediaService).toHaveProperty('option_groupMedia');
+    expect(mediaService).toHaveProperty('optionMedia');
   });
 
-  describe('handleMedia post entity', () => {
-    it('Should try to find the needed post with necessary parameters', async () => {
+  describe('handleMedia method', () => {
+    it('Should call postMedia method if entity_type = post', async () => {
+      // data
+      const dto: MediaDataMessageDto = {
+        entity_id: 'test-entity-uuid',
+        entity_type: mediaType.POST,
+        file_id: 'test-media-file-uuid',
+      };
+
+      // mocks
+      mediaService.postMedia = jest.fn();
+
+      // actions
+      await mediaService.handleMedia(dto);
+
+      // assertions
+      expect(mediaService.postMedia).toBeCalledWith(dto);
+    });
+
+    it('Should call option_groupMedia method if entity_type = option_group', async () => {
+      // data
+      const dto: MediaDataMessageDto = {
+        entity_id: 'test-entity-uuid',
+        entity_type: mediaType.OPTION_GROUP,
+        file_id: 'test-media-file-uuid',
+      };
+
+      // mocks
+      mediaService.option_groupMedia = jest.fn();
+
+      // actions
+      await mediaService.handleMedia(dto);
+
+      // assertions
+      expect(mediaService.option_groupMedia).toBeCalledWith(dto);
+    });
+
+    it('Should call optionMedia method if entity_type = option_group', async () => {
+      // data
+      const dto: MediaDataMessageDto = {
+        entity_id: 'test-entity-uuid',
+        entity_type: mediaType.OPTION,
+        file_id: 'test-media-file-uuid',
+      };
+
+      // mocks
+      mediaService.optionMedia = jest.fn();
+
+      // actions
+      await mediaService.handleMedia(dto);
+
+      // assertions
+      expect(mediaService.optionMedia).toBeCalledWith(dto);
+    });
+  });
+
+  describe('postMedia method', () => {
+    it('Should try to find a post in DB using the passed entity_id', async () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
@@ -56,22 +115,20 @@ describe('Media Service', () => {
       };
 
       const foundPost = {
-        uuid: 'test-post-uuid',
-        unhandled_media: 3,
+        uuid: '1',
+        ready: false,
       } as Post;
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValue(foundPost);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addPostMedia = jest.fn().mockResolvedValue(undefined);
 
       // actions
-      await mediaService.handleMedia(dto);
+      await mediaService.postMedia(dto);
 
       // assertions
-      expect(postRepo.getPostById).toBeCalledWith(dto.entity_id);
+      expect(mediaRepo.addPostMedia).toBeCalledWith(foundPost, dto.file_id);
     });
-
     it('Should throw error if post not found', async () => {
       // data
       const dto: MediaDataMessageDto = {
@@ -82,12 +139,13 @@ describe('Media Service', () => {
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValue(undefined);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addPostMedia = jest.fn().mockResolvedValue(undefined);
 
       // assertions
-      expect(mediaService.handleMedia(dto)).rejects.toThrowError(
-        new RpcException(`Post with id:${dto.entity_id} not found`),
+      expect(mediaService.postMedia(dto)).rejects.toThrowError(
+        new RpcException(
+          `rabbitMQ media message: Post with id:${dto.entity_id} not found`,
+        ),
       );
     });
 
@@ -100,18 +158,17 @@ describe('Media Service', () => {
       };
       const foundPost = {
         uuid: 'test-post-uuid',
-        unhandled_media: 0,
+        ready: true,
       } as Post;
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValue(foundPost);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addPostMedia = jest.fn().mockResolvedValue(undefined);
 
       // assertions
-      expect(mediaService.handleMedia(dto)).rejects.toThrowError(
+      expect(mediaService.postMedia(dto)).rejects.toThrowError(
         new RpcException(
-          `post with id:${foundPost.uuid} does not have unhandled media files`,
+          `rabbitMQ media message: post with id:${foundPost.uuid} does not have unhandled media files`,
         ),
       );
     });
@@ -126,26 +183,21 @@ describe('Media Service', () => {
 
       const foundPost = {
         uuid: 'test-post-uuid',
-        unhandled_media: 3,
+        ready: false,
       } as Post;
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValue(foundPost);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addPostMedia = jest.fn().mockResolvedValue(undefined);
 
       // actions
-      await mediaService.handleMedia(dto);
+      await mediaService.postMedia(dto);
 
       // assertions
-      expect(mediaRepo.add).toBeCalledWith(
-        foundPost,
-        dto.file_id,
-        dto.entity_type,
-      );
+      expect(mediaRepo.addPostMedia).toBeCalledWith(foundPost, dto.file_id);
     });
 
-    it('Should handle post readiness by calling postRepo.handleReadiness with right parameters', async () => {
+    it('should return undefined', async () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
@@ -155,24 +207,23 @@ describe('Media Service', () => {
 
       const foundPost = {
         uuid: 'test-post-uuid',
-        unhandled_media: 3,
+        ready: false,
       } as Post;
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValue(foundPost);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addPostMedia = jest.fn().mockResolvedValue(undefined);
 
-      // actions
-      await mediaService.handleMedia(dto);
+      // action
+      const res = await mediaService.postMedia(dto);
 
-      // assertions
-      expect(postRepo.handleReadiness).toBeCalledWith(foundPost);
+      // assertion
+      expect(res).toBeUndefined();
     });
   });
 
-  describe('handleMedia optionsGroup entity', () => {
-    it('Should try to find the needed group with necessary parameters', async () => {
+  describe('option_groupMedia method', () => {
+    it('Should try to find a group in DB using the passed entity_id', async () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
@@ -181,29 +232,25 @@ describe('Media Service', () => {
       };
 
       const foundGroup = {
-        uuid: 'test-group-uuid',
         post: {
-          uuid: 'test-post-uuid',
-          unhandled_media: 3,
+          uuid: '1',
+          ready: false,
         },
       } as OptiosnGroup;
 
       // mocks
       optionsGroupRepo.getByID = jest.fn().mockResolvedValue(foundGroup);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest.fn().mockResolvedValue(foundGroup.post);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionsGroupMedia = jest.fn().mockResolvedValue(undefined);
 
       // actions
-      await mediaService.handleMedia(dto);
+      await mediaService.option_groupMedia(dto);
 
       // assertions
-      expect(optionsGroupRepo.getByID).toBeCalledWith(
-        dto.entity_id,
-        mediaType.POST,
+      expect(mediaRepo.addOptionsGroupMedia).toBeCalledWith(
+        foundGroup,
+        dto.file_id,
       );
     });
-
     it('Should throw error if group not found', async () => {
       // data
       const dto: MediaDataMessageDto = {
@@ -214,13 +261,13 @@ describe('Media Service', () => {
 
       // mocks
       optionsGroupRepo.getByID = jest.fn().mockResolvedValue(undefined);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest.fn().mockResolvedValue(undefined);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionsGroupMedia = jest.fn().mockResolvedValue(undefined);
 
       // assertions
-      expect(mediaService.handleMedia(dto)).rejects.toThrowError(
-        new RpcException(`options_group with id:${dto.entity_id} not found`),
+      expect(mediaService.option_groupMedia(dto)).rejects.toThrowError(
+        new RpcException(
+          `rabbitMQ media message: options_group with id:${dto.entity_id} not found`,
+        ),
       );
     });
 
@@ -228,27 +275,24 @@ describe('Media Service', () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
-        entity_type: mediaType.OPTION_GROUP,
+        entity_type: mediaType.POST,
         file_id: 'test-media-file-uuid',
       };
       const foundGroup = {
-        uuid: 'test-group-uuid',
         post: {
-          uuid: 'test-post-uuid',
-          unhandled_media: 0,
+          uuid: '1',
+          ready: true,
         },
       } as OptiosnGroup;
 
       // mocks
       optionsGroupRepo.getByID = jest.fn().mockResolvedValue(foundGroup);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest.fn().mockResolvedValue(foundGroup.post);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionsGroupMedia = jest.fn().mockResolvedValue(undefined);
 
       // assertions
-      expect(mediaService.handleMedia(dto)).rejects.toThrowError(
+      expect(mediaService.option_groupMedia(dto)).rejects.toThrowError(
         new RpcException(
-          `post with id:${foundGroup.post.uuid} does not have unhandled media files`,
+          `rabbitMQ media message: post with id:${foundGroup.post.uuid} does not have unhandled media files`,
         ),
       );
     });
@@ -257,65 +301,60 @@ describe('Media Service', () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
-        entity_type: mediaType.OPTION_GROUP,
+        entity_type: mediaType.POST,
         file_id: 'test-media-file-uuid',
       };
+
       const foundGroup = {
-        uuid: 'test-group-uuid',
         post: {
-          uuid: 'test-post-uuid',
-          unhandled_media: 3,
+          uuid: '1',
+          ready: false,
         },
       } as OptiosnGroup;
 
       // mocks
       optionsGroupRepo.getByID = jest.fn().mockResolvedValue(foundGroup);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest.fn().mockResolvedValue(foundGroup.post);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionsGroupMedia = jest.fn().mockResolvedValue(undefined);
 
       // actions
-      await mediaService.handleMedia(dto);
+      await mediaService.option_groupMedia(dto);
 
       // assertions
-      expect(mediaRepo.add).toBeCalledWith(
+      expect(mediaRepo.addOptionsGroupMedia).toBeCalledWith(
         foundGroup,
         dto.file_id,
-        dto.entity_type,
       );
     });
 
-    it('Should handle post readiness by calling postRepo.handleReadiness with right parameters', async () => {
+    it('should return undefined', async () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
-        entity_type: mediaType.OPTION_GROUP,
+        entity_type: mediaType.POST,
         file_id: 'test-media-file-uuid',
       };
+
       const foundGroup = {
-        uuid: 'test-group-uuid',
         post: {
-          uuid: 'test-post-uuid',
-          unhandled_media: 3,
+          uuid: '1',
+          ready: false,
         },
       } as OptiosnGroup;
 
       // mocks
       optionsGroupRepo.getByID = jest.fn().mockResolvedValue(foundGroup);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest.fn().mockResolvedValue(foundGroup.post);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionsGroupMedia = jest.fn().mockResolvedValue(undefined);
 
-      // actions
-      await mediaService.handleMedia(dto);
+      // action
+      const res = await mediaService.option_groupMedia(dto);
 
-      // assertions
-      expect(postRepo.handleReadiness).toBeCalledWith(foundGroup.post);
+      // assertion
+      expect(res).toBeUndefined();
     });
   });
 
-  describe('handleMedia option entity', () => {
-    it('Should try to find the needed option with necessary parameters', async () => {
+  describe('optionMedia method', () => {
+    it('Should try to find an option in DB using the passed entity_id', async () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
@@ -324,48 +363,41 @@ describe('Media Service', () => {
       };
 
       const foundOption = {
-        uuid: 'test-option-uuid',
         optionsGroup: {
-          uuid: 'test-group-uuid',
           post: {
-            uuid: 'test-post-uuid',
-            unhandled_media: 3,
+            uuid: '1',
+            ready: false,
           },
         },
       } as Option;
 
       // mocks
       optionRepo.getByID = jest.fn().mockResolvedValue(foundOption);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest
-        .fn()
-        .mockResolvedValue(foundOption.optionsGroup.post);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionMedia = jest.fn().mockResolvedValue(undefined);
 
       // actions
-      await mediaService.handleMedia(dto);
+      await mediaService.optionMedia(dto);
 
       // assertions
-      expect(optionRepo.getByID).toBeCalledWith(dto.entity_id, mediaType.POST);
+      expect(mediaRepo.addOptionMedia).toBeCalledWith(foundOption, dto.file_id);
     });
-
     it('Should throw error if option not found', async () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
-        entity_type: mediaType.OPTION,
+        entity_type: mediaType.OPTION_GROUP,
         file_id: 'test-media-file-uuid',
       };
 
       // mocks
       optionRepo.getByID = jest.fn().mockResolvedValue(undefined);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest.fn().mockResolvedValue(undefined);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionMedia = jest.fn().mockResolvedValue(undefined);
 
       // assertions
-      expect(mediaService.handleMedia(dto)).rejects.toThrowError(
-        new RpcException(`option with id:${dto.entity_id} not found`),
+      expect(mediaService.optionMedia(dto)).rejects.toThrowError(
+        new RpcException(
+          `rabbitMQ media message: option with id:${dto.entity_id} not found`,
+        ),
       );
     });
 
@@ -377,28 +409,22 @@ describe('Media Service', () => {
         file_id: 'test-media-file-uuid',
       };
       const foundOption = {
-        uuid: 'test-option-uuid',
         optionsGroup: {
-          uuid: 'test-group-uuid',
           post: {
-            uuid: 'test-post-uuid',
-            unhandled_media: 0,
+            uuid: '1',
+            ready: true,
           },
         },
       } as Option;
 
       // mocks
       optionRepo.getByID = jest.fn().mockResolvedValue(foundOption);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest
-        .fn()
-        .mockResolvedValue(foundOption.optionsGroup.post);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionMedia = jest.fn().mockResolvedValue(undefined);
 
       // assertions
-      expect(mediaService.handleMedia(dto)).rejects.toThrowError(
+      expect(mediaService.optionMedia(dto)).rejects.toThrowError(
         new RpcException(
-          `post with id:${foundOption.optionsGroup.post.uuid} does not have unhandled media files`,
+          `rabbitMQ media message: post with id:${foundOption.optionsGroup.post.uuid} does not have unhandled media files`,
         ),
       );
     });
@@ -410,69 +436,53 @@ describe('Media Service', () => {
         entity_type: mediaType.OPTION,
         file_id: 'test-media-file-uuid',
       };
+
       const foundOption = {
-        uuid: 'test-option-uuid',
         optionsGroup: {
-          uuid: 'test-group-uuid',
           post: {
-            uuid: 'test-post-uuid',
-            unhandled_media: 3,
+            uuid: '1',
+            ready: false,
           },
         },
       } as Option;
 
       // mocks
       optionRepo.getByID = jest.fn().mockResolvedValue(foundOption);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest
-        .fn()
-        .mockResolvedValue(foundOption.optionsGroup.post);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionMedia = jest.fn().mockResolvedValue(undefined);
 
       // actions
-      await mediaService.handleMedia(dto);
+      await mediaService.optionMedia(dto);
 
       // assertions
-      expect(mediaRepo.add).toBeCalledWith(
-        foundOption,
-        dto.file_id,
-        dto.entity_type,
-      );
+      expect(mediaRepo.addOptionMedia).toBeCalledWith(foundOption, dto.file_id);
     });
 
-    it('Should handle post readiness by calling postRepo.handleReadiness with right parameters', async () => {
+    it('should return undefined', async () => {
       // data
       const dto: MediaDataMessageDto = {
         entity_id: 'test-entity-uuid',
         entity_type: mediaType.OPTION,
         file_id: 'test-media-file-uuid',
       };
+
       const foundOption = {
-        uuid: 'test-group-uuid',
         optionsGroup: {
-          uuid: 'test-group-uuid',
           post: {
-            uuid: 'test-post-uuid',
-            unhandled_media: 3,
+            uuid: '1',
+            ready: false,
           },
         },
       } as Option;
 
       // mocks
       optionRepo.getByID = jest.fn().mockResolvedValue(foundOption);
-      mediaRepo.add = jest.fn().mockResolvedValue(undefined);
-      postRepo.getPostById = jest
-        .fn()
-        .mockResolvedValue(foundOption.optionsGroup.post);
-      postRepo.handleReadiness = jest.fn().mockResolvedValue(undefined);
+      mediaRepo.addOptionMedia = jest.fn().mockResolvedValue(undefined);
 
-      // actions
-      await mediaService.handleMedia(dto);
+      // action
+      const res = await mediaService.optionMedia(dto);
 
-      // assertions
-      expect(postRepo.handleReadiness).toBeCalledWith(
-        foundOption.optionsGroup.post,
-      );
+      // assertion
+      expect(res).toBeUndefined();
     });
   });
 });
