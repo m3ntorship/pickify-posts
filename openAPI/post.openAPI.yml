@@ -3,12 +3,11 @@ openapi: 3.0.0
 info:
   description: "Post Service API Specs"
   version: 1.0.0
-  title: Pickly Post Service
+  title: Pickify Post Service
 tags:
   - name: posts
     description: Posts endpoints
   - name: votes
-  - name: media
 paths:
   /posts:
     post:
@@ -166,35 +165,6 @@ paths:
         401:
           description: Unauthorized.
           $ref: "#/components/responses/error_unauthorized"
-  /media:
-    post:
-      tags:
-        - media
-      summary: Add the media data related to a post
-      operationId: uploadOneMedia
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/media_creation_request"
-      responses:
-        200:
-          description: Media were added
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "acknowledged"
-        400:
-          description: Bad request
-          $ref: "#/components/responses/error_bad_request"
-        401:
-          description: Unauthorized.
-          $ref: "#/components/responses/error_unauthorized"
   /votes/{optionid}:
     put:
       tags:
@@ -226,7 +196,10 @@ paths:
                     optionId:
                       type: string
                       x-faker: random.uuid
-                  maxProperties: 2
+                    voted: 
+                      type: boolean
+                      x-faker: random.boolean
+                  maxProperties: 3
         400:
           description: Bad request
           $ref: "#/components/responses/error_bad_request"
@@ -280,13 +253,11 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
         options:
           type: array
           items:
             $ref: "#/components/schemas/options_creation_request"
       required:
-        - "name"
         - "options"
       maxProperties: 2
     options_creation_response:
@@ -312,6 +283,8 @@ components:
             required:
               - "url"
           maxItems: 4
+        voted: 
+          type: boolean
       required:
         - "id"
     options_creation_request:
@@ -323,25 +296,6 @@ components:
       required:
         - "body"
       maxProperties: 1
-    media_creation_request:
-      type: object
-      properties:
-        file:
-          type: string
-          format: binary
-        entity_type:
-          type: string
-          enum:
-            - post
-            - group
-            - option
-        entity_id:
-          type: string
-          format: uuid
-      # required:
-      #   - "file"
-      #   - "entity_type"
-      #   - "entity_id"
     post_finished_flag_request:
       type: object
       properties:
@@ -361,7 +315,6 @@ components:
           example: false
         type:
           type: string
-          enum: [text poll, image poll, mini survey]
         media_count:
           type: number
       maxProperties: 4
@@ -403,7 +356,6 @@ components:
           # x-faker: date.past
         type:
           type: string
-          enum: [text poll, image poll, mini_survey]
           example: "text_poll"
         media:
           type: array
@@ -457,7 +409,7 @@ components:
                       x-faker: random.uuid
                     options:
                       type: array
-                      maxItems: 3
+                      maxItems: 4
                       items:
                         type: object
                         properties:
@@ -466,6 +418,7 @@ components:
                             x-faker: random.uuid
                         required:
                           - "id"
+                  required: ["id", "options"]
             required:
               - "groups"
     created_post:
@@ -495,6 +448,7 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/single_post_response"
+            required: ["postsCount", "posts"]
     single_post_deletion_response:
       description: Post deleted
     error_bad_request:
