@@ -48,6 +48,12 @@
   ```bash
   yarn start:dev
   ```
+- Run docker-compose file to have both db service and rabbitMQ broker service running locally and open http://localhost:5672 for viewing rabbitMQ dashboard locally.
+
+  ```bash
+  yarn prestart:dev
+  ```
+
 
 ## Test
 
