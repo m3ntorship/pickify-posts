@@ -19,7 +19,7 @@ export class MediaService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
-  private async postMedia(mediaData: MediaDataMessageDto): Promise<void> {
+  async postMedia(mediaData: MediaDataMessageDto): Promise<void> {
     const post = await this.postRepo.getPostById(mediaData.entity_id);
 
     if (!post) {
@@ -39,9 +39,7 @@ export class MediaService {
     await this.mediaRepo.addPostMedia(post, mediaData.file_id);
   }
 
-  private async option_groupMedia(
-    mediaData: MediaDataMessageDto,
-  ): Promise<void> {
+  async option_groupMedia(mediaData: MediaDataMessageDto): Promise<void> {
     // get the optionsGroup with relation to post
     const optionsGroup = await this.optionsGroupRepo.getByID(
       mediaData.entity_id,
@@ -65,7 +63,7 @@ export class MediaService {
     await this.mediaRepo.addOptionsGroupMedia(optionsGroup, mediaData.file_id);
   }
 
-  private async optionMedia(mediaData: MediaDataMessageDto): Promise<void> {
+  async optionMedia(mediaData: MediaDataMessageDto): Promise<void> {
     // get the option with relation to post
     const option = await this.optionRepo.getByID(mediaData.entity_id);
     // if option is not found
