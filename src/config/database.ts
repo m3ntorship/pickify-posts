@@ -39,7 +39,6 @@ const config: TypeOrmModuleOptions = {
   },
   entities: [process.env.DB_ENTITIES || 'dist/**/*.entity{.ts,.js}'],
   migrations: [process.env.DB_MIGRATIONS || 'dist/**/shared/migrations/*.js'],
-  subscribers: [process.env.DB_SUBSCRIBERS || 'dist/**/subscriber/*.js'],
   cli: {
     entitiesDir: 'src/**/entity',
     migrationsDir: 'src/shared/migrations',

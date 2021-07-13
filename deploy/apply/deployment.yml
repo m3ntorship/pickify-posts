@@ -39,7 +39,9 @@ spec:
             - name: RABBITMQ_URL
               value: {{{M3_RABBITMQ_URL}}}
             - name: MEDIA_QUEUE
-              value: {{{M3_MEDIA_QUEUE}}}              
+              value: {{{M3_MEDIA_QUEUE}}}    
+            - name: BROKER_QUEUE_PATTERN
+              value: {{{M3_BROKER_QUEUE_PATTERN}}}
           ports:
             - name: web
               containerPort: 3000

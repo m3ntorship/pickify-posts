@@ -5,6 +5,19 @@ import { User } from './user.entity';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
+  // check whether all media in post were received and stored or not
+  private mediaReadiness(post: Post): boolean {
+    const postMedia = [...post.media];
+    post.groups.forEach((group) => {
+      postMedia.push(...group.media);
+      group.options.forEach((option) => {
+        postMedia.push(...option.media);
+      });
+    });
+
+    return post.media_count === postMedia.length;
+  }
+
   /**
    * createPost
    */
@@ -17,12 +30,13 @@ export class PostRepository extends Repository<Post> {
     post.caption = caption;
     post.type = type;
     post.is_hidden = is_hidden;
-    post.unhandled_media = media_count;
+    post.media_count = media_count;
     post.user = user;
     post.created = false;
     post.ready = false;
     return await this.save(post);
   }
+
   public async getAllPosts(): Promise<Post[]> {
     return await this.createQueryBuilder('post')
       .select([
@@ -63,6 +77,7 @@ export class PostRepository extends Repository<Post> {
       })
       .getMany();
   }
+
   /**
    * flagPostCreation
    */
@@ -70,7 +85,7 @@ export class PostRepository extends Repository<Post> {
     post.created = flag;
 
     // make post ready if it has no media or all media got handled
-    if (post.unhandled_media === 0) {
+    if (post.media_count === 0) {
       post.ready = true;
     }
     await this.save(post);
@@ -83,6 +98,8 @@ export class PostRepository extends Repository<Post> {
         'post.created',
         'post.ready',
         'post.caption',
+        'post.media_count',
+        'post.ready',
         'post.is_hidden',
         'post.created_at',
         'post.type',
@@ -123,16 +140,23 @@ export class PostRepository extends Repository<Post> {
       .getOne();
   }
 
-  // handles post ready column
-  public async handleReadiness(post: Post): Promise<void> {
-    // decrease unhandled media by 1
-    post.unhandled_media = post.unhandled_media - 1;
+  public async handleReadiness(postId: string): Promise<void> {
+    // get detailed post
+    const post = await this.getDetailedPostById(postId);
 
-    // if all media files are handled, make post ready
-    if (post.unhandled_media === 0) {
+    // handle post readiness if all post media is received and handled successfully
+    const isMediaHandled = this.mediaReadiness(post);
+
+    // here to add any logic if post readiness will depend on it
+
+    // handle post readiness
+    if (isMediaHandled) {
       post.ready = true;
+      await this.createQueryBuilder()
+        .update(Post)
+        .set({ ready: true })
+        .where('uuid = :uuid', { uuid: postId })
+        .execute();
     }
-
-    await this.save(post);
   }
 }
