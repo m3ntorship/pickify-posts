@@ -1,6 +1,6 @@
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { Post } from './post.entity';
+import { Post } from '../../posts/entities/post.entity';
 import { Vote } from '../../votes/entities/vote.entity';
 
 @Entity({ name: 'users', schema: POSTS_SCHEMA })
@@ -10,6 +10,9 @@ export class User extends Model {
 
   @Column()
   profile_pic: string;
+
+  @Column()
+  user_id: string;
 
   // one to many relation with posts entity
   @OneToMany(() => Post, (post) => post.user)

@@ -13,13 +13,10 @@ export class FirebaseAuthStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(token) {
-    try {
-      const user = await admin.auth().verifyIdToken(token, true);
-      return user;
-    } catch (error) {
-      return this.staticIdAuth(token);
-    }
+    const user = await admin.auth().verifyIdToken(token, true);
+    return user;
   }
+
   private staticIdAuth(uuid: string): boolean {
     // Add logic later
     if (!uuid) {

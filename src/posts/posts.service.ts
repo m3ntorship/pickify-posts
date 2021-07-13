@@ -20,8 +20,7 @@ import {
 } from '@nestjs/common';
 import { isUserAuthorized } from '../shared/authorization/userAuthorization';
 import { LockedException } from '../shared/exceptions/locked.exception';
-import { UserRepository } from './entities/user.repository';
-
+import { UserRepository } from '../users/entities/user.repository';
 @Injectable()
 export class PostsService {
   constructor(

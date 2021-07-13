@@ -11,7 +11,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserRepository } from './entities/user.repository';
+import { UserRepository } from '../users/entities/user.repository';
 import { Post } from './interfaces/getPosts.interface';
 import { getNow } from '../shared/utils/datetime';
 

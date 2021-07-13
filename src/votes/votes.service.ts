@@ -8,7 +8,7 @@ import { LockedException } from '../shared/exceptions/locked.exception';
 import { OptionRepository } from '../posts/entities/option.repository';
 import { VoteRepository } from './entities/votes.repository';
 import { OptionsVotes } from './interfaces/optionsVotes.interface';
-import { UserRepository } from '../posts/entities/user.repository';
+import { UserRepository } from '../users/entities/user.repository';
 
 @Injectable()
 export class VotesService {

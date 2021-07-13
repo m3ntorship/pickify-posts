@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserRepository } from '../posts/entities/user.repository';
+import { UserRepository } from '../users/entities/user.repository';
 import { Option } from '../posts/entities/option.entity';
 import { OptionRepository } from '../posts/entities/option.repository';
 import { VoteRepository } from './entities/votes.repository';
