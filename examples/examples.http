@@ -37,7 +37,7 @@ Authorization: Bearer {{userId}}
 {   
     "caption": "post caption",
     "type": "text_poll",
-    "media_count": 3
+    "media_count": 0
 }
 
 ###
@@ -65,8 +65,17 @@ Authorization: Bearer {{userId}}
             "name": "group 1 name",
             "options": [
                 {
-                    "body": "option 1 body"
-                }
+                    "body": "option 1 body1"
+                },
+                {
+                    "body": "option 1 body2"
+                },
+                {
+                    "body": "option 1 body1"
+                },
+                {
+                    "body": "option 1 body2"
+                },
             ]
         }
     ]

@@ -17,11 +17,11 @@ export class AllExceptionsFilterLogger implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const { headers, method, originalUrl } = ctx.getRequest();
-    delete headers.authorization;
+    delete headers.Authorization;
     const { message, stack } = exception;
-
     this.logger.error({
-      ...exception,
+      message: message,
+      stack: stack,
       request: {
         headers,
         method,

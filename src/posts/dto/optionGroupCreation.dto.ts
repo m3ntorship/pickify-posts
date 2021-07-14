@@ -4,6 +4,7 @@ import {
   IsOptional,
   ArrayMaxSize,
   IsString,
+  ArrayMinSize,
 } from 'class-validator';
 
 export class OptionDto {
@@ -19,6 +20,7 @@ export class OptionsGroupDto {
 
   @ValidateNested({ each: true })
   @Type(() => OptionDto)
+  @ArrayMinSize(2, { message: `Min options number in a group is 2` })
   @ArrayMaxSize(4, { message: `Max options number in a group is 4` })
   options: OptionDto[];
 }
