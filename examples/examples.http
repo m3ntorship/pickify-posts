@@ -1,7 +1,7 @@
-@postId = 8132ce0d-01a2-4272-a28a-9fe191909f35
-@groupId = 329652ed-6ed7-42db-a21c-74819efbb5da
+@postId = 1f56de9c-5b76-494e-b02b-de07574348d5
+@groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
-@userId = 7f66ec3b-fc1b-4655-8864-a677038da16c
+@userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
 
 // POST /api/posts
 //////////////////
@@ -12,7 +12,7 @@ Authorization: Bearer {{userId}}
 {
     "type": "text_poll",
     "is_hidden": false,
-    "media_count": 3
+    "media_count": 0
 }
 
 ###
@@ -118,17 +118,6 @@ Authorization: Bearer {{userId}}
                 },
                 {
                     "body":"g1o3"
-                }
-            ]
-        },
-        {
-            "name": "group2",
-            "options": [
-                {
-                    "body":"g2o1"
-                },
-                {
-                    "body":"g2o2"
                 }
             ]
         },

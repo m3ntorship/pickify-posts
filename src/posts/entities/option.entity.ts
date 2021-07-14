@@ -6,7 +6,7 @@ import { Media } from '../../media/entities/media.entity';
 
 @Entity({ name: 'options', schema: POSTS_SCHEMA })
 export class Option extends Model {
-  @Column()
+  @Column({ nullable: true })
   body: string;
 
   @Column()
