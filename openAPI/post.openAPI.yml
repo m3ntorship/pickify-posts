@@ -288,8 +288,6 @@ components:
             required:
               - "url"
           maxItems: 4
-        voted: 
-          type: boolean
       required:
         - "id"
     options_creation_request:
@@ -297,7 +295,7 @@ components:
       properties:
         body:
           type: string
-          minLength: 1
+          nullable: true
       required:
         - "body"
       maxProperties: 1
