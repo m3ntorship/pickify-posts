@@ -3,7 +3,7 @@ import { User } from './user.entity';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  private async checkUser(user: any): Promise<User> {
+  public async checkUser(user: any): Promise<User> {
     return await this.createQueryBuilder('user')
       .where('user.user_id = :id', { id: user.user_id })
       .getOne();
