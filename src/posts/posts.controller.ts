@@ -17,7 +17,7 @@ import { PostIdParam } from '../shared/validations/uuid.validator';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { PostCreationDto } from './dto/postCreation.dto';
-import type { Posts } from './interfaces/getPosts.interface';
+import type { Post as GetPost, Posts } from './interfaces/getPosts.interface';
 import { OptionsGroups } from './interfaces/optionsGroup.interface';
 import type { PostCreation as PostCreationInterface } from './interfaces/postCreation.interface';
 import { PostsService } from './posts.service';
@@ -40,13 +40,20 @@ export class PostsController {
   }
 
   @Get('/')
-  async getAllPosts(): Promise<Posts> {
-    return await this.postsService.getAllPosts();
+  async getAllPosts(
+    @Headers() headers: { Authorization: string },
+  ): Promise<Posts> {
+    const userId = headers.Authorization;
+    return await this.postsService.getAllPosts(userId);
   }
 
   @Get('/:postid')
-  getSinglePost(@Param() params: PostIdParam) {
-    return this.postsService.getSinglePost(params.postid);
+  getSinglePost(
+    @Param() params: PostIdParam,
+    @Headers() headers: { Authorization: string },
+  ): Promise<GetPost> {
+    const userId = headers.Authorization;
+    return this.postsService.getSinglePost(params.postid, userId);
   }
 
   @Post('/:postid/groups')

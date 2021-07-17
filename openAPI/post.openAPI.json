@@ -3,7 +3,7 @@
   "info": {
     "description": "Post Service API Specs",
     "version": "1.0.0",
-    "title": "Pickly Post Service"
+    "title": "Pickify Post Service"
   },
   "tags": [
     {
@@ -12,17 +12,12 @@
     },
     {
       "name": "votes"
-    },
-    {
-      "name": "media"
     }
   ],
   "paths": {
     "/posts": {
       "post": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "Create a new post",
         "operationId": "createPost",
         "requestBody": {
@@ -51,9 +46,7 @@
         }
       },
       "get": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "Get posts",
         "operationId": "getPosts",
         "parameters": [
@@ -92,9 +85,7 @@
     },
     "/posts/{postid}/groups": {
       "post": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "add option group to post",
         "operationId": "createOptionsGroup",
         "requestBody": {
@@ -137,9 +128,7 @@
     },
     "/posts/{postid}": {
       "get": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "Get single post",
         "operationId": "getOnePost",
         "parameters": [
@@ -176,9 +165,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "patch post",
         "operationId": "flagPostAsFinished",
         "parameters": [
@@ -218,9 +205,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "posts"
-        ],
+        "tags": ["posts"],
         "summary": "Delete one post",
         "operationId": "deleteOnePost",
         "parameters": [
@@ -251,56 +236,9 @@
         }
       }
     },
-    "/media": {
-      "post": {
-        "tags": [
-          "media"
-        ],
-        "summary": "Add the media data related to a post",
-        "operationId": "uploadOneMedia",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/media_creation_request"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Media were added",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "acknowledged"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "$ref": "#/components/responses/error_bad_request"
-          },
-          "401": {
-            "description": "Unauthorized.",
-            "$ref": "#/components/responses/error_unauthorized"
-          }
-        }
-      }
-    },
     "/votes/{optionid}": {
       "put": {
-        "tags": [
-          "votes"
-        ],
+        "tags": ["votes"],
         "summary": "Add vote",
         "operationId": "addVote",
         "parameters": [
@@ -333,9 +271,13 @@
                       "optionId": {
                         "type": "string",
                         "x-faker": "random.uuid"
+                      },
+                      "voted": {
+                        "type": "boolean",
+                        "x-faker": "random.boolean"
                       }
                     },
-                    "maxProperties": 2
+                    "maxProperties": 3
                   }
                 }
               }
@@ -369,9 +311,7 @@
             }
           }
         },
-        "required": [
-          "groups"
-        ]
+        "required": ["groups"]
       },
       "options_group_creation_response": {
         "type": "object",
@@ -394,9 +334,7 @@
                   "x-faker": "image.imageUrl"
                 }
               },
-              "required": [
-                "url"
-              ]
+              "required": ["url"]
             },
             "maxItems": 4
           },
@@ -408,17 +346,13 @@
             "maxItems": 4
           }
         },
-        "required": [
-          "id",
-          "options"
-        ]
+        "required": ["id", "options"]
       },
       "options_group_creation_request": {
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           },
           "options": {
             "type": "array",
@@ -427,10 +361,7 @@
             }
           }
         },
-        "required": [
-          "name",
-          "options"
-        ],
+        "required": ["options"],
         "maxProperties": 2
       },
       "options_creation_response": {
@@ -448,6 +379,10 @@
             "type": "string",
             "x-faker": "random.words"
           },
+          "voted": {
+            "type": "boolean",
+            "x-faker": "random.boolean"
+          },
           "media": {
             "type": "array",
             "items": {
@@ -458,16 +393,15 @@
                   "x-faker": "image.imageUrl"
                 }
               },
-              "required": [
-                "url"
-              ]
+              "required": ["url"]
             },
             "maxItems": 4
+          },
+          "voted": {
+            "type": "boolean"
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "options_creation_request": {
         "type": "object",
@@ -477,31 +411,8 @@
             "minLength": 1
           }
         },
-        "required": [
-          "body"
-        ],
+        "required": ["body"],
         "maxProperties": 1
-      },
-      "media_creation_request": {
-        "type": "object",
-        "properties": {
-          "file": {
-            "type": "string",
-            "format": "binary"
-          },
-          "entity_type": {
-            "type": "string",
-            "enum": [
-              "post",
-              "group",
-              "option"
-            ]
-          },
-          "entity_id": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
       },
       "post_finished_flag_request": {
         "type": "object",
@@ -510,9 +421,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "finished"
-        ],
+        "required": ["finished"],
         "maxProperties": 1
       },
       "post_creation_request": {
@@ -527,23 +436,14 @@
             "example": false
           },
           "type": {
-            "type": "string",
-            "enum": [
-              "text poll",
-              "image poll",
-              "mini survey"
-            ]
+            "type": "string"
           },
           "media_count": {
             "type": "number"
           }
         },
         "maxProperties": 4,
-        "required": [
-          "is_hidden",
-          "type",
-          "media_count"
-        ]
+        "required": ["is_hidden", "type", "media_count"]
       },
       "single_post_response": {
         "type": "object",
@@ -590,11 +490,6 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "text poll",
-              "image poll",
-              "mini_survey"
-            ],
             "example": "text_poll"
           },
           "media": {
@@ -607,9 +502,7 @@
                   "x-faker": "image.imageUrl"
                 }
               },
-              "required": [
-                "url"
-              ]
+              "required": ["url"]
             },
             "maxItems": 4
           },
@@ -624,18 +517,10 @@
                 "maxItems": 4
               }
             },
-            "required": [
-              "groups"
-            ]
+            "required": ["groups"]
           }
         },
-        "required": [
-          "created_at",
-          "is_hidden",
-          "id",
-          "type",
-          "options_groups"
-        ]
+        "required": ["created_at", "is_hidden", "id", "type", "options_groups"]
       },
       "generic_error": {
         "type": "object",
@@ -645,10 +530,7 @@
             "items": {
               "type": "string"
             },
-            "example": [
-              "error1",
-              "error2"
-            ]
+            "example": ["error1", "error2"]
           },
           "status_code": {
             "type": "number",
@@ -677,7 +559,7 @@
                       },
                       "options": {
                         "type": "array",
-                        "maxItems": 3,
+                        "maxItems": 4,
                         "items": {
                           "type": "object",
                           "properties": {
@@ -686,18 +568,15 @@
                               "x-faker": "random.uuid"
                             }
                           },
-                          "required": [
-                            "id"
-                          ]
+                          "required": ["id"]
                         }
                       }
-                    }
+                    },
+                    "required": ["id", "options"]
                   }
                 }
               },
-              "required": [
-                "groups"
-              ]
+              "required": ["groups"]
             }
           }
         }
@@ -715,9 +594,7 @@
                   "x-faker": "random.uuid"
                 }
               },
-              "required": [
-                "id"
-              ]
+              "required": ["id"]
             }
           }
         }
@@ -739,7 +616,8 @@
                     "$ref": "#/components/schemas/single_post_response"
                   }
                 }
-              }
+              },
+              "required": ["postsCount", "posts"]
             }
           }
         }
