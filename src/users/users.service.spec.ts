@@ -1,21 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConsoleTransportOptions } from 'winston/lib/winston/transports';
 import { UserRepository } from './entities/user.repository';
 import { FirebaseAuthStrategy } from './firebase-auth.strategy';
-import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 describe('UsersService', () => {
-  let service: UsersService;
+  let userService: UsersService;
+  let userRepo: UserRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UsersService, UserRepository, FirebaseAuthStrategy],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
+    userService = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(userService).toBeDefined();
+    expect(userService).toHaveProperty('createUser');
   });
 });

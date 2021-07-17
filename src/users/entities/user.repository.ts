@@ -8,9 +8,14 @@ export class UserRepository extends Repository<User> {
       .where('user.user_id = :id', { id: user.user_id })
       .getOne();
   }
+  public async checkUuid(uuid: string): Promise<User> {
+    return await this.createQueryBuilder('user')
+      .where('user.uuid = :id', { id: uuid })
+      .getOne();
+  }
 
   public async createUser(user: any): Promise<User> {
-    const userToFind = this.checkUser(user);
+    const userToFind = await this.checkUser(user);
     if (userToFind) {
       return userToFind;
     }
