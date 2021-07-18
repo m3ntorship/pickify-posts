@@ -4,7 +4,7 @@ export interface Post {
   is_hidden: boolean;
   created_at: Date;
   type: string;
-  user: User;
+  user?: User;
   media?: Media[];
   options_groups: OptionsGroup;
 }
@@ -24,12 +24,13 @@ export interface OptionsGroup {
 export interface Option {
   id: string;
   body: string;
-  vote_count: number;
+  vote_count?: number;
+  voted?: boolean;
   media?: Media[];
 }
 export interface Group {
   id: string;
-  name: string;
+  name?: string;
   options: Option[];
   media?: Media[];
 }

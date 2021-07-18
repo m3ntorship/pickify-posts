@@ -54,18 +54,31 @@ describe('PostsController', () => {
 
   describe('getAllPosts function', () => {
     it('should return object with array of posts and post count', async () => {
-      const result = await controller.getAllPosts();
+      // data
+      const headers = { Authorization: 'test-user-uuid' };
+
+      // actions
+      const result = await controller.getAllPosts(headers);
+
+      // assertions
       expect(result).toEqual({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] });
-      expect(service.getAllPosts).toHaveBeenCalled();
+      expect(service.getAllPosts).toHaveBeenCalledWith(headers.Authorization);
     });
   });
 
   describe('getSinglePost function', () => {
     it('should throw not implemented', async () => {
+      // data
+      const headers = { Authorization: 'test-user-uuid' };
       const params = { postid: 'post1-id' };
-      const result = await controller.getSinglePost(params);
+
+      // actions
+      const result = await controller.getSinglePost(params, headers);
       expect(result).toEqual({ id: 'post1-id' });
-      expect(service.getSinglePost).toBeCalledWith(params.postid);
+      expect(service.getSinglePost).toBeCalledWith(
+        params.postid,
+        headers.Authorization,
+      );
     });
   });
 

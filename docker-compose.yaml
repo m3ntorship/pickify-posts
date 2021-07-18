@@ -9,11 +9,13 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - /home/$USER/docker_pg_data:/var/lib/postgresql/data
-  app:
-    image: microservice-template:latest
-    container_name: microservice-template
+        
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
     network_mode: host
-    env_file:
-      - .development.env
-    volumes:
-      - /pickly-backend-template:$PWD/pickly-backend-template
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+      RABBITMQ_URL: amqp://admin:admin@localhost:5672
+

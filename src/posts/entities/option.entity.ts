@@ -6,7 +6,7 @@ import { Media } from '../../media/entities/media.entity';
 
 @Entity({ name: 'options', schema: POSTS_SCHEMA })
 export class Option extends Model {
-  @Column()
+  @Column({ nullable: true })
   body: string;
 
   @Column()
@@ -14,6 +14,8 @@ export class Option extends Model {
 
   @Column({ default: 0 })
   order: number;
+
+  voted: boolean;
 
   // many-to-one relation with OptionGroup entity
   @ManyToOne(() => OptiosnGroup, (optionsGroup) => optionsGroup.options, {

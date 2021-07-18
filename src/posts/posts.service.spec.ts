@@ -298,15 +298,16 @@ describe('PostsService', () => {
   describe('getAllPosts function ', () => {
     it('should return object contains postsCount and array of posts', async () => {
       // data
+      const userId = 'user1';
       const postInDB = {
         uuid: 'test-post-uuid',
-        created: true,
+        ready: true,
         caption: 'test-post-caption',
         is_hidden: false,
         created_at: getNow().toDate(),
         type: 'text poll',
         user: {
-          uuid: 'test-user-uuid',
+          uuid: userId,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -320,6 +321,7 @@ describe('PostsService', () => {
                 vote_count: 2,
                 body: 'test-option-body',
                 uuid: 'test-option-uuid',
+                voted: false,
               },
             ],
           },
@@ -348,6 +350,7 @@ describe('PostsService', () => {
                   id: postInDB.groups[0].options[0].uuid,
                   body: postInDB.groups[0].options[0].body,
                   vote_count: postInDB.groups[0].options[0].vote_count,
+                  voted: postInDB.groups[0].options[0].voted,
                 },
               ],
             },
@@ -363,23 +366,24 @@ describe('PostsService', () => {
       postRepo.getAllPosts = jest.fn().mockResolvedValueOnce(postsInDB);
 
       // actions
-      const result = await service.getAllPosts();
+      const result = await service.getAllPosts(userId);
 
       // assertions
       expect(result).toEqual(expectedPosts);
     });
 
-    it('should return only the posts with created = true', async () => {
+    it('should return only the posts with ready = true', async () => {
       // data
+      const userId = 'user1';
       const postInDB = {
         uuid: 'test-post-uuid',
-        created: false,
+        ready: false,
         caption: 'test-post-caption',
         is_hidden: false,
         created_at: getNow().toDate(),
         type: 'text poll',
         user: {
-          uuid: 'test-user-uuid',
+          uuid: userId,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -392,6 +396,7 @@ describe('PostsService', () => {
                 vote_count: 2,
                 body: 'test-option-body',
                 uuid: 'test-option-uuid',
+                voted: false,
               },
             ],
           },
@@ -400,7 +405,7 @@ describe('PostsService', () => {
       const postsInDB = [
         {
           ...postInDB,
-          created: true,
+          ready: true,
           groups: [
             {
               ...postInDB.groups[0],
@@ -439,6 +444,7 @@ describe('PostsService', () => {
                   id: postInDB.groups[0].options[0].uuid,
                   body: postInDB.groups[0].options[0].body,
                   vote_count: postInDB.groups[0].options[0].vote_count,
+                  voted: postInDB.groups[0].options[0].voted,
                 },
               ],
             },
@@ -453,10 +459,10 @@ describe('PostsService', () => {
       // mocks
       postRepo.getAllPosts = jest
         .fn()
-        .mockResolvedValueOnce(postsInDB.filter((post) => post.created));
+        .mockResolvedValueOnce(postsInDB.filter((post) => post.ready));
 
       // actions
-      const result = await service.getAllPosts();
+      const result = await service.getAllPosts(userId);
 
       // assertions
       expect(result).toEqual(expectedPosts);
@@ -464,17 +470,18 @@ describe('PostsService', () => {
   });
 
   describe('getSinglePost function', () => {
-    it('should return post object', async () => {
+    it('Should return post with vote_count for all options if user is post owner', async () => {
       // data
+      const userId = 'test-post-owner-uuid';
       const postInDB = {
         uuid: 'test-post-uuid',
-        created: true,
+        ready: true,
         caption: 'test-post-caption',
         is_hidden: false,
         created_at: getNow().toDate(),
         type: 'text poll',
         user: {
-          uuid: 'test-user-uuid',
+          uuid: userId,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -488,8 +495,232 @@ describe('PostsService', () => {
               {
                 vote_count: 2,
                 body: 'test-option-body',
-                uuid: 'test-option-uuid',
-                media: [],
+                uuid: 'test-option32-uuid',
+                voted: false,
+                votes: [
+                  {
+                    uuid: 'vote12-test-uuid',
+                    user: { uuid: 'user15-test-uuid' },
+                  },
+                  {
+                    uuid: 'vote44-test-uuid',
+                    user: { uuid: 'user12-test-uuid' },
+                  },
+                ],
+              },
+              {
+                vote_count: 1,
+                body: 'test-option-body',
+                uuid: 'test-option22-uuid',
+                voted: false,
+                votes: [
+                  {
+                    uuid: 'vote11-test-uuid',
+                    user: { uuid: 'user34-test-uuid' },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+      const expectedPost = {
+        id: postInDB.uuid,
+        caption: postInDB.caption,
+        is_hidden: postInDB.is_hidden,
+        created_at: postInDB.created_at,
+        type: postInDB.type,
+        media: postInDB.media,
+        user: {
+          id: postInDB.user.uuid,
+          name: postInDB.user.name,
+          profile_pic: postInDB.user.profile_pic,
+        },
+        options_groups: {
+          groups: [
+            {
+              id: postInDB.groups[0].uuid,
+              name: postInDB.groups[0].name,
+              media: postInDB.groups[0].media,
+              options: [
+                {
+                  vote_count: postInDB.groups[0].options[0].vote_count,
+                  id: postInDB.groups[0].options[0].uuid,
+                  body: postInDB.groups[0].options[0].body,
+                  voted: postInDB.groups[0].options[0].voted,
+                },
+                {
+                  vote_count: postInDB.groups[0].options[1].vote_count,
+                  id: postInDB.groups[0].options[1].uuid,
+                  body: postInDB.groups[0].options[1].body,
+                  voted: postInDB.groups[0].options[1].voted,
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const postId = 'test-post-uuid';
+
+      // mocks
+      postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
+
+      // actions
+      const result = await service.getSinglePost(postId, userId);
+
+      // assertions
+      expect(result).toEqual(expectedPost);
+    });
+
+    it('Should return same media found in DB', async () => {
+      // data
+      const userId = 'test-post-owner-uuid';
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        ready: true,
+        caption: 'test-post-caption',
+        is_hidden: false,
+        created_at: getNow().toDate(),
+        type: 'text poll',
+        user: {
+          uuid: userId,
+          name: 'test',
+          profile_pic: 'test-url',
+        },
+        media: [{ url: 'test-media-url' }],
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            media: [],
+            options: [
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option32-uuid',
+                voted: false,
+                votes: [
+                  {
+                    uuid: 'vote12-test-uuid',
+                    user: { uuid: 'user15-test-uuid' },
+                  },
+                  {
+                    uuid: 'vote44-test-uuid',
+                    user: { uuid: 'user12-test-uuid' },
+                  },
+                ],
+              },
+              {
+                vote_count: 1,
+                body: 'test-option-body',
+                uuid: 'test-option22-uuid',
+                voted: false,
+                votes: [
+                  {
+                    uuid: 'vote11-test-uuid',
+                    user: { uuid: 'user34-test-uuid' },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+      const expectedPost = {
+        id: postInDB.uuid,
+        caption: postInDB.caption,
+        is_hidden: postInDB.is_hidden,
+        created_at: postInDB.created_at,
+        type: postInDB.type,
+        media: [{ url: 'test-media-url' }],
+        user: {
+          id: postInDB.user.uuid,
+          name: postInDB.user.name,
+          profile_pic: postInDB.user.profile_pic,
+        },
+        options_groups: {
+          groups: [
+            {
+              id: postInDB.groups[0].uuid,
+              name: postInDB.groups[0].name,
+              media: postInDB.groups[0].media,
+              options: [
+                {
+                  vote_count: postInDB.groups[0].options[0].vote_count,
+                  id: postInDB.groups[0].options[0].uuid,
+                  body: postInDB.groups[0].options[0].body,
+                  voted: postInDB.groups[0].options[0].voted,
+                },
+                {
+                  vote_count: postInDB.groups[0].options[1].vote_count,
+                  id: postInDB.groups[0].options[1].uuid,
+                  body: postInDB.groups[0].options[1].body,
+                  voted: postInDB.groups[0].options[1].voted,
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const postId = 'test-post-uuid';
+
+      // mocks
+      postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
+
+      // actions
+      const result = await service.getSinglePost(postId, userId);
+
+      // assertions
+      expect(result).toEqual(expectedPost);
+    });
+
+    it('Should return post without vote_count for any option in the group if user has not voted in that group', async () => {
+      // data
+      const userId = 'user1';
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        ready: true,
+        caption: 'test-post-caption',
+        is_hidden: false,
+        created_at: 'test-creation-time',
+        type: 'text poll',
+        media: [],
+        user: {
+          uuid: 'user2',
+          name: 'test',
+          profile_pic: 'test-url',
+        },
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            media: [],
+            options: [
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option32-uuid',
+                votes: [
+                  {
+                    uuid: 'vote12-test-uuid',
+                    user: { uuid: 'user3' },
+                  },
+                  {
+                    uuid: 'vote44-test-uuid',
+                    user: { uuid: 'user4' },
+                  },
+                ],
+              },
+              {
+                vote_count: 1,
+                body: 'test-option-body',
+                uuid: 'test-option22-uuid',
+                votes: [
+                  {
+                    uuid: 'vote11-test-uuid',
+                    user: { uuid: 'user5' },
+                  },
+                ],
               },
             ],
           },
@@ -517,8 +748,10 @@ describe('PostsService', () => {
                 {
                   id: postInDB.groups[0].options[0].uuid,
                   body: postInDB.groups[0].options[0].body,
-                  vote_count: postInDB.groups[0].options[0].vote_count,
-                  media: postInDB.groups[0].options[0].media,
+                },
+                {
+                  id: postInDB.groups[0].options[1].uuid,
+                  body: postInDB.groups[0].options[1].body,
                 },
               ],
             },
@@ -531,7 +764,212 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = await service.getSinglePost(postId);
+      const result = await service.getSinglePost(postId, userId);
+
+      // assertions
+      expect(result).toEqual(expectedPost);
+    });
+
+    it('Should return post with vote_count for all options ONLY in the group user voted in', async () => {
+      // data
+      const userId = 'user1';
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        ready: true,
+        caption: 'test-post-caption',
+        is_hidden: false,
+        created_at: 'test-creation-time',
+        type: 'text poll',
+        user: {
+          uuid: 'user2',
+          name: 'test',
+          profile_pic: 'test-url',
+        },
+        groups: [
+          // group 1
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            options: [
+              // option 1 in group 1
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option32-uuid',
+                votes: [
+                  {
+                    uuid: 'vote12-test-uuid',
+                    user: { uuid: 'user3' },
+                  },
+                  {
+                    uuid: 'vote44-test-uuid',
+                    user: { uuid: 'user4' },
+                  },
+                ],
+              },
+              // option 2 in group 1
+              {
+                vote_count: 1,
+                body: 'test-option-body',
+                uuid: 'test-option22-uuid',
+                votes: [
+                  {
+                    uuid: 'vote11-test-uuid',
+                    user: { uuid: 'user1' },
+                  },
+                ],
+              },
+            ],
+          },
+          // group 2
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            options: [
+              // option 1 in group 2
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option32-uuid',
+                votes: [
+                  {
+                    uuid: 'vote12-test-uuid',
+                    user: { uuid: 'user7' },
+                  },
+                  {
+                    uuid: 'vote44-test-uuid',
+                    user: { uuid: 'user3' },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+      const expectedPost = {
+        id: postInDB.uuid,
+        caption: postInDB.caption,
+        is_hidden: postInDB.is_hidden,
+        created_at: postInDB.created_at,
+        type: postInDB.type,
+        user: {
+          id: postInDB.user.uuid,
+          name: postInDB.user.name,
+          profile_pic: postInDB.user.profile_pic,
+        },
+        options_groups: {
+          groups: [
+            // group 1
+            {
+              id: postInDB.groups[0].uuid,
+              name: postInDB.groups[0].name,
+              options: [
+                {
+                  vote_count: postInDB.groups[0].options[0].vote_count,
+                  voted: false,
+                  id: postInDB.groups[0].options[0].uuid,
+                  body: postInDB.groups[0].options[0].body,
+                },
+                {
+                  vote_count: postInDB.groups[0].options[1].vote_count,
+                  id: postInDB.groups[0].options[1].uuid,
+                  body: postInDB.groups[0].options[1].body,
+                  voted: true,
+                },
+              ],
+            },
+            // group 2
+            {
+              id: postInDB.groups[1].uuid,
+              name: postInDB.groups[1].name,
+              options: [
+                {
+                  id: postInDB.groups[1].options[0].uuid,
+                  body: postInDB.groups[1].options[0].body,
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const postId = 'test-post-uuid';
+
+      // mocks
+      postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
+
+      // actions
+      const result = await service.getSinglePost(postId, userId);
+
+      // assertions
+      expect(result).toEqual(expectedPost);
+    });
+
+    it('Should return post without user details if he is not post owner and is_hidden=true', async () => {
+      // data
+      const userId = 'user1';
+      const postInDB = {
+        uuid: 'test-post-uuid',
+        ready: true,
+        caption: 'test-post-caption',
+        is_hidden: true,
+        created_at: 'test-creation-time',
+        type: 'text poll',
+        user: {
+          uuid: 'user2',
+          name: 'test',
+          profile_pic: 'test-url',
+        },
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            options: [
+              {
+                vote_count: 0,
+                body: 'test-option-body',
+                uuid: 'test-option32-uuid',
+              },
+              {
+                vote_count: 0,
+                body: 'test-option-body',
+                uuid: 'test-option22-uuid',
+              },
+            ],
+          },
+        ],
+      };
+      const expectedPost = {
+        id: postInDB.uuid,
+        caption: postInDB.caption,
+        is_hidden: postInDB.is_hidden,
+        created_at: postInDB.created_at,
+        type: postInDB.type,
+        options_groups: {
+          groups: [
+            {
+              id: postInDB.groups[0].uuid,
+              name: postInDB.groups[0].name,
+              options: [
+                {
+                  id: postInDB.groups[0].options[0].uuid,
+                  body: postInDB.groups[0].options[0].body,
+                },
+                {
+                  id: postInDB.groups[0].options[1].uuid,
+                  body: postInDB.groups[0].options[1].body,
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const postId = 'test-post-uuid';
+
+      // mocks
+      postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
+
+      // actions
+      const result = await service.getSinglePost(postId, userId);
 
       // assertions
       expect(result).toEqual(expectedPost);
@@ -539,13 +977,14 @@ describe('PostsService', () => {
 
     it('should throw error if post not found', () => {
       // data
+      const userId = 'test-user-uuid';
       const postId = 'test-post-uuid';
 
       // mocks
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(undefined);
 
       // actions
-      const result = service.getSinglePost(postId);
+      const result = service.getSinglePost(postId, userId);
 
       // assertions
       expect(result).rejects.toThrowError(
@@ -553,11 +992,12 @@ describe('PostsService', () => {
       );
     });
 
-    it('should throw error if post not created yet', () => {
+    it('should throw error if post not ready yet', () => {
       // data
+      const userId = 'test-user-uuid';
       const postInDB = {
         uuid: 'test-post-uuid',
-        created: false,
+        ready: false,
         caption: 'test-post-caption',
         is_hidden: false,
         created_at: getNow().toDate(),
@@ -582,7 +1022,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = service.getSinglePost(postId);
+      const result = service.getSinglePost(postId, userId);
 
       // assertions
       expect(result).rejects.toThrowError(
