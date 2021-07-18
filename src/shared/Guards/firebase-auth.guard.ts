@@ -27,6 +27,11 @@ export class FirebaseAuthGuard extends AuthGuard('firebase-jwt') {
       let foundUser;
       const url = context.getArgByIndex(0).url;
 
+      // if firebase auth in strategy validate method throws an error
+      if (err) {
+        throw new UnauthorizedException(err.message);
+      }
+
       if (url === '/api/users/register') {
         foundUser = await this.userRepo.createUser(user);
       } else {
