@@ -73,13 +73,12 @@ export class PostsController {
   async flagPost(
     @Param() params: PostIdParam,
     @Body() flagPostDto: FlagPostFinishedDto,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ): Promise<void> {
-    const userId = headers.Authorization;
     await this.postsService.flagPost(
       params.postid,
       flagPostDto.finished,
-      userId,
+      req.user,
     );
   }
 

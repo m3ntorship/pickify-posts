@@ -114,16 +114,16 @@ describe('PostsController', () => {
       // data
       const dto: FlagPostFinishedDto = { finished: true };
       const params: PostIdParam = { postid: '23242' };
-      const headers = { Authorization: '3' };
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
 
       // actions
-      await controller.flagPost(params, dto, headers);
+      await controller.flagPost(params, dto, req);
 
       // assertions
       expect(service.flagPost).toBeCalledWith(
         params.postid,
         dto.finished,
-        headers.Authorization,
+        req.user,
       );
     });
   });

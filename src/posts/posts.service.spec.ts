@@ -1023,8 +1023,8 @@ describe('PostsService', () => {
       // data
       const flag = true;
       const postid = 'test-post-uuid';
-      const userId = 'test-user-uuid';
-      const foundPost = { id: 1, user: { uuid: userId } };
+      const user = { uuid: 'user-uuid' } as User;
+      const foundPost = { id: 1, user: { uuid: user.uuid } };
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
@@ -1032,7 +1032,7 @@ describe('PostsService', () => {
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      const data = service.flagPost(postid, flag, userId);
+      const data = service.flagPost(postid, flag, user);
 
       // assertions
       expect(data).resolves.toBeUndefined();
@@ -1042,8 +1042,8 @@ describe('PostsService', () => {
       // data
       const flag = true;
       const postid = 'test-post-uuid';
-      const userId = 'test-user-uuid';
-      const foundPost = { id: 1, user: { uuid: userId } };
+      const user = { uuid: 'user-uuid' } as User;
+      const foundPost = { id: 1, user: { uuid: user.uuid } };
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
@@ -1051,7 +1051,7 @@ describe('PostsService', () => {
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      await service.flagPost(postid, flag, userId);
+      await service.flagPost(postid, flag, user);
 
       // assertions
       expect(postRepo.getPostById).toBeCalledWith(postid);
@@ -1061,7 +1061,7 @@ describe('PostsService', () => {
       // data
       const flag = true;
       const postid = 'test-post-uuid';
-      const userId = '3';
+      const user = { uuid: 'user-uuid' } as User;
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValueOnce(undefined);
@@ -1069,7 +1069,7 @@ describe('PostsService', () => {
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      const data = service.flagPost(postid, flag, userId);
+      const data = service.flagPost(postid, flag, user);
 
       // assertions
       expect(data).rejects.toThrowError(
@@ -1081,8 +1081,8 @@ describe('PostsService', () => {
       // data
       const flag = true;
       const postid = 'test-post-uuid';
-      const userId = 'user-owns-post';
-      const foundPost = { id: 1, user: { uuid: 'user-dont-own-post' } };
+      const user = { uuid: 'user-uuid' } as User;
+      const foundPost = { id: 1, user: { uuid: 'user-doesnt-own-post' } };
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
@@ -1090,7 +1090,7 @@ describe('PostsService', () => {
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      const data = service.flagPost(postid, flag, userId);
+      const data = service.flagPost(postid, flag, user);
 
       // assertions
       expect(data).rejects.toThrowError(
@@ -1102,8 +1102,8 @@ describe('PostsService', () => {
       // data
       const flag = true;
       const postid = 'test-post-uuid';
-      const userId = 'test-user-uuid';
-      const foundPost = { id: 1, user: { uuid: userId } };
+      const user = { uuid: 'user-uuid' } as User;
+      const foundPost = { id: 1, user: { uuid: user.uuid } };
 
       // mocks
       postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
@@ -1111,7 +1111,7 @@ describe('PostsService', () => {
       postRepo.flagPostCreation = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      await service.flagPost(postid, flag, userId);
+      await service.flagPost(postid, flag, user);
 
       // assertions
       expect(postRepo.flagPostCreation).toBeCalledWith(flag, foundPost);

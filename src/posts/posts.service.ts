@@ -176,7 +176,7 @@ export class PostsService {
     return { id: createdPost.uuid };
   }
 
-  async flagPost(postId: string, flag: boolean, userId: string): Promise<void> {
+  async flagPost(postId: string, flag: boolean, user: User): Promise<void> {
     // get post
     const post = await this.postRepository.getPostById(postId);
 
@@ -186,7 +186,7 @@ export class PostsService {
     }
 
     // Allw only post owner to continue
-    if (!isUserAuthorized(post, userId)) {
+    if (!isUserAuthorized(post, user.uuid)) {
       throw new UnauthorizedException('Unauthorized');
     }
 
