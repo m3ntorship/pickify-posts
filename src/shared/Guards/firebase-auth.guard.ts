@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserRepository } from 'src/users/entities/user.repository';
+import { UserRepository } from '../../users/entities/user.repository';
 
 @Injectable()
 export class FirebaseAuthGuard extends AuthGuard('firebase-jwt') {

@@ -5,7 +5,7 @@ import { FirebaseAuthStrategy } from './firebase-auth.strategy';
 import { UserRepository } from './entities/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
-import { FirebaseAuthGuard } from 'src/shared/Guards/firebase-auth.guard';
+import { FirebaseAuthGuard } from '../shared/Guards/firebase-auth.guard';
 
 @Module({
   imports: [
