@@ -9,13 +9,10 @@ import configuration from './config/configuration';
 import dbConfig from './config/database';
 import * as swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from '../openAPI/post.openAPI.json';
-// import { ExtendHeadersMiddleware } from './shared/middlewares/extendHeaders.middleware';
 import { PassportModule } from '@nestjs/passport';
-// import { ExtendHeadersMiddleware } from './shared/middlewares/extendHeaders.middleware';
 import { WinstonModule } from 'nest-winston';
 import { winstonLoggerOptions } from './logging/winston.options';
 import { UsersModule } from './users/users.module';
-import { ExtendHeadersMiddleware } from './shared/middlewares/extendHeaders.middleware';
 
 const evnVariable = process.env.NODE_ENV;
 @Module({
@@ -45,8 +42,6 @@ const evnVariable = process.env.NODE_ENV;
 export class AppModule implements NestModule {
   // Add swagger middleware to /api endpoint only
   configure(consumer: MiddlewareConsumer) {
-    // THIS MIDDLEWARE SHOULD BE REMOVED AND REPLACED WITH CORRECT IMPLEMENTATION FOR AUTHENTICATION
-    // consumer.apply(ExtendHeadersMiddleware).forRoutes('/');
     consumer
       .apply(swaggerUi.serve, swaggerUi.setup(swaggerDocument))
       .exclude('/api/(.[a-z0-9-/]*)')
