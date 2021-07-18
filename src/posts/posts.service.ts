@@ -257,7 +257,7 @@ export class PostsService {
     return response;
   }
 
-  async getAllPosts(userId: string): Promise<Posts> {
+  async getAllPosts(user: User): Promise<Posts> {
     // get all posts from DB
     const currentPosts = await this.postRepository.getAllPosts();
 
@@ -265,7 +265,7 @@ export class PostsService {
       postsCount: currentPosts.length,
       // return all posts after modifiying each one as found in openAPI
       posts: currentPosts.map((post) => {
-        return this.handlePostFeatures(post, userId);
+        return this.handlePostFeatures(post, user.uuid);
       }),
     };
   }

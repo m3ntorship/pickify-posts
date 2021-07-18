@@ -5,6 +5,7 @@ import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
 import { PostCreationDto } from './dto/postCreation.dto';
+import { ExtendedRequest } from '../shared/interfaces/expressRequest';
 
 describe('PostsController', () => {
   let controller: PostsController;
@@ -57,14 +58,14 @@ describe('PostsController', () => {
   describe('getAllPosts function', () => {
     it('should return object with array of posts and post count', async () => {
       // data
-      const headers = { Authorization: 'test-user-uuid' };
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
 
       // actions
-      const result = await controller.getAllPosts(headers);
+      const result = await controller.getAllPosts(req);
 
       // assertions
       expect(result).toEqual({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] });
-      expect(service.getAllPosts).toHaveBeenCalledWith(headers.Authorization);
+      expect(service.getAllPosts).toHaveBeenCalledWith(req.user);
     });
   });
 

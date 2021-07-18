@@ -239,7 +239,11 @@ describe('PostsService', () => {
   describe('getAllPosts function ', () => {
     it('should return object contains postsCount and array of posts', async () => {
       // data
-      const userId = 'user1';
+      const user = {
+        uuid: 'user-id',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -248,7 +252,7 @@ describe('PostsService', () => {
         created_at: getNow().toDate(),
         type: 'text poll',
         user: {
-          uuid: userId,
+          uuid: user.uuid,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -307,7 +311,7 @@ describe('PostsService', () => {
       postRepo.getAllPosts = jest.fn().mockResolvedValueOnce(postsInDB);
 
       // actions
-      const result = await service.getAllPosts(userId);
+      const result = await service.getAllPosts(user);
 
       // assertions
       expect(result).toEqual(expectedPosts);
@@ -315,7 +319,11 @@ describe('PostsService', () => {
 
     it('should return only the posts with ready = true', async () => {
       // data
-      const userId = 'user1';
+      const user = {
+        uuid: 'user-id',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: false,
@@ -324,7 +332,7 @@ describe('PostsService', () => {
         created_at: getNow().toDate(),
         type: 'text poll',
         user: {
-          uuid: userId,
+          uuid: user.uuid,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -403,7 +411,7 @@ describe('PostsService', () => {
         .mockResolvedValueOnce(postsInDB.filter((post) => post.ready));
 
       // actions
-      const result = await service.getAllPosts(userId);
+      const result = await service.getAllPosts(user);
 
       // assertions
       expect(result).toEqual(expectedPosts);
