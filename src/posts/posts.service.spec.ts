@@ -55,8 +55,14 @@ describe('PostsService', () => {
     it('should return the ids of the created groups & options', async () => {
       // data
       const postId = 'test post id';
-      const userId = 'test-user-uuid';
-      const foundPost = { id: 1, user: { uuid: userId } };
+
+      const user = {
+        uuid: 'test-user-uuid',
+        name: 'test-name',
+        profile_pic: 'test-picture-url',
+      } as User;
+
+      const foundPost = { id: 1, user: { uuid: user.uuid } };
       const dto: OptionsGroupCreationDto = {
         groups: [
           {
@@ -97,7 +103,7 @@ describe('PostsService', () => {
         ]);
 
       // action
-      const data = await service.createOptionGroup(postId, dto, userId);
+      const data = await service.createOptionGroup(postId, dto, user);
 
       // assertions
       expect(data).toEqual(createdOptionsGroups);
@@ -106,7 +112,13 @@ describe('PostsService', () => {
     it('should throw error if post not found', async () => {
       // data
       const postId = 'test post id';
-      const userId = '3';
+      
+      const user = {
+        uuid: 'test-user-uuid',
+        name: 'test-name',
+        profile_pic: 'test-picture-url',
+      } as User;
+
       const dto: OptionsGroupCreationDto = {
         groups: [
           {
@@ -132,7 +144,7 @@ describe('PostsService', () => {
         ]);
 
       // action
-      const data = service.createOptionGroup(postId, dto, userId);
+      const data = service.createOptionGroup(postId, dto, user);
 
       // assertions
       expect(data).rejects.toThrowError(
@@ -143,7 +155,13 @@ describe('PostsService', () => {
     it('should throw error if user is not post owner', async () => {
       // data
       const postId = 'test post id';
-      const userId = 'user-owns-post';
+
+      const user = {
+        uuid: 'test-user-uuid',
+        name: 'test-name',
+        profile_pic: 'test-picture-url',
+      } as User;
+
       const foundPost = { id: 1, user: { uuid: 'user-dont-own-post' } };
       const dto: OptionsGroupCreationDto = {
         groups: [
@@ -170,7 +188,7 @@ describe('PostsService', () => {
         ]);
 
       // action
-      const data = service.createOptionGroup(postId, dto, userId);
+      const data = service.createOptionGroup(postId, dto, user);
 
       // assertions
       expect(data).rejects.toThrowError(

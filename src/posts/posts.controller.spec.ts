@@ -85,7 +85,7 @@ describe('PostsController', () => {
   describe('createOptionGroup function', () => {
     it('should call service.createOptionGroup with proper parameters and return its return', async () => {
       // data
-      const headers = { Authorization: '3' };
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
       const param: PostIdParam = { postid: 'test postId' };
       const dto: OptionsGroupCreationDto = {
         groups: [
@@ -97,13 +97,13 @@ describe('PostsController', () => {
       };
 
       // actions
-      const data = await controller.createOptionGroup(param, dto, headers);
+      const data = await controller.createOptionGroup(param, dto, req);
 
       // assertions
       expect(service.createOptionGroup).toBeCalledWith(
         param.postid,
         dto,
-        headers.Authorization,
+        req.user,
       );
       expect(data).toEqual('test creating groups');
     });

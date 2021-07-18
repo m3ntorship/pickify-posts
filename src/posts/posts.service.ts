@@ -213,7 +213,7 @@ export class PostsService {
   async createOptionGroup(
     postid: string,
     groupsCreationDto: OptionsGroupCreationDto,
-    userId: string,
+    user: User,
   ): Promise<OptionsGroups> {
     const response: OptionsGroups = { groups: [] };
 
@@ -226,7 +226,7 @@ export class PostsService {
     }
 
     // Allw only post owner to continue
-    if (!isUserAuthorized(post, userId)) {
+    if (!isUserAuthorized(post, user.uuid)) {
       throw new UnauthorizedException('Unauthorized');
     }
 
