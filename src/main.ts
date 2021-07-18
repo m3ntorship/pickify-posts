@@ -14,6 +14,7 @@ import admin from 'firebase-admin';
 import * as path from 'path';
 import { AuthGuard } from '@nestjs/passport';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { FirebaseAuthGuard } from './shared/Guards/firebase-auth.guard';
 
 async function bootstrap() {
   // Create application listens for HTTP requests
@@ -69,7 +70,7 @@ async function bootstrap() {
   const logger = winston.createLogger(winstonLoggerOptions);
   app.useGlobalInterceptors(new HttpLoggingInterceptor(logger));
   app.useGlobalFilters(new AllExceptionsFilterLogger(logger));
-  app.useGlobalGuards(new (AuthGuard('firebase-jwt'))());
+  // app.useGlobalGuards(FirebaseAuthGuard);
 
   app.use('/health', (req: any, res: any) => {
     res.send({ status: true });
