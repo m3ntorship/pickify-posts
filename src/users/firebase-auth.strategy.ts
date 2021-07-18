@@ -2,9 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
 import admin from 'firebase-admin';
-import { UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './entities/user.repository';
-import { User } from './entities/user.entity';
 
 @Injectable()
 export class FirebaseAuthStrategy extends PassportStrategy(Strategy) {
@@ -14,21 +12,14 @@ export class FirebaseAuthStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(token) {
-    try {
-      const user = await admin.auth().verifyIdToken(token, true);
-      return user;
-    } catch (err) {
-      return this.staticIdAuth(token);
-    }
-  }
-
-  private async staticIdAuth(uuid: string): Promise<User> {
-    try {
-      const userToFind = await this.userRepo.checkUuid(uuid);
-      return userToFind;
-    } catch (err) {
-      throw new UnauthorizedException('Unauthorized User');
+  async validate(token: string) {
+    const validateUuid = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
+      token,
+    );
+    if (!validateUuid) {
+      return { name: 'temp', uuid: token };
+    } else {
+      return await admin.auth().verifyIdToken(token, true);
     }
   }
 }

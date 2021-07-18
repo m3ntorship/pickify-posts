@@ -12,7 +12,7 @@ export class User extends Model {
   profile_pic: string;
 
   @Column()
-  user_id: string;
+  google_id: string;
 
   // one to many relation with posts entity
   @OneToMany(() => Post, (post) => post.user)
