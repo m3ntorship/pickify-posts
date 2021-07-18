@@ -40,7 +40,6 @@ export class FirebaseAuthGuard extends AuthGuard('firebase-jwt') {
           if (!foundUser) {
             throw new UnauthorizedException('Unauthorized');
           }
-          return foundUser;
         }
       }
 
