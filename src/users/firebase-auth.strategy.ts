@@ -13,10 +13,10 @@ export class FirebaseAuthStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(token: string) {
-    const validateUuid = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
+    const isUuid = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i.test(
       token,
     );
-    if (!validateUuid) {
+    if (isUuid) {
       return { name: 'temp', uuid: token };
     } else {
       return await admin.auth().verifyIdToken(token, true);
