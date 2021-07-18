@@ -193,7 +193,7 @@ export class PostsService {
     await this.postRepository.flagPostCreation(flag, post);
   }
 
-  async deletePost(postid: string, userId: string): Promise<void> {
+  async deletePost(postid: string, user: User): Promise<void> {
     // get post
     const post = await this.postRepository.getPostById(postid);
 
@@ -203,7 +203,7 @@ export class PostsService {
     }
 
     // Check if current user is the owner of the post
-    if (!isUserAuthorized(post, userId)) {
+    if (!isUserAuthorized(post, user.uuid)) {
       throw new UnauthorizedException('Unauthorized');
     }
 

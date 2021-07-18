@@ -131,19 +131,16 @@ describe('PostsController', () => {
   describe('deletePost function', () => {
     it('does not return anything', async () => {
       const params = { postid: 'uuid' };
-      const headers = { Authorization: '3' };
-      const res = await controller.deletePost(params, headers);
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
+      const res = await controller.deletePost(params, req);
       expect(res).toBeUndefined();
     });
 
     it('should call service function with postid and authroization header', async () => {
       const params = { postid: 'uuid' };
-      const headers = { Authorization: '3' };
-      await controller.deletePost(params, headers);
-      expect(service.deletePost).toBeCalledWith(
-        params.postid,
-        headers.Authorization,
-      );
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
+      await controller.deletePost(params, req);
+      expect(service.deletePost).toBeCalledWith(params.postid, req.user);
     });
   });
 });

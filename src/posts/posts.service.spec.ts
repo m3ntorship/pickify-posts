@@ -1120,16 +1120,16 @@ describe('PostsService', () => {
   describe('deletePost', () => {
     it('should return undefined', () => {
       // data
-      const userId = 'test-user-id';
+      const user = { uuid: 'user-uuid' } as User;
       const postId = 'test-post-id';
-      const foundPost = { id: 1, user: { uuid: userId } };
+      const foundPost = { id: 1, user: { uuid: user.uuid } };
 
       //mocks
       postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      const res = service.deletePost(postId, userId);
+      const res = service.deletePost(postId, user);
 
       // assertions
       expect(res).resolves.toBeUndefined();
@@ -1137,16 +1137,16 @@ describe('PostsService', () => {
 
     it('should have getPostById method that is called with post id', async () => {
       // data
-      const userId = 'test-user-id';
+      const user = { uuid: 'user-uuid' } as User;
       const postId = 'test-post-id';
-      const foundPost = { id: 1, user: { uuid: userId } };
+      const foundPost = { id: 1, user: { uuid: user.uuid } };
 
       //mocks
       postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      await service.deletePost(postId, userId);
+      await service.deletePost(postId, user);
 
       // assertions
       expect(postRepo.getPostById).toBeCalledWith(postId);
@@ -1154,7 +1154,7 @@ describe('PostsService', () => {
 
     it('should throw error if post is not found', () => {
       // data
-      const userId = '2';
+      const user = { uuid: 'user-uuid' } as User;
       const postId = 'test-post-uuid';
 
       //mocks
@@ -1162,7 +1162,7 @@ describe('PostsService', () => {
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      const res = service.deletePost(postId, userId);
+      const res = service.deletePost(postId, user);
 
       // assertions
       expect(res).rejects.toThrowError(
@@ -1172,7 +1172,7 @@ describe('PostsService', () => {
 
     it('should throw error if user is not owner of post', () => {
       // data
-      const userId = 'user-owns-post';
+      const user = { uuid: 'user-uuid' } as User;
       const postId = 'test-post-uuid';
       const foundPost = { id: 1, user: { uuid: 'user-dont-own-post' } };
 
@@ -1181,7 +1181,7 @@ describe('PostsService', () => {
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      const res = service.deletePost(postId, userId);
+      const res = service.deletePost(postId, user);
 
       // assertions
       expect(res).rejects.toThrowError(
@@ -1191,16 +1191,16 @@ describe('PostsService', () => {
 
     it('should call postRepository.remove with the found post', async () => {
       // data
-      const userId = 'test-user-uuid';
+      const user = { uuid: 'user-uuid' } as User;
       const postId = 'test-post-uuid';
-      const foundPost = { id: 1, user: { uuid: userId } };
+      const foundPost = { id: 1, user: { uuid: user.uuid } };
 
       //mocks
       postRepo.getPostById = jest.fn().mockResolvedValueOnce(foundPost);
       postRepo.remove = jest.fn().mockResolvedValueOnce(undefined);
 
       // action
-      await service.deletePost(postId, userId);
+      await service.deletePost(postId, user);
 
       // assertions
       expect(postRepo.remove).toBeCalledWith(foundPost);

@@ -87,9 +87,8 @@ export class PostsController {
   @HttpCode(204)
   async deletePost(
     @Param() params: PostIdParam,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ) {
-    const userId = headers.Authorization;
-    await this.postsService.deletePost(params.postid, userId);
+    await this.postsService.deletePost(params.postid, req.user);
   }
 }
