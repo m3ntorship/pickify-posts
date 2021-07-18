@@ -8,8 +8,10 @@ import {
   Param,
   Patch,
   Post,
+  Request,
   UseFilters,
 } from '@nestjs/common';
+import { ExtendedRequest } from 'src/shared/interfaces/expressRequest';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
@@ -33,10 +35,9 @@ export class PostsController {
   @Post('/')
   createPost(
     @Body() postCreationDto: PostCreationDto,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ): Promise<PostCreationInterface> {
-    const userId = headers.Authorization;
-    return this.postsService.createPost(postCreationDto, userId);
+    return this.postsService.createPost(postCreationDto, req.user);
   }
 
   @Get('/')

@@ -14,6 +14,7 @@ import {
 import { UserRepository } from '../users/entities/user.repository';
 import { Post } from './interfaces/getPosts.interface';
 import { getNow } from '../shared/utils/datetime';
+import { User } from '../users/entities/user.entity';
 
 describe('PostsService', () => {
   let service: PostsService;
@@ -187,80 +188,23 @@ describe('PostsService', () => {
         is_hidden: false,
         media_count: 3,
       };
-      const userId = 'test-user-uuid';
 
       const user = {
         uuid: 'test-user-uuid',
         name: 'test-name',
         profile_pic: 'test-picture-url',
-      };
+      } as User;
 
       // mocks
       postRepo.createPost = jest
         .fn()
         .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
 
-      userRepo.findOne = jest.fn().mockResolvedValue(user);
-
       // action
-      const data = service.createPost(dto, userId);
+      const data = service.createPost(dto, user);
 
       // assertions
       expect(data).resolves.toEqual({ id: 'created-post-uuid' });
-    });
-
-    it('should call userRepo.findOne with the appropriate parameters', async () => {
-      // data
-      const dto: PostCreationDto = {
-        type: 'text_poll',
-        caption: 'test caption',
-        is_hidden: false,
-        media_count: 3,
-      };
-      const userId = 'test-user-uuid';
-
-      const user = {
-        uuid: 'test-user-uuid',
-        name: 'test-name',
-        profile_pic: 'test-picture-url',
-      };
-
-      // mocks
-      postRepo.createPost = jest
-        .fn()
-        .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
-
-      userRepo.findOne = jest.fn().mockResolvedValue(user);
-
-      // action
-      await service.createPost(dto, userId);
-
-      // assertions
-      expect(userRepo.findOne).toBeCalledWith({ where: { uuid: userId } });
-      expect(userRepo.findOne).toBeCalledTimes(1);
-    });
-
-    it('should thorw error if user not found', async () => {
-      // data
-      const dto: PostCreationDto = {
-        type: 'text_poll',
-        caption: 'test caption',
-        is_hidden: false,
-        media_count: 3,
-      };
-      const userId = 'test-user-uuid';
-
-      // mocks
-      postRepo.createPost = jest
-        .fn()
-        .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
-
-      userRepo.findOne = jest.fn().mockResolvedValue(undefined);
-
-      // assertions
-      expect(service.createPost(dto, userId)).rejects.toThrowError(
-        new NotFoundException(`User with id: ${userId} not found`),
-      );
     });
 
     it('should call postRepo.createPost with the appropriate parameters', async () => {
@@ -271,23 +215,20 @@ describe('PostsService', () => {
         is_hidden: false,
         media_count: 3,
       };
-      const userId = 'test-user-uuid';
-
       const user = {
         uuid: 'test-user-uuid',
         name: 'test-name',
         profile_pic: 'test-picture-url',
-      };
+      } as User;
 
       // mocks
       postRepo.createPost = jest
         .fn()
         .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
 
-      userRepo.findOne = jest.fn().mockResolvedValue(user);
 
       // action
-      await service.createPost(dto, userId);
+      await service.createPost(dto, user);
 
       // assertions
       expect(postRepo.createPost).toBeCalledWith(dto, user);

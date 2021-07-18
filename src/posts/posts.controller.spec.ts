@@ -34,6 +34,7 @@ describe('PostsController', () => {
 
   describe('createPost function', () => {
     it('should return a string', async () => {
+      // data
       const dto: PostCreationDto = {
         caption: 'test dto',
         type: 'text_poll',
@@ -41,14 +42,15 @@ describe('PostsController', () => {
         media_count: 3,
       };
 
-      const headers = { Authorization: '3' };
+      const req: any = { user: { uuid: 'user-uuid' } };
 
-      const result = await controller.createPost(dto, headers);
+      // actions
+      const result = await controller.createPost(dto, req);
 
+      // assertions
       expect(result).toEqual({ uuid: 'test id' });
-
       expect(service.createPost).toBeCalledTimes(1);
-      expect(service.createPost).toBeCalledWith(dto, headers.Authorization);
+      expect(service.createPost).toBeCalledWith(dto, req.user);
     });
   });
 

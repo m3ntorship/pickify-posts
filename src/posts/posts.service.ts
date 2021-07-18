@@ -22,6 +22,7 @@ import {
 import { isUserAuthorized } from '../shared/authorization/userAuthorization';
 import { LockedException } from '../shared/exceptions/locked.exception';
 import { UserRepository } from '../users/entities/user.repository';
+import { User } from '../users/entities/user.entity';
 @Injectable()
 export class PostsService {
   constructor(
@@ -165,16 +166,8 @@ export class PostsService {
 
   async createPost(
     postCreationDto: PostCreationDto,
-    userId: string,
+    user: User,
   ): Promise<PostCreationInterface> {
-    // get user to add post to it
-    const user = await this.userRepository.findOne({ where: { uuid: userId } });
-
-    // Check whether user exists
-    if (!user) {
-      throw new NotFoundException(`User with id: ${userId} not found`);
-    }
-
     // create the post
     const createdPost = await this.postRepository.createPost(
       postCreationDto,
