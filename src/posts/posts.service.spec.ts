@@ -226,7 +226,6 @@ describe('PostsService', () => {
         .fn()
         .mockResolvedValueOnce({ uuid: 'created-post-uuid' });
 
-
       // action
       await service.createPost(dto, user);
 
@@ -421,7 +420,12 @@ describe('PostsService', () => {
   describe('getSinglePost function', () => {
     it('Should return post with vote_count for all options if user is post owner', async () => {
       // data
-      const userId = 'test-post-owner-uuid';
+      const user = {
+        uuid: 'user-uuid',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
+
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -430,7 +434,7 @@ describe('PostsService', () => {
         created_at: getNow().toDate(),
         type: 'text poll',
         user: {
-          uuid: userId,
+          uuid: user.uuid,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -515,7 +519,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = await service.getSinglePost(postId, userId);
+      const result = await service.getSinglePost(postId, user);
 
       // assertions
       expect(result).toEqual(expectedPost);
@@ -523,7 +527,12 @@ describe('PostsService', () => {
 
     it('Should return same media found in DB', async () => {
       // data
-      const userId = 'test-post-owner-uuid';
+      const user = {
+        uuid: 'user-uuid',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
+
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -532,7 +541,7 @@ describe('PostsService', () => {
         created_at: getNow().toDate(),
         type: 'text poll',
         user: {
-          uuid: userId,
+          uuid: user.uuid,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -575,6 +584,7 @@ describe('PostsService', () => {
           },
         ],
       };
+
       const expectedPost = {
         id: postInDB.uuid,
         caption: postInDB.caption,
@@ -617,7 +627,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = await service.getSinglePost(postId, userId);
+      const result = await service.getSinglePost(postId, user);
 
       // assertions
       expect(result).toEqual(expectedPost);
@@ -625,7 +635,12 @@ describe('PostsService', () => {
 
     it('Should return post without vote_count for any option in the group if user has not voted in that group', async () => {
       // data
-      const userId = 'user1';
+      const user = {
+        uuid: 'user1',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
+
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -713,7 +728,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = await service.getSinglePost(postId, userId);
+      const result = await service.getSinglePost(postId, user);
 
       // assertions
       expect(result).toEqual(expectedPost);
@@ -721,7 +736,12 @@ describe('PostsService', () => {
 
     it('Should return post with vote_count for all options ONLY in the group user voted in', async () => {
       // data
-      const userId = 'user1';
+      const user = {
+        uuid: 'user1',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
+
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -847,7 +867,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = await service.getSinglePost(postId, userId);
+      const result = await service.getSinglePost(postId, user);
 
       // assertions
       expect(result).toEqual(expectedPost);
@@ -855,7 +875,12 @@ describe('PostsService', () => {
 
     it('Should return post without user details if he is not post owner and is_hidden=true', async () => {
       // data
-      const userId = 'user1';
+      const user = {
+        uuid: 'user1',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
+
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -918,7 +943,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = await service.getSinglePost(postId, userId);
+      const result = await service.getSinglePost(postId, user);
 
       // assertions
       expect(result).toEqual(expectedPost);
@@ -926,14 +951,19 @@ describe('PostsService', () => {
 
     it('should throw error if post not found', () => {
       // data
-      const userId = 'test-user-uuid';
+      const user = {
+        uuid: 'user-uuid',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
+
       const postId = 'test-post-uuid';
 
       // mocks
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(undefined);
 
       // actions
-      const result = service.getSinglePost(postId, userId);
+      const result = service.getSinglePost(postId, user);
 
       // assertions
       expect(result).rejects.toThrowError(
@@ -943,7 +973,12 @@ describe('PostsService', () => {
 
     it('should throw error if post not ready yet', () => {
       // data
-      const userId = 'test-user-uuid';
+      const user = {
+        uuid: 'user-uuid',
+        name: 'test',
+        profile_pic: 'test-url',
+      } as User;
+
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: false,
@@ -971,7 +1006,7 @@ describe('PostsService', () => {
       postRepo.getDetailedPostById = jest.fn().mockResolvedValueOnce(postInDB);
 
       // actions
-      const result = service.getSinglePost(postId, userId);
+      const result = service.getSinglePost(postId, user);
 
       // assertions
       expect(result).rejects.toThrowError(

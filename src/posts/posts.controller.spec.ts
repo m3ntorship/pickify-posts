@@ -70,18 +70,15 @@ describe('PostsController', () => {
   });
 
   describe('getSinglePost function', () => {
-    it('should throw not implemented', async () => {
+    it('Should return what service.getSinglePost returns', async () => {
       // data
-      const headers = { Authorization: 'test-user-uuid' };
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
       const params = { postid: 'post1-id' };
 
       // actions
-      const result = await controller.getSinglePost(params, headers);
+      const result = await controller.getSinglePost(params, req);
       expect(result).toEqual({ id: 'post1-id' });
-      expect(service.getSinglePost).toBeCalledWith(
-        params.postid,
-        headers.Authorization,
-      );
+      expect(service.getSinglePost).toBeCalledWith(params.postid, req.user);
     });
   });
 

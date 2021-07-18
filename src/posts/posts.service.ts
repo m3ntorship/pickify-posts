@@ -270,7 +270,7 @@ export class PostsService {
     };
   }
 
-  async getSinglePost(postId: string, userId: string): Promise<Post> {
+  async getSinglePost(postId: string, user: User): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);
     // check whether post is found
     if (!post) throw new NotFoundException(`Post with id: ${postId} not found`);
@@ -282,6 +282,6 @@ export class PostsService {
       );
     }
 
-    return this.handlePostFeatures(post, userId);
+    return this.handlePostFeatures(post, user.uuid);
   }
 }

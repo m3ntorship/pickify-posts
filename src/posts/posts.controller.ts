@@ -48,10 +48,9 @@ export class PostsController {
   @Get('/:postid')
   getSinglePost(
     @Param() params: PostIdParam,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ): Promise<GetPost> {
-    const userId = headers.Authorization;
-    return this.postsService.getSinglePost(params.postid, userId);
+    return this.postsService.getSinglePost(params.postid, req.user);
   }
 
   @Post('/:postid/groups')
