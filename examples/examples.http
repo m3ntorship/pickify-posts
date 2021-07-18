@@ -2,6 +2,7 @@
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
 @userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
+@token = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
 
 // POST /api/posts
 //////////////////
@@ -178,3 +179,7 @@ Authorization: Bearer {{userId}}
 // PUT /api/votes/:optionid
 PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
 Authorization: Bearer {{userId}}
+
+###
+POST  http://localhost:3000/api/users/register
+Authorization: Bearer {{token}}
