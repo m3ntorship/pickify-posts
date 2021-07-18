@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PassportModule } from '@nestjs/passport';
 import { FirebaseAuthStrategy } from './firebase-auth.strategy';
 import { UserRepository } from './entities/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { FirebaseAuthGuard } from 'src/shared/Guards/firebase-auth.guard';
 
 @Module({
   imports: [
@@ -13,7 +13,13 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forFeature([UserRepository]),
   ],
   controllers: [UsersController],
-  providers: [FirebaseAuthStrategy, UsersService],
+  providers: [
+    FirebaseAuthStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: FirebaseAuthGuard,
+    },
+  ],
   exports: [PassportModule, FirebaseAuthStrategy],
 })
 export class UsersModule {}
