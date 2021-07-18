@@ -12,7 +12,6 @@ import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import admin from 'firebase-admin';
 import * as path from 'path';
-import { AuthGuard } from '@nestjs/passport';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
@@ -69,7 +68,6 @@ async function bootstrap() {
   const logger = winston.createLogger(winstonLoggerOptions);
   app.useGlobalInterceptors(new HttpLoggingInterceptor(logger));
   app.useGlobalFilters(new AllExceptionsFilterLogger(logger));
-  app.useGlobalGuards(new (AuthGuard('firebase-jwt'))());
 
   app.use('/health', (req: any, res: any) => {
     res.send({ status: true });

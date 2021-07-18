@@ -11,8 +11,8 @@ export class User extends Model {
   @Column()
   profile_pic: string;
 
-  @Column()
-  user_id: string;
+  @Column({ default: '0' })
+  google_id: string;
 
   // one to many relation with posts entity
   @OneToMany(() => Post, (post) => post.user)

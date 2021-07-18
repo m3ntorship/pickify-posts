@@ -5,7 +5,7 @@ import {
   EventSubscriber,
   InsertEvent,
 } from 'typeorm';
-import { PostRepository } from 'src/posts/entities/post.repository';
+import { PostRepository } from '../../posts/entities/post.repository';
 
 @EventSubscriber()
 export class MediaSubscriber implements EntitySubscriberInterface<Media> {
