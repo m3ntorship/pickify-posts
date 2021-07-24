@@ -5,6 +5,7 @@ import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
 import { PostCreationDto } from './dto/postCreation.dto';
+import { ExtendedRequest } from '../shared/interfaces/expressRequest';
 
 describe('PostsController', () => {
   let controller: PostsController;
@@ -34,6 +35,7 @@ describe('PostsController', () => {
 
   describe('createPost function', () => {
     it('should return a string', async () => {
+      // data
       const dto: PostCreationDto = {
         caption: 'test dto',
         type: 'text_poll',
@@ -41,51 +43,49 @@ describe('PostsController', () => {
         media_count: 3,
       };
 
-      const headers = { Authorization: '3' };
+      const req: any = { user: { uuid: 'user-uuid' } };
 
-      const result = await controller.createPost(dto, headers);
+      // actions
+      const result = await controller.createPost(dto, req);
 
+      // assertions
       expect(result).toEqual({ uuid: 'test id' });
-
       expect(service.createPost).toBeCalledTimes(1);
-      expect(service.createPost).toBeCalledWith(dto, headers.Authorization);
+      expect(service.createPost).toBeCalledWith(dto, req.user);
     });
   });
 
   describe('getAllPosts function', () => {
     it('should return object with array of posts and post count', async () => {
       // data
-      const headers = { Authorization: 'test-user-uuid' };
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
 
       // actions
-      const result = await controller.getAllPosts(headers);
+      const result = await controller.getAllPosts(req);
 
       // assertions
       expect(result).toEqual({ postCount: 1, posts: [{ uuid: 'post1-uuid' }] });
-      expect(service.getAllPosts).toHaveBeenCalledWith(headers.Authorization);
+      expect(service.getAllPosts).toHaveBeenCalledWith(req.user);
     });
   });
 
   describe('getSinglePost function', () => {
-    it('should throw not implemented', async () => {
+    it('Should return what service.getSinglePost returns', async () => {
       // data
-      const headers = { Authorization: 'test-user-uuid' };
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
       const params = { postid: 'post1-id' };
 
       // actions
-      const result = await controller.getSinglePost(params, headers);
+      const result = await controller.getSinglePost(params, req);
       expect(result).toEqual({ id: 'post1-id' });
-      expect(service.getSinglePost).toBeCalledWith(
-        params.postid,
-        headers.Authorization,
-      );
+      expect(service.getSinglePost).toBeCalledWith(params.postid, req.user);
     });
   });
 
   describe('createOptionGroup function', () => {
     it('should call service.createOptionGroup with proper parameters and return its return', async () => {
       // data
-      const headers = { Authorization: '3' };
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
       const param: PostIdParam = { postid: 'test postId' };
       const dto: OptionsGroupCreationDto = {
         groups: [
@@ -97,13 +97,13 @@ describe('PostsController', () => {
       };
 
       // actions
-      const data = await controller.createOptionGroup(param, dto, headers);
+      const data = await controller.createOptionGroup(param, dto, req);
 
       // assertions
       expect(service.createOptionGroup).toBeCalledWith(
         param.postid,
         dto,
-        headers.Authorization,
+        req.user,
       );
       expect(data).toEqual('test creating groups');
     });
@@ -114,16 +114,16 @@ describe('PostsController', () => {
       // data
       const dto: FlagPostFinishedDto = { finished: true };
       const params: PostIdParam = { postid: '23242' };
-      const headers = { Authorization: '3' };
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
 
       // actions
-      await controller.flagPost(params, dto, headers);
+      await controller.flagPost(params, dto, req);
 
       // assertions
       expect(service.flagPost).toBeCalledWith(
         params.postid,
         dto.finished,
-        headers.Authorization,
+        req.user,
       );
     });
   });
@@ -131,19 +131,16 @@ describe('PostsController', () => {
   describe('deletePost function', () => {
     it('does not return anything', async () => {
       const params = { postid: 'uuid' };
-      const headers = { Authorization: '3' };
-      const res = await controller.deletePost(params, headers);
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
+      const res = await controller.deletePost(params, req);
       expect(res).toBeUndefined();
     });
 
     it('should call service function with postid and authroization header', async () => {
       const params = { postid: 'uuid' };
-      const headers = { Authorization: '3' };
-      await controller.deletePost(params, headers);
-      expect(service.deletePost).toBeCalledWith(
-        params.postid,
-        headers.Authorization,
-      );
+      const req = { user: { uuid: 'user-uuid' } } as ExtendedRequest;
+      await controller.deletePost(params, req);
+      expect(service.deletePost).toBeCalledWith(params.postid, req.user);
     });
   });
 });

@@ -1,10 +1,18 @@
-import { Controller, Param, Put, UseFilters, Headers } from '@nestjs/common';
+import {
+  Controller,
+  Param,
+  Put,
+  UseFilters,
+  Headers,
+  Request,
+} from '@nestjs/common';
 import { OptionIdParam } from '../shared/validations/uuid.validator';
 import { VotesService } from './votes.service';
 import { OptionsVotes } from './interfaces/optionsVotes.interface';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
+import { ExtendedRequest } from 'src/shared/interfaces/expressRequest';
 
 @Controller('votes')
 @UseFilters(
@@ -16,9 +24,8 @@ export class VotesController {
   @Put('/:optionid')
   addVote(
     @Param() params: OptionIdParam,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ): Promise<OptionsVotes[]> {
-    const userId = headers.Authorization;
-    return this.votesService.addVote(params.optionid, userId);
+    return this.votesService.addVote(params.optionid, req.user);
   }
 }

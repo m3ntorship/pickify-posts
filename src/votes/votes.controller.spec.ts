@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ExtendedRequest } from 'src/shared/interfaces/expressRequest';
 import { VotesController } from './votes.controller';
 import { VotesService } from './votes.service';
 
@@ -26,13 +27,23 @@ describe('VotesController', () => {
   });
 
   describe('addVote', () => {
+    // data
     const params = { optionid: 'uuid' };
+    const req = {
+      user: { uuid: 'user-uuid' },
+    } as ExtendedRequest;
     it('should call service function with optionId', async () => {
-      controller.addVote(params, { Authorization: '3' });
-      expect(mockService.addVote).toBeCalledWith(params.optionid, '3');
+      // actions
+      controller.addVote(params, req);
+
+      // assertions
+      expect(mockService.addVote).toBeCalledWith(params.optionid, req.user);
     });
     it('should return whatever service method returns', () => {
-      const res = controller.addVote(params, { Authorization: '3' });
+      // actions
+      const res = controller.addVote(params, req);
+
+      // assertions
       expect(res).resolves.toEqual(['options']);
     });
   });
