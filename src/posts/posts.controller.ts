@@ -8,8 +8,10 @@ import {
   Param,
   Patch,
   Post,
+  Request,
   UseFilters,
 } from '@nestjs/common';
+import { ExtendedRequest } from 'src/shared/interfaces/expressRequest';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
@@ -33,40 +35,34 @@ export class PostsController {
   @Post('/')
   createPost(
     @Body() postCreationDto: PostCreationDto,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ): Promise<PostCreationInterface> {
-    const userId = headers.Authorization;
-    return this.postsService.createPost(postCreationDto, userId);
+    return this.postsService.createPost(postCreationDto, req.user);
   }
 
   @Get('/')
-  async getAllPosts(
-    @Headers() headers: { Authorization: string },
-  ): Promise<Posts> {
-    const userId = headers.Authorization;
-    return await this.postsService.getAllPosts(userId);
+  async getAllPosts(@Request() req: ExtendedRequest): Promise<Posts> {
+    return await this.postsService.getAllPosts(req.user);
   }
 
   @Get('/:postid')
   getSinglePost(
     @Param() params: PostIdParam,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ): Promise<GetPost> {
-    const userId = headers.Authorization;
-    return this.postsService.getSinglePost(params.postid, userId);
+    return this.postsService.getSinglePost(params.postid, req.user);
   }
 
   @Post('/:postid/groups')
   async createOptionGroup(
     @Param() params: PostIdParam,
     @Body() createGroupsDto: OptionsGroupCreationDto,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ): Promise<OptionsGroups> {
-    const userId = headers.Authorization;
     const createdGroups = await this.postsService.createOptionGroup(
       params.postid,
       createGroupsDto,
-      userId,
+      req.user,
     );
     return createdGroups;
   }
@@ -76,13 +72,12 @@ export class PostsController {
   async flagPost(
     @Param() params: PostIdParam,
     @Body() flagPostDto: FlagPostFinishedDto,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ): Promise<void> {
-    const userId = headers.Authorization;
     await this.postsService.flagPost(
       params.postid,
       flagPostDto.finished,
-      userId,
+      req.user,
     );
   }
 
@@ -90,9 +85,8 @@ export class PostsController {
   @HttpCode(204)
   async deletePost(
     @Param() params: PostIdParam,
-    @Headers() headers: { Authorization: string },
+    @Request() req: ExtendedRequest,
   ) {
-    const userId = headers.Authorization;
-    await this.postsService.deletePost(params.postid, userId);
+    await this.postsService.deletePost(params.postid, req.user);
   }
 }

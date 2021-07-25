@@ -8,7 +8,8 @@ import { LockedException } from '../shared/exceptions/locked.exception';
 import { OptionRepository } from '../posts/entities/option.repository';
 import { VoteRepository } from './entities/votes.repository';
 import { OptionsVotes } from './interfaces/optionsVotes.interface';
-import { UserRepository } from '../posts/entities/user.repository';
+import { UserRepository } from '../users/entities/user.repository';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class VotesService {
@@ -17,7 +18,7 @@ export class VotesService {
     private optionRepository: OptionRepository,
     private userRepository: UserRepository,
   ) {}
-  async addVote(optionId: string, userId: string): Promise<OptionsVotes[]> {
+  async addVote(optionId: string, user: User): Promise<OptionsVotes[]> {
     // get the option with relation to vote, group & post
     let option = await this.optionRepository.findDetailedOptionById(optionId);
 
@@ -33,14 +34,14 @@ export class VotesService {
     }
 
     // prevent post owner from voting
-    if (option.optionsGroup.post.user.uuid == userId) {
+    if (option.optionsGroup.post.user.uuid == user.uuid) {
       throw new BadRequestException(`You cannot vote on your own post`);
     }
 
     // prevent user from voting twice on any option inside the group
     let isUserVoted = false;
     option.optionsGroup.options.forEach((option) => {
-      isUserVoted = option.votes.some((vote) => vote.user.uuid === userId);
+      isUserVoted = option.votes.some((vote) => vote.user.uuid === user.uuid);
       if (isUserVoted) {
         throw new ConflictException(
           `User has already voted for option with id:${option.uuid}`,
@@ -51,9 +52,6 @@ export class VotesService {
     // delete votes from option
     // as it cuase error when adding option to a vote in voteRepository.addVote
     delete option.votes;
-
-    // get user so we can relate it when adding a vote
-    const user = await this.userRepository.findOne({ where: { uuid: userId } });
 
     // add vote
     await this.voteRepository.addVote(option, user);

@@ -21,8 +21,8 @@ import {
 } from '@nestjs/common';
 import { isUserAuthorized } from '../shared/authorization/userAuthorization';
 import { LockedException } from '../shared/exceptions/locked.exception';
-import { UserRepository } from './entities/user.repository';
-
+import { UserRepository } from '../users/entities/user.repository';
+import { User } from '../users/entities/user.entity';
 @Injectable()
 export class PostsService {
   constructor(
@@ -166,16 +166,8 @@ export class PostsService {
 
   async createPost(
     postCreationDto: PostCreationDto,
-    userId: string,
+    user: User,
   ): Promise<PostCreationInterface> {
-    // get user to add post to it
-    const user = await this.userRepository.findOne({ where: { uuid: userId } });
-
-    // Check whether user exists
-    if (!user) {
-      throw new NotFoundException(`User with id: ${userId} not found`);
-    }
-
     // create the post
     const createdPost = await this.postRepository.createPost(
       postCreationDto,
@@ -184,7 +176,7 @@ export class PostsService {
     return { id: createdPost.uuid };
   }
 
-  async flagPost(postId: string, flag: boolean, userId: string): Promise<void> {
+  async flagPost(postId: string, flag: boolean, user: User): Promise<void> {
     // get post
     const post = await this.postRepository.getPostById(postId);
 
@@ -194,14 +186,14 @@ export class PostsService {
     }
 
     // Allw only post owner to continue
-    if (!isUserAuthorized(post, userId)) {
+    if (!isUserAuthorized(post, user.uuid)) {
       throw new UnauthorizedException('Unauthorized');
     }
 
     await this.postRepository.flagPostCreation(flag, post);
   }
 
-  async deletePost(postid: string, userId: string): Promise<void> {
+  async deletePost(postid: string, user: User): Promise<void> {
     // get post
     const post = await this.postRepository.getPostById(postid);
 
@@ -211,7 +203,7 @@ export class PostsService {
     }
 
     // Check if current user is the owner of the post
-    if (!isUserAuthorized(post, userId)) {
+    if (!isUserAuthorized(post, user.uuid)) {
       throw new UnauthorizedException('Unauthorized');
     }
 
@@ -221,7 +213,7 @@ export class PostsService {
   async createOptionGroup(
     postid: string,
     groupsCreationDto: OptionsGroupCreationDto,
-    userId: string,
+    user: User,
   ): Promise<OptionsGroups> {
     const response: OptionsGroups = { groups: [] };
 
@@ -234,7 +226,7 @@ export class PostsService {
     }
 
     // Allw only post owner to continue
-    if (!isUserAuthorized(post, userId)) {
+    if (!isUserAuthorized(post, user.uuid)) {
       throw new UnauthorizedException('Unauthorized');
     }
 
@@ -265,7 +257,7 @@ export class PostsService {
     return response;
   }
 
-  async getAllPosts(userId: string): Promise<Posts> {
+  async getAllPosts(user: User): Promise<Posts> {
     // get all posts from DB
     const currentPosts = await this.postRepository.getAllPosts();
 
@@ -273,12 +265,12 @@ export class PostsService {
       postsCount: currentPosts.length,
       // return all posts after modifiying each one as found in openAPI
       posts: currentPosts.map((post) => {
-        return this.handlePostFeatures(post, userId);
+        return this.handlePostFeatures(post, user.uuid);
       }),
     };
   }
 
-  async getSinglePost(postId: string, userId: string): Promise<Post> {
+  async getSinglePost(postId: string, user: User): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);
     // check whether post is found
     if (!post) throw new NotFoundException(`Post with id: ${postId} not found`);
@@ -290,6 +282,6 @@ export class PostsService {
       );
     }
 
-    return this.handlePostFeatures(post, userId);
+    return this.handlePostFeatures(post, user.uuid);
   }
 }

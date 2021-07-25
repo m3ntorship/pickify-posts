@@ -1,7 +1,7 @@
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Option } from '../../posts/entities/option.entity';
-import { User } from '../../posts/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'votes', schema: POSTS_SCHEMA })
 export class Vote extends Model {

@@ -10,6 +10,8 @@ import { AllExceptionsFilterLogger } from './shared/exception-filters/http-excep
 import { winstonLoggerOptions } from './logging/winston.options';
 import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
 import { ValidationPipe } from '@nestjs/common';
+import admin from 'firebase-admin';
+import * as path from 'path';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
@@ -69,6 +71,13 @@ async function bootstrap() {
 
   app.use('/health', (req: any, res: any) => {
     res.send({ status: true });
+  });
+
+  admin.initializeApp({
+    credential: admin.credential.cert(
+      path.join(__dirname, '..', '..', 'firebase_service_account.json'),
+    ),
+    databaseURL: 'https://pick-291910.firebaseio.com',
   });
 
   // get port from configService
