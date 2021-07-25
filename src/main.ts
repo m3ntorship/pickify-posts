@@ -11,7 +11,6 @@ import { winstonLoggerOptions } from './logging/winston.options';
 import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import admin from 'firebase-admin';
-import * as path from 'path';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
@@ -74,9 +73,7 @@ async function bootstrap() {
   });
 
   admin.initializeApp({
-    credential: admin.credential.cert(
-      path.join(__dirname, '..', '..', 'firebase_service_account.json'),
-    ),
+    credential: admin.credential.cert('/firebase_service_account.json'),
     databaseURL: 'https://pick-291910.firebaseio.com',
   });
 

@@ -122,7 +122,7 @@ jobs:
           
         run: |
           for f in $(find $M3_DEPLOYMENT_PATH/$M3_ENCRYPTED_SECRETS_DIR -maxdepth 1 -type f); do gpg --quiet --batch --yes --decrypt --passphrase="$M3_ENCRYPTION_PHRASE" "$f" > "$M3_TEMP_SECRETS_DIR/$(basename -s .gpg $f)"; done
-          kubectl create configmap $M3_PROJECT-$M3_COMPONENET-$M3_ENVIRONMENT --from-file=$M3_TEMP_SECRETS_DIR/ -o yaml -n $M3_NAMESPACE --dry-run=client > $M3_TEMP_DIR/configmap.yaml
+          kubectl create configmap $M3_PROJECT-$M3_COMPONENT-$M3_ENVIRONMENT --from-file=$M3_TEMP_SECRETS_DIR/ -o yaml -n $M3_NAMESPACE --dry-run=client > $M3_TEMP_DIR/configmap.yaml
 
       - name: deploy-dev
         env:

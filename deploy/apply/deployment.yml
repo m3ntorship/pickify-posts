@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{{M3_COMPONENT}}}-deployment"
+  name: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}'
   namespace: {{{M3_NAMESPACE}}}
   labels:
-    app: "{{{M3_COMPONENT}}}-deployment"
+    application: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}'
 spec:
   replicas: {{{M3_REPLICAS}}}
   selector:
@@ -46,4 +46,12 @@ spec:
             - name: web
               containerPort: 3000
               protocol: TCP
-
+          volumeMounts:
+            - name: pickify-firebase-service-account
+              mountPath: /firebase_service_account.json
+              subPath: firebase_service_account.json
+              readOnly: true
+      volumes:  
+        - name: pickify-firebase-service-account
+          configMap:
+            name: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}'
