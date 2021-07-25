@@ -11,6 +11,7 @@ env:
   M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-dev'
   M3_DEPLOYMENT_PATH: deploy/apply
   M3_TEMP_DIR: temp
+  M3_TEMP_SECRETS_DIR: temp-secrets
   M3_REPLICAS: '1'
   M3_MAIN_APP_PORT: 3000
   M3_PORT_BACKEND: 80
@@ -107,15 +108,19 @@ jobs:
           sudo mv mo /usr/local/bin/
           echo "works" | mo
       
+      # prepare deployment
+      - name: deployment-preparation
+        run: |
+          echo $M3_NAMESPACE
+          mkdir -p $M3_TEMP_DIR $M3_TEMP_SECRETS_DIR
+
       # decrypt secrets
       - name: decrypt-secrets
         env:
-          M3_TEMP_SECRETS_DIR: temp-secrets
           M3_ENCRYPTION_PHRASE: ${{secrets.M3NTORSHIP_ENCRYPTION_PHRASE}}
           M3_ENCRYPTED_SECRETS_DIR: secrets
           
         run: |
-          mkdir -p $M3_TEMP_SECRETS_DIR
           for f in $(find $M3_DEPLOYMENT_PATH/$M3_ENCRYPTED_SECRETS_DIR -maxdepth 1 -type f); do gpg --quiet --batch --yes --decrypt --passphrase="$M3_ENCRYPTION_PHRASE" "$f" > "$M3_TEMP_SECRETS_DIR/$(basename -s .gpg $f)"; done
           kubectl create configmap $M3_PROJECT-$M3_COMPONENET-$M3_ENVIRONMENT --from-file=$M3_TEMP_SECRETS_DIR/ -o yaml -n $M3_NAMESPACE --dry-run > $M3_TEMP_DIR/configmap.yaml
 
