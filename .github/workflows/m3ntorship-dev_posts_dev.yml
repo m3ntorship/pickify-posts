@@ -9,7 +9,7 @@ env:
   M3_COMPONENT: posts
   M3_ENVIRONMENT: 'be-dev'
   M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-dev'
-  M3_DEPLOYMENT_PATH: deploy/apply
+  M3_DEPLOYMENT_PATH: deploy
   M3_TEMP_DIR: temp
   M3_TEMP_SECRETS_DIR: temp-secrets
   M3_REPLICAS: '1'
@@ -130,5 +130,5 @@ jobs:
           SHA: ${{needs.prepare.outputs.sha}}
         run: |
           echo $M3_VERSION
-          for f in $M3_DEPLOYMENT_PATH/*; do mo -u "$f" > $M3_TEMP_DIR/"$(basename $f)"; done
+          for f in $M3_DEPLOYMENT_PATH/apply/*; do mo -u "$f" > $M3_TEMP_DIR/"$(basename $f)"; done
           kubectl apply -f $M3_TEMP_DIR
