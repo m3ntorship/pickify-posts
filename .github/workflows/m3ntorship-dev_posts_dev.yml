@@ -57,7 +57,6 @@ jobs:
           echo "m3_version $M3_VERSION"
 
   build:
-    if: ${{github.event.action != 'closed'}}
     needs:
       - prepare
     runs-on: ubuntu-latest
