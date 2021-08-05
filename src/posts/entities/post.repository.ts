@@ -126,6 +126,10 @@ export class PostRepository extends Repository<Post> {
       .leftJoin('option.media', 'option_media')
       .leftJoin('group.media', 'group_media')
       .where('post.uuid = :uuid', { uuid: postid })
+      .orderBy({
+        'group.order': 'ASC',
+        'option.order': 'ASC',
+      })
       .getOne();
 
     return post;
