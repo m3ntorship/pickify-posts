@@ -3,15 +3,16 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   HttpCode,
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UseFilters,
 } from '@nestjs/common';
-import { ExtendedRequest } from 'src/shared/interfaces/expressRequest';
+import { ExtendedRequest } from '../shared/interfaces/expressRequest';
+import { Queries } from '../shared/validations/query.validator';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
@@ -41,7 +42,10 @@ export class PostsController {
   }
 
   @Get('/')
-  async getAllPosts(@Request() req: ExtendedRequest): Promise<Posts> {
+  async getAllPosts(
+    @Request() req: ExtendedRequest,
+    @Query() queries: Queries,
+  ): Promise<Posts> {
     return await this.postsService.getAllPosts(req.user);
   }
 
