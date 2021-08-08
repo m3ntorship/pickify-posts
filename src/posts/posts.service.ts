@@ -23,6 +23,7 @@ import { isUserAuthorized } from '../shared/authorization/userAuthorization';
 import { LockedException } from '../shared/exceptions/locked.exception';
 import { UserRepository } from '../users/entities/user.repository';
 import { User } from '../users/entities/user.entity';
+import { QueryParameters } from '../shared/validations/query.validator';
 @Injectable()
 export class PostsService {
   constructor(
@@ -257,9 +258,9 @@ export class PostsService {
     return response;
   }
 
-  async getAllPosts(user: User): Promise<Posts> {
+  async getAllPosts(user: User, queries: QueryParameters): Promise<Posts> {
     // get all posts from DB
-    const currentPosts = await this.postRepository.getAllPosts();
+    const currentPosts = await this.postRepository.getAllPosts(queries);
 
     return {
       postsCount: currentPosts.length,

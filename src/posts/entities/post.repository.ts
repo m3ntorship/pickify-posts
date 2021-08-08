@@ -2,6 +2,7 @@ import { EntityRepository, Repository } from 'typeorm';
 import { PostCreationDto } from '../dto/postCreation.dto';
 import { Post } from './post.entity';
 import { User } from '../../users/entities/user.entity';
+import { QueryParameters } from '../../shared/validations/query.validator';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -37,7 +38,7 @@ export class PostRepository extends Repository<Post> {
     return await this.save(post);
   }
 
-  public async getAllPosts(): Promise<Post[]> {
+  public async getAllPosts(queries: QueryParameters): Promise<Post[]> {
     return await this.createQueryBuilder('post')
       .select([
         'post.uuid',
