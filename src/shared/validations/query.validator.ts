@@ -1,6 +1,6 @@
-import { IsNumber, IsNumberString, IsOptional } from 'class-validator';
+import { IsNumberString, IsOptional } from 'class-validator';
 
-export class Queries {
+export class QueryParameters {
   @IsOptional()
   @IsNumberString({}, { message: 'offset should be a number' })
   // @IsNumber({}, { message: 'offset should be a number' })

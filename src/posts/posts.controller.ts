@@ -12,7 +12,7 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { ExtendedRequest } from '../shared/interfaces/expressRequest';
-import { Queries } from '../shared/validations/query.validator';
+import { QueryParameters } from '../shared/validations/query.validator';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
@@ -44,9 +44,9 @@ export class PostsController {
   @Get('/')
   async getAllPosts(
     @Request() req: ExtendedRequest,
-    @Query() queries: Queries,
+    @Query() queries: QueryParameters,
   ): Promise<Posts> {
-    return await this.postsService.getAllPosts(req.user);
+    return await this.postsService.getAllPosts(req.user, queries);
   }
 
   @Get('/:postid')
