@@ -1,11 +1,19 @@
-@postId = 1f56de9c-5b76-494e-b02b-de07574348d5
+@postId = 4283481e-50a7-4008-9b80-6b36b218c502	
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
 @userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
 @token = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
 
+
+
+
+GET http://localhost:3000/api/posts/homepage/{{userId}}
+Authorization: Bearer {{userId}}
+
+###
+
 // POST /api/posts
-//////////////////
+
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
 Authorization: Bearer {{userId}}

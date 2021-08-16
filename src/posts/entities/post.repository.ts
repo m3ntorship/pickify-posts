@@ -77,6 +77,47 @@ export class PostRepository extends Repository<Post> {
       })
       .getMany();
   }
+  public async getUserPosts(userid: string): Promise<Post[]> {
+    return await this.createQueryBuilder('post')
+      .select([
+        'post.uuid',
+        'post.created',
+        'post.ready',
+        'post.caption',
+        'post.is_hidden',
+        'post.created_at',
+        'post.type',
+        'post_media.url',
+        'user.uuid',
+        'user.name',
+        'user.profile_pic',
+        'group.uuid',
+        'group.name',
+        'group_media.url',
+        'option.uuid',
+        'option.vote_count',
+        'option.body',
+        'option_media.url',
+        'vote.uuid',
+        'vote_user.uuid',
+      ])
+      .where('post.ready = :ready', { ready: true })
+      .andWhere('user.uuid = :userid', { userid })
+      .leftJoin('post.groups', 'group')
+      .leftJoin('group.options', 'option')
+      .leftJoin('post.user', 'user')
+      .leftJoin('option.votes', 'vote')
+      .leftJoin('vote.user', 'vote_user')
+      .leftJoin('post.media', 'post_media')
+      .leftJoin('option.media', 'option_media')
+      .leftJoin('group.media', 'group_media')
+      .orderBy({
+        'post.created_at': 'DESC',
+        'group.order': 'ASC',
+        'option.order': 'ASC',
+      })
+      .getMany();
+  }
 
   /**
    * flagPostCreation

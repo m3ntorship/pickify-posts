@@ -9,3 +9,7 @@ export class OptionIdParam {
   @IsUUID(4, { message: 'option id is not correct' })
   optionid: string;
 }
+export class UserIdParam {
+  @IsUUID(4, { message: 'user id is not correct' })
+  userid: string;
+}

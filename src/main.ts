@@ -73,7 +73,7 @@ async function bootstrap() {
   });
 
   admin.initializeApp({
-    credential: admin.credential.cert('/firebase_service_account.json'),
+    credential: admin.credential.cert('firebase_service_account.json'),
     databaseURL: 'https://pick-291910.firebaseio.com',
   });
 

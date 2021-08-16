@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   HttpCode,
   Param,
   Patch,
@@ -15,7 +14,7 @@ import { ExtendedRequest } from 'src/shared/interfaces/expressRequest';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
-import { PostIdParam } from '../shared/validations/uuid.validator';
+import { PostIdParam, UserIdParam } from '../shared/validations/uuid.validator';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { PostCreationDto } from './dto/postCreation.dto';
@@ -43,6 +42,11 @@ export class PostsController {
   @Get('/')
   async getAllPosts(@Request() req: ExtendedRequest): Promise<Posts> {
     return await this.postsService.getAllPosts(req.user);
+  }
+
+  @Get('/homepage/:userid')
+  async getUserPosts(@Param() params: UserIdParam): Promise<Posts> {
+    return await this.postsService.getUserPosts(params.userid);
   }
 
   @Get('/:postid')

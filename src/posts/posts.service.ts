@@ -269,6 +269,20 @@ export class PostsService {
       }),
     };
   }
+  async getUserPosts(userid: string): Promise<Posts> {
+    // get user posts from DB
+    const currentPosts: PostEntity[] = await this.postRepository.getUserPosts(
+      userid,
+    );
+
+    return {
+      postsCount: currentPosts.length,
+      // is this part can be modified as all the current posts relate to the same user?
+      posts: currentPosts.map((post) => {
+        return this.handlePostFeatures(post, userid);
+      }),
+    };
+  }
 
   async getSinglePost(postId: string, user: User): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);

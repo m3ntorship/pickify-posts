@@ -83,6 +83,39 @@
         }
       }
     },
+    "/posts/homepage/{userid}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get all posts of a specific user",
+        "requestBody": {
+          "required": true,
+          "content": {}
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user id",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The current user id"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Posts Got successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
+    },
     "/posts/{postid}/groups": {
       "post": {
         "tags": ["posts"],
