@@ -63,18 +63,17 @@ export class PostRepository extends Repository<Post> {
         'group.uuid',
         'group.name',
         'group_media.url',
-        // 'group.order',
+        'group.order',
         'option.id',
         'option.uuid',
         'option.vote_count',
         'option.body',
         'option_media.url',
-        // 'option.order',
+        'option.order',
         'vote.id',
         'vote.uuid',
         'vote_user.uuid',
       ])
-      .where('post.ready = :ready', { ready: true })
       .leftJoin('post.groups', 'group')
       .leftJoin('group.options', 'option')
       .leftJoin('post.user', 'user')
@@ -83,10 +82,9 @@ export class PostRepository extends Repository<Post> {
       .leftJoin('post.media', 'post_media')
       .leftJoin('option.media', 'option_media')
       .leftJoin('group.media', 'group_media')
+      .where('post.ready = :ready', { ready: true })
       .orderBy({
         'post.created_at': 'DESC',
-        // 'group.order': 'ASC',
-        // 'option.order': 'ASC',
       })
       .take(queries.limit || 10)
       .skip(queries.offset || 0)
@@ -125,9 +123,11 @@ export class PostRepository extends Repository<Post> {
         'group.uuid',
         'group.name',
         'group_media.url',
+        'group.order',
         'option.uuid',
         'option.vote_count',
         'option.body',
+        'option.order',
         'option_media.url',
         'vote.uuid',
         'vote_user.uuid',

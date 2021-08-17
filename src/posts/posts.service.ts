@@ -108,6 +108,16 @@ export class PostsService {
 
   private handlePostFeatures(post: PostEntity, userId: string): Post {
     let returnedPost: Post;
+    // sorting options ASC
+    post.groups.map((el) => {
+      el.options.sort((a: any, b: any) => {
+        return a.order - b.order;
+      });
+    });
+    //sorting groups ASC
+    post.groups.sort((a: any, b: any) => {
+      return a.order - b.order;
+    });
 
     // check whether user is post owner
     const isPostOwner: boolean = isUserAuthorized(post, userId);
@@ -261,7 +271,6 @@ export class PostsService {
   async getAllPosts(user: User, queries: QueryParameters): Promise<Posts> {
     // get all posts from DB
     const currentPosts = await this.postRepository.getAllPosts(queries);
-
     return {
       postsCount: currentPosts.length,
       // return all posts after modifiying each one as found in openAPI
@@ -282,7 +291,6 @@ export class PostsService {
         `Post with id: ${postId} still under creation...`,
       );
     }
-
     return this.handlePostFeatures(post, user.uuid);
   }
 }
