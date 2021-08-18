@@ -6,11 +6,12 @@ import { UserRepository } from './entities/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { FirebaseAuthGuard } from '../shared/Guards/firebase-auth.guard';
+import { PostRepository } from 'src/posts/entities/post.repository';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'firebase-jwt' }),
-    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([UserRepository, PostRepository]),
   ],
   controllers: [UsersController],
   providers: [
