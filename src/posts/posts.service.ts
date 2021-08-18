@@ -108,15 +108,17 @@ export class PostsService {
 
   private handlePostFeatures(post: PostEntity, userId: string): Post {
     let returnedPost: Post;
-    // sorting options ASC
-    post.groups.map((el) => {
-      el.options.sort((a: any, b: any) => {
-        return a.order - b.order;
-      });
-    });
+
     //sorting groups ASC
     post.groups.sort((a: any, b: any) => {
       return a.order - b.order;
+    });
+
+    // sorting options ASC
+    post.groups.forEach((group) => {
+      group.options.sort((a: any, b: any) => {
+        return a.order - b.order;
+      });
     });
 
     // check whether user is post owner
