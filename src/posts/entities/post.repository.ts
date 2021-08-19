@@ -2,6 +2,7 @@ import { EntityRepository, Repository } from 'typeorm';
 import { PostCreationDto } from '../dto/postCreation.dto';
 import { Post } from './post.entity';
 import { User } from '../../users/entities/user.entity';
+import { QueryParameters } from '../../shared/validations/query.validator';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -37,9 +38,15 @@ export class PostRepository extends Repository<Post> {
     return await this.save(post);
   }
 
-  public async getAllPosts(): Promise<Post[]> {
+  public async getAllPosts(queries: QueryParameters): Promise<Post[]> {
+    // according to this comment
+    // https://github.com/typeorm/typeorm/issues/4742#issuecomment-783857414
+    // we have to use take() and & skip() instead of limit() & offset() as our query uses joins
+    // also we had to select post.id, group.id, user.id, option.id & vote.id to make it work with take() & skip()
+    // also temporarily, group & option order were commented out as they threw error and required a lot of refactoring to fix this issue.
     return await this.createQueryBuilder('post')
       .select([
+        'post.id',
         'post.uuid',
         'post.created',
         'post.ready',
@@ -48,20 +55,25 @@ export class PostRepository extends Repository<Post> {
         'post.created_at',
         'post.type',
         'post_media.url',
+        'user.id',
         'user.uuid',
         'user.name',
         'user.profile_pic',
+        'group.id',
         'group.uuid',
         'group.name',
         'group_media.url',
+        'group.order',
+        'option.id',
         'option.uuid',
         'option.vote_count',
         'option.body',
         'option_media.url',
+        'option.order',
+        'vote.id',
         'vote.uuid',
         'vote_user.uuid',
       ])
-      .where('post.ready = :ready', { ready: true })
       .leftJoin('post.groups', 'group')
       .leftJoin('group.options', 'option')
       .leftJoin('post.user', 'user')
@@ -70,11 +82,12 @@ export class PostRepository extends Repository<Post> {
       .leftJoin('post.media', 'post_media')
       .leftJoin('option.media', 'option_media')
       .leftJoin('group.media', 'group_media')
+      .where('post.ready = :ready', { ready: true })
       .orderBy({
         'post.created_at': 'DESC',
-        'group.order': 'ASC',
-        'option.order': 'ASC',
       })
+      .take(queries.limit || 10)
+      .skip(queries.offset || 0)
       .getMany();
   }
 
@@ -110,9 +123,11 @@ export class PostRepository extends Repository<Post> {
         'group.uuid',
         'group.name',
         'group_media.url',
+        'group.order',
         'option.uuid',
         'option.vote_count',
         'option.body',
+        'option.order',
         'option_media.url',
         'vote.uuid',
         'vote_user.uuid',
