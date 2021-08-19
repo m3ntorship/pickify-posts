@@ -23,6 +23,7 @@ import { isUserAuthorized } from '../shared/authorization/userAuthorization';
 import { LockedException } from '../shared/exceptions/locked.exception';
 import { UserRepository } from '../users/entities/user.repository';
 import { User } from '../users/entities/user.entity';
+import { QueryParameters } from '../shared/validations/query.validator';
 @Injectable()
 export class PostsService {
   constructor(
@@ -105,8 +106,20 @@ export class PostsService {
     return groups;
   }
 
-  private handlePostFeatures(post: PostEntity, userId: string): Post {
+  handlePostFeatures(post: PostEntity, userId: string): Post {
     let returnedPost: Post;
+
+    //sorting groups ASC
+    post.groups.sort((a: any, b: any) => {
+      return a.order - b.order;
+    });
+
+    // sorting options ASC
+    post.groups.forEach((group) => {
+      group.options.sort((a: any, b: any) => {
+        return a.order - b.order;
+      });
+    });
 
     // check whether user is post owner
     const isPostOwner: boolean = isUserAuthorized(post, userId);
@@ -257,10 +270,9 @@ export class PostsService {
     return response;
   }
 
-  async getAllPosts(user: User): Promise<Posts> {
+  async getAllPosts(user: User, queries: QueryParameters): Promise<Posts> {
     // get all posts from DB
-    const currentPosts = await this.postRepository.getAllPosts();
-
+    const currentPosts = await this.postRepository.getAllPosts(queries);
     return {
       postsCount: currentPosts.length,
       // return all posts after modifiying each one as found in openAPI
@@ -269,21 +281,6 @@ export class PostsService {
       }),
     };
   }
-  async getUserPosts(userid: string): Promise<Posts> {
-    // get user posts from DB
-    const currentPosts: PostEntity[] = await this.postRepository.getUserPosts(
-      userid,
-    );
-
-    return {
-      postsCount: currentPosts.length,
-      // is this part can be modified as all the current posts relate to the same user?
-      posts: currentPosts.map((post) => {
-        return this.handlePostFeatures(post, userid);
-      }),
-    };
-  }
-
   async getSinglePost(postId: string, user: User): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);
     // check whether post is found
@@ -295,7 +292,6 @@ export class PostsService {
         `Post with id: ${postId} still under creation...`,
       );
     }
-
     return this.handlePostFeatures(post, user.uuid);
   }
 }

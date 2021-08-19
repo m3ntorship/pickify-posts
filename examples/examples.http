@@ -1,14 +1,11 @@
-@postId = 4283481e-50a7-4008-9b80-6b36b218c502	
+@postId = 81cc93e6-aee7-4175-878a-6775fed64098
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
-@userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
-@token = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
+@userId =02e8f7cf-6ac0-4ce1-bb1c-6c33d68bf12f
+@token = eyJhbGciOiJSUzI1NiIsImtpZCI6IjM2NGU4NTQ1NzI5OWQ5NzIxYjczNDQyZGNiNTQ3Y2U2ZDk4NGRmNTkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoib21hciBzYW15IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdoYlBIaGpFNGpveVZzaGhOSEt2aFdCQ0V4cVYyZWtfenpPNThlTlBRPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3BpY2tpZnktMTM4ZjkiLCJhdWQiOiJwaWNraWZ5LTEzOGY5IiwiYXV0aF90aW1lIjoxNjI5Mzc3MzkyLCJ1c2VyX2lkIjoiVTBhMTdWdzFVUk5IQXVPMHE3S1hnNkZwbmdpMSIsInN1YiI6IlUwYTE3VncxVVJOSEF1TzBxN0tYZzZGcG5naTEiLCJpYXQiOjE2MjkzODEyMTQsImV4cCI6MTYyOTM4NDgxNCwiZW1haWwiOiJvbWFyc2FteTA5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTAwMzIyNzg1NzkyNzk3NTY4ODY1Il0sImVtYWlsIjpbIm9tYXJzYW15MDlAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.rXqlYU9xfSXwkWFH2_BGTD1wyGuDWq77gvuUGLd_RTMH4C-4dvDHQuLu4dnYSyxQbn0XTuPyzKeT-MEjNao9VnwaOAAIhXyCh11MwNv94DGdTO01Utte-0GGlNxfDqNaN7gfUmOX7GG9y06KXl5Nkp1dfV_YdNc5wmm2ufinSGqJFOtQAwGdrPzKHQQ86QTj_4hmt1TkrLg3-cKm4CRfqUYV2qlE1GDTaVOJSEE6ZarqZs-l9ohabmd7i7k0YjylcdMphBhuhi6H_1armzNDiZEn_0vLQC9U4WujAj63eD1tCa0XuKkhP7HTbDixZMOk3cPdPMbr4x2UWYtsRc0uhA
 
 
 
-
-GET http://localhost:3000/api/posts/homepage/{{userId}}
-Authorization: Bearer {{userId}}
 
 ###
 
@@ -175,18 +172,23 @@ Authorization: Bearer {{userId}}
 
 ##################
 // GET /api/posts
-GET http://localhost:3000/api/posts
-Authorization: Bearer {{userId}}
+GET http://localhost:3000/api/posts?limit=10&offset=0
+Authorization: Bearer {{token}}
 
 ##################
 // GET /api/posts/:postid
 GET http://localhost:3000/api/posts/{{postId}}
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 ##################
 // PUT /api/votes/:optionid
 PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
 Authorization: Bearer {{userId}}
+
+##################
+// GET /api/users/:userid/posts
+GET http://localhost:3000/api/users/{{userId}}/posts?limit=10&0ffset=0
+Authorization: Bearer {{token}}
 
 ###
 POST  http://localhost:3000/api/users/register

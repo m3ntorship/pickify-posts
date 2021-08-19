@@ -18,5 +18,6 @@ import { UserRepository } from '../users/entities/user.repository';
   ],
   controllers: [PostsController],
   providers: [PostsService],
+  exports: [PostsService],
 })
 export class PostsModule {}

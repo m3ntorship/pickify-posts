@@ -1,5 +1,7 @@
+import { Query } from '@nestjs/common';
 import { Controller, Get, Param, Post, Request } from '@nestjs/common';
-import { Post as Ipost } from 'src/posts/interfaces/getPosts.interface';
+import { Post as Ipost, Posts } from '../posts/interfaces/getPosts.interface';
+import { QueryParameters } from '../shared/validations/query.validator';
 import { UserIdParam } from '../shared/validations/uuid.validator';
 import { UsersService } from './users.service';
 
@@ -12,7 +14,10 @@ export class UsersController {
   }
 
   @Get(':userId/posts')
-  async getPosts(@Param('userId') userId: UserIdParam): Promise<Ipost> {
-    return await this.userService.getPosts(userId);
+  async getPosts(
+    @Param() params: UserIdParam,
+    @Query() queries: QueryParameters,
+  ): Promise<Posts> {
+    return await this.userService.getUserPosts(params.userId, queries);
   }
 }

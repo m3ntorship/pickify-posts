@@ -15,6 +15,7 @@ import { UserRepository } from '../users/entities/user.repository';
 import { Post } from './interfaces/getPosts.interface';
 import { getNow } from '../shared/utils/datetime';
 import { User } from '../users/entities/user.entity';
+import { QueryParameters } from 'src/shared/validations/query.validator';
 
 describe('PostsService', () => {
   let service: PostsService;
@@ -112,7 +113,7 @@ describe('PostsService', () => {
     it('should throw error if post not found', async () => {
       // data
       const postId = 'test post id';
-      
+
       const user = {
         uuid: 'test-user-uuid',
         name: 'test-name',
@@ -261,6 +262,12 @@ describe('PostsService', () => {
         name: 'test',
         profile_pic: 'test-url',
       } as User;
+
+      const queries = {
+        limit: 3,
+        offset: 3,
+      } as QueryParameters;
+
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -328,7 +335,7 @@ describe('PostsService', () => {
       postRepo.getAllPosts = jest.fn().mockResolvedValueOnce(postsInDB);
 
       // actions
-      const result = await service.getAllPosts(user);
+      const result = await service.getAllPosts(user, queries);
 
       // assertions
       expect(result).toEqual(expectedPosts);
@@ -341,6 +348,12 @@ describe('PostsService', () => {
         name: 'test',
         profile_pic: 'test-url',
       } as User;
+
+      const queries = {
+        limit: 3,
+        offset: 3,
+      } as QueryParameters;
+
       const postInDB = {
         uuid: 'test-post-uuid',
         ready: false,
@@ -428,7 +441,7 @@ describe('PostsService', () => {
         .mockResolvedValueOnce(postsInDB.filter((post) => post.ready));
 
       // actions
-      const result = await service.getAllPosts(user);
+      const result = await service.getAllPosts(user, queries);
 
       // assertions
       expect(result).toEqual(expectedPosts);

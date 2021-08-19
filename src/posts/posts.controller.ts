@@ -7,10 +7,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UseFilters,
 } from '@nestjs/common';
-import { ExtendedRequest } from 'src/shared/interfaces/expressRequest';
+import { ExtendedRequest } from '../shared/interfaces/expressRequest';
+import { QueryParameters } from '../shared/validations/query.validator';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
@@ -40,13 +42,11 @@ export class PostsController {
   }
 
   @Get('/')
-  async getAllPosts(@Request() req: ExtendedRequest): Promise<Posts> {
-    return await this.postsService.getAllPosts(req.user);
-  }
-
-  @Get('/homepage/:userid')
-  async getUserPosts(@Param() params: UserIdParam): Promise<Posts> {
-    return await this.postsService.getUserPosts(params.userid);
+  async getAllPosts(
+    @Request() req: ExtendedRequest,
+    @Query() queries: QueryParameters,
+  ): Promise<Posts> {
+    return await this.postsService.getAllPosts(req.user, queries);
   }
 
   @Get('/:postid')

@@ -11,5 +11,5 @@ export class OptionIdParam {
 }
 export class UserIdParam {
   @IsUUID(4, { message: 'user id is not correct' })
-  userid: string;
+  userId: string;
 }
