@@ -1,5 +1,6 @@
 import { Query } from '@nestjs/common';
 import { Controller, Get, Param, Post, Request } from '@nestjs/common';
+import { ExtendedRequest } from '../shared/interfaces/expressRequest';
 import { Post as Ipost, Posts } from '../posts/interfaces/getPosts.interface';
 import { QueryParameters } from '../shared/validations/query.validator';
 import { UserIdParam } from '../shared/validations/uuid.validator';
@@ -17,7 +18,12 @@ export class UsersController {
   async getPosts(
     @Param() params: UserIdParam,
     @Query() queries: QueryParameters,
+    @Request() req: ExtendedRequest,
   ): Promise<Posts> {
-    return await this.userService.getUserPosts(params.userId, queries);
+    return await this.userService.getUserPosts(
+      params.userId,
+      queries,
+      req.user,
+    );
   }
 }

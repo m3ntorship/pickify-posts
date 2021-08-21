@@ -1,8 +1,14 @@
-@postId = 81cc93e6-aee7-4175-878a-6775fed64098
+@postId = 31c68aa4-89eb-4a29-9fc0-b6ea3fdcc0a0
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
-@userId =02e8f7cf-6ac0-4ce1-bb1c-6c33d68bf12f
-@token = eyJhbGciOiJSUzI1NiIsImtpZCI6IjM2NGU4NTQ1NzI5OWQ5NzIxYjczNDQyZGNiNTQ3Y2U2ZDk4NGRmNTkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoib21hciBzYW15IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdoYlBIaGpFNGpveVZzaGhOSEt2aFdCQ0V4cVYyZWtfenpPNThlTlBRPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3BpY2tpZnktMTM4ZjkiLCJhdWQiOiJwaWNraWZ5LTEzOGY5IiwiYXV0aF90aW1lIjoxNjI5Mzc3MzkyLCJ1c2VyX2lkIjoiVTBhMTdWdzFVUk5IQXVPMHE3S1hnNkZwbmdpMSIsInN1YiI6IlUwYTE3VncxVVJOSEF1TzBxN0tYZzZGcG5naTEiLCJpYXQiOjE2MjkzODEyMTQsImV4cCI6MTYyOTM4NDgxNCwiZW1haWwiOiJvbWFyc2FteTA5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTAwMzIyNzg1NzkyNzk3NTY4ODY1Il0sImVtYWlsIjpbIm9tYXJzYW15MDlAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.rXqlYU9xfSXwkWFH2_BGTD1wyGuDWq77gvuUGLd_RTMH4C-4dvDHQuLu4dnYSyxQbn0XTuPyzKeT-MEjNao9VnwaOAAIhXyCh11MwNv94DGdTO01Utte-0GGlNxfDqNaN7gfUmOX7GG9y06KXl5Nkp1dfV_YdNc5wmm2ufinSGqJFOtQAwGdrPzKHQQ86QTj_4hmt1TkrLg3-cKm4CRfqUYV2qlE1GDTaVOJSEE6ZarqZs-l9ohabmd7i7k0YjylcdMphBhuhi6H_1armzNDiZEn_0vLQC9U4WujAj63eD1tCa0XuKkhP7HTbDixZMOk3cPdPMbr4x2UWYtsRc0uhA
+@userId =e7db6314-f4bb-4eb6-8b6c-5d8178a6059b
+
+#  @userId = 02e8f7cf-6ac0-4ce1-bb1c-6c33d68bf12f
+    
+#    @userId = 3ad4e0f5-1787-46fa-851f-d7dddbfaf2c3
+
+
+@token = eyJhbGciOiJSUzI1NiIsImtpZCI6IjM2NGU4NTQ1NzI5OWQ5NzIxYjczNDQyZGNiNTQ3Y2U2ZDk4NGRmNTkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoib21hciBzYW15IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdoYlBIaGpFNGpveVZzaGhOSEt2aFdCQ0V4cVYyZWtfenpPNThlTlBRPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3BpY2tpZnktMTM4ZjkiLCJhdWQiOiJwaWNraWZ5LTEzOGY5IiwiYXV0aF90aW1lIjoxNjI5NTQwMDI2LCJ1c2VyX2lkIjoiVTBhMTdWdzFVUk5IQXVPMHE3S1hnNkZwbmdpMSIsInN1YiI6IlUwYTE3VncxVVJOSEF1TzBxN0tYZzZGcG5naTEiLCJpYXQiOjE2Mjk1NDUyNjAsImV4cCI6MTYyOTU0ODg2MCwiZW1haWwiOiJvbWFyc2FteTA5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTAwMzIyNzg1NzkyNzk3NTY4ODY1Il0sImVtYWlsIjpbIm9tYXJzYW15MDlAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.JmM1YCr6Ywk0GxKC9qTcixJZHnVpTwjX87hQOEuInorf5fwrQEqlK4zLELk1Jj4gQ0xq6HFfb7LJHFIwRwvwVNsWLCWecLwJPEv0UZzy6O2fP23rRUQwIfkW2vqZkoR3b2rHy3j3-pfCRN09wjhPh0YAm9QgSlEJn8upg0AmvJvBTWP_4-6SqOWx_QN81OMzMB5oq33dwJOKcX0KpsfUyJJfRdGr7d5QXG5C1SEb6oFUJjAQETZnDXmhj6uaMOL1PTGJ3PCATqaxevIi6dbQ403epjZrw7FdAKFAI26HfZwgXYVd3CDDFy2qvfkWdL8sQW9v6-4sA-vpmEEI8q8bFg
 
 
 
@@ -31,7 +37,7 @@ Authorization: Bearer {{userId}}
     "caption": "post 2 caption",
     "type": "image_poll",
     "is_hidden": true,
-    "media_count": 3
+    "media_count": 0
 }
 
 ###
@@ -55,7 +61,7 @@ Authorization: Bearer {{userId}}
 {   
     "caption": "post caption",
     "type": "text_poll",
-    "is_hidden": false,
+    "is_hidden": true,
     "media_count": 0
 }
 
