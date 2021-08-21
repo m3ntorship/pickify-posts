@@ -19,6 +19,7 @@ spec:
         - name: "{{{M3_COMPONENT}}}-main-container"
           image: "{{{M3_IMAGE}}}:{{{M3_VERSION}}}"
           env:
+            # Database variables
             - name: APP_DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -31,17 +32,29 @@ spec:
                   key: password
             - name: APP_DB_HOST
               value: "{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db.{{{M3_NAMESPACE}}}.svc.cluster.local"
-
-            - name: DB_URL
-              value: {{{M3_POSTS_DB_URL}}}
-            - name: NODE_ENV
-              value: {{{M3_NODE_ENV}}}
-            - name: RABBITMQ_URL
-              value: {{{M3_RABBITMQ_URL}}}
+            # rabbitMQ variables
+            - name: RABBITMQ_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: password
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: username
+            - name: RABBITMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: host
             - name: MEDIA_QUEUE
               value: {{{M3_MEDIA_QUEUE}}}    
             - name: BROKER_QUEUE_PATTERN
               value: {{{M3_BROKER_QUEUE_PATTERN}}}
+            # general variables
+            - name: NODE_ENV
+              value: {{{M3_NODE_ENV}}}
           ports:
             - name: web
               containerPort: 3000
