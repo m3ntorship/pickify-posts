@@ -2,7 +2,7 @@ import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Post } from '../../posts/entities/post.entity';
 import { Vote } from '../../votes/entities/vote.entity';
-import { Feedback } from 'src/report/entities/feedback.entity';
+import { Feedback } from '../../report/entities/feedback.entity';
 
 @Entity({ name: 'users', schema: POSTS_SCHEMA })
 export class User extends Model {
