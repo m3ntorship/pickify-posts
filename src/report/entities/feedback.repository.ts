@@ -21,7 +21,7 @@ export class FeedbackRepository extends Repository<Feedback> {
       .select([
         'feedback.feedback_body',
         'feedback.feedback_choice',
-        'user.name',
+        'user.uuid',
       ])
       .leftJoin('feedback.user', 'user')
       .getMany();
