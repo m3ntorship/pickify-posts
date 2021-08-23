@@ -1,7 +1,17 @@
-import { Body, Controller, Get, HttpCode, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { auth } from 'firebase-admin';
 import { ExtendedRequest } from '../shared/interfaces/expressRequest';
 import { FeedbackCreationDto } from './dto/feedback.dto';
 import { Feedback } from './entities/feedback.entity';
+import { AdminAuthGuard } from './Guards/admin.guard';
 import { ReportService } from './report.service';
 
 @Controller('report')
@@ -14,8 +24,9 @@ export class ReportController {
     @Body() feedbackDto: FeedbackCreationDto,
     @Request() req: ExtendedRequest,
   ): Promise<void> {
-    return await this.reportService.createFeedback(feedbackDto, req.user);
+    await this.reportService.createFeedback(feedbackDto, req.user);
   }
+  @UseGuards(AdminAuthGuard)
   @Get('/feedback')
   @HttpCode(200)
   async getFeedbacks(): Promise<Feedback[]> {

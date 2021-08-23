@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '../users/entities/user.entity';
+import { FeedbackCreationDto } from './dto/feedback.dto';
 import { FeedbackRepository } from './entities/feedback.repository';
 import { ReportService } from './report.service';
 
@@ -43,6 +45,25 @@ describe('ReportService', () => {
 
       //assertions
       expect(result).toEqual(feedbacks);
+    });
+  });
+  describe('Create feedback function', () => {
+    it('should create feedback', async () => {
+      // data
+      const dto: FeedbackCreationDto = {
+        feedback_body: 'good idea',
+        feedback_choice: 4,
+      };
+      const user = {
+        uuid: 'test-user-uuid',
+      } as User;
+      //mocks
+      feedbackRepository.createFeedback = jest.fn().mockImplementation();
+      //action
+      const result = await service.createFeedback(dto, user);
+      //assertion
+      expect(feedbackRepository.createFeedback).toBeCalledWith(dto, user);
+      expect(feedbackRepository.createFeedback).toBeCalledTimes(1);
     });
   });
 });

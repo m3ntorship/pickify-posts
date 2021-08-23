@@ -8,13 +8,13 @@ export class FeedbackRepository extends Repository<Feedback> {
   async createFeedback(
     feedbackDto: FeedbackCreationDto,
     user: User,
-  ): Promise<Feedback> {
+  ): Promise<void> {
     const { feedback_body, feedback_choice } = feedbackDto;
     const feedback = this.create();
     feedback.feedback_choice = feedback_choice;
     feedback.feedback_body = feedback_body;
     feedback.user = user;
-    return await this.save(feedback);
+    await this.save(feedback);
   }
   async getAllFeedBacks(): Promise<Feedback[]> {
     return await this.createQueryBuilder('feedback')
@@ -24,6 +24,9 @@ export class FeedbackRepository extends Repository<Feedback> {
         'user.uuid',
       ])
       .leftJoin('feedback.user', 'user')
+      .orderBy({
+        'feedback.created_at': 'DESC',
+      })
       .getMany();
   }
 }
