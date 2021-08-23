@@ -1,6 +1,7 @@
 @postId = 31c68aa4-89eb-4a29-9fc0-b6ea3fdcc0a0
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
+<<<<<<< HEAD
 @userId =e7db6314-f4bb-4eb6-8b6c-5d8178a6059b
 
 #  @userId = 02e8f7cf-6ac0-4ce1-bb1c-6c33d68bf12f
@@ -14,6 +15,10 @@
 
 
 ###
+=======
+@userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
+@token = eyJhbGciOiJSUzI1NiIsImtpZCI6IjM2NGU4NTQ1NzI5OWQ5NzIxYjczNDQyZGNiNTQ3Y2U2ZDk4NGRmNTkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoib21hciBzYW15IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdoYlBIaGpFNGpveVZzaGhOSEt2aFdCQ0V4cVYyZWtfenpPNThlTlBRPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3BpY2tpZnktMTM4ZjkiLCJhdWQiOiJwaWNraWZ5LTEzOGY5IiwiYXV0aF90aW1lIjoxNjI5NzIzMjk1LCJ1c2VyX2lkIjoiVTBhMTdWdzFVUk5IQXVPMHE3S1hnNkZwbmdpMSIsInN1YiI6IlUwYTE3VncxVVJOSEF1TzBxN0tYZzZGcG5naTEiLCJpYXQiOjE2Mjk3MjcwNTEsImV4cCI6MTYyOTczMDY1MSwiZW1haWwiOiJvbWFyc2FteTA5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTAwMzIyNzg1NzkyNzk3NTY4ODY1Il0sImVtYWlsIjpbIm9tYXJzYW15MDlAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.bm23IiaAHnJIgki17wAVm7cb4ky0_OQoVv2WdrXCbu0g0SIz-dYVkCE4tS_B18NC1kY6AoQ_TgK2-9gWpkmAf3OGxxyfnRJ1Wi-n99C-C_NJ5a_jYoMcGMhcWo7dv4ZmfbFlKGu5DJ0x2OaaB8RdCmUY2XDOFrdL7vaXU3rM0VrYKYzaFepwFsC0Dny8s2vTwtcUxb-CDNaj74Yo3PI8rvmMLjccxhWmj-SF__K8PaYmdn195_eIgIkzxLIUgmOXb2J7rVO4YxjmRSuPNc0ljxB-iU-4Oos-B8qnRI0TlBTxdq68lB1LJW97FaQd_bAmi4vcgqUy0oGh9qCUKl1llw
+>>>>>>> 8a41b09f78045e06afd40fbf9206e6e7742ad93c
 
 // POST /api/posts
 
@@ -151,10 +156,21 @@ Authorization: Bearer {{userId}}
 }
 
 ##################
+//Post /api/reports/feedback
+POST http://localhost:3000/api/report/feedback HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{   
+    "feedback_body":"new",
+    "feedback_choice":4
+}
+
+##################
 // PATCH /api/posts/:postid
 PATCH http://localhost:3000/api/posts/{{postId}}
 Content-Type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {
     "finished": true
@@ -185,6 +201,13 @@ Authorization: Bearer {{token}}
 // GET /api/posts/:postid
 GET http://localhost:3000/api/posts/{{postId}}
 Authorization: Bearer {{token}}
+
+##################
+// GET /api/report/feedback
+GET http://localhost:3000/api/report/feedback HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
 
 ##################
 // PUT /api/votes/:optionid
