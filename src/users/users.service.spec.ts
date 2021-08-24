@@ -1,62 +1,51 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostsService } from '../posts/posts.service';
-import { PostRepository } from '../posts/entities/post.repository';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { UserRepository } from './entities/user.repository';
-import { OptionsGroupRepository } from '../posts/entities/optionsGroup.repository';
-import { OptionRepository } from '../posts/entities/option.repository';
-import { UserIdParam } from '../shared/validations/uuid.validator';
 import { QueryParameters } from '../shared/validations/query.validator';
-import { Post } from '../posts/interfaces/getPosts.interface';
+import { OptionRepository } from '../posts/entities/option.repository';
+import { OptionsGroupRepository } from '../posts/entities/optionsGroup.repository';
+import { PostRepository } from '../posts/entities/post.repository';
+import { PostsService } from '../posts/posts.service';
+import { User } from '../users/entities/user.entity';
+import { UserRepository } from './entities/user.repository';
+import { UsersService } from './users.service';
 import { getNow } from '../shared/utils/datetime';
+import { Post } from '../posts/interfaces/getPosts.interface';
 
-describe('UsersController', () => {
-  let controller: UsersController;
-  let userService: UsersService;
+describe('UserService', () => {
+  let service: UsersService;
+  let postRepo: PostRepository;
+  let postService: PostsService;
+  let userRepo: UserRepository;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UsersController],
       providers: [
         UsersService,
+        UserRepository,
         PostRepository,
         PostsService,
-        UserRepository,
         OptionsGroupRepository,
         OptionRepository,
       ],
     }).compile();
-
-    controller = module.get<UsersController>(UsersController);
-    userService = module.get<UsersService>(UsersService);
+    service = module.get<UsersService>(UsersService);
+    postRepo = module.get<PostRepository>(PostRepository);
+    postService = module.get<PostsService>(PostsService);
+    userRepo = module.get<UserRepository>(UserRepository);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
-    expect(controller).toHaveProperty('createUser');
-    expect(controller).toHaveProperty('getPosts');
+    expect(service).toBeDefined();
+    expect(service).toHaveProperty('getUserPosts');
   });
 
-  describe('createUser Method', () => {
-    it('should return user from request body', () => {
-      // data
-      const req = {
-        user: 'test',
-      };
-
-      // actions
-      const res = controller.createUser(req);
-      // assertion
-      expect(res).toEqual(req.user);
-    });
-  });
-
-  describe('getPosts function', () => {
-    it('should return object of postscount and array of posts', async () => {
+  describe('getUsersPosts function', () => {
+    it('should return object of posts count and array of posts', async () => {
       //data
-      const param = { userId: 'user-uuid' } as UserIdParam;
+      const userid = 'user-id';
       const query = { limit: 10, offset: 0 } as QueryParameters;
-      const req: any = { user: { uuid: 'user-uuid' } };
+      const currentUser = { uuid: 'user2-uuid' } as User;
+      const returnedUser = { uuid: 'user-id' } as User;
+
       const post = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -65,7 +54,7 @@ describe('UsersController', () => {
         created_at: getNow().toDate(),
         type: 'text poll',
         user: {
-          uuid: param.userId,
+          uuid: userid,
           name: 'test',
           profile_pic: 'test-url',
         },
@@ -121,9 +110,16 @@ describe('UsersController', () => {
       };
 
       //mocks
-      userService.getUserPosts = jest.fn().mockResolvedValue(returnedPosts);
-      //actions
-      const result = await controller.getPosts(param, query, req);
+
+      userRepo.getUser = jest.fn().mockResolvedValue(returnedUser);
+      if (userid === currentUser.uuid) {
+        postRepo.getCurrentUserPosts = jest.fn().mockResolvedValue(postsInDB);
+      } else {
+        postRepo.getUserPosts = jest.fn().mockResolvedValue(postsInDB);
+      }
+      //action
+      const result = await service.getUserPosts(userid, query, currentUser);
+
       //assertions
       expect(result).toEqual(returnedPosts);
     });

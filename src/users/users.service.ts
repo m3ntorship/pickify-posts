@@ -22,8 +22,11 @@ export class UsersService {
   ): Promise<Posts> {
     //check if user exist or not
     const userToFind = await this.userRepository.getUser(userid);
+
+    //checking if user is in the database
     if (!userToFind)
       throw new NotFoundException(`User with id: ${userid} not found`);
+
     let currentPosts: PostEntity[];
 
     if (userid === user.uuid) {
