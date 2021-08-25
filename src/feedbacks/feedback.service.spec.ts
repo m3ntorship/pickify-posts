@@ -28,7 +28,7 @@ describe('FeedBackService', () => {
       const feedbacks = [
         {
           feedback_body: 'Good Idea',
-          feedback_choice: 4,
+          feedback_rating: 4,
           user: {
             uuid: 'user-uuid',
           },

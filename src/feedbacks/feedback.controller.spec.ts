@@ -10,7 +10,7 @@ describe('FeedBackController', () => {
     getAllFeedBacks: jest.fn().mockResolvedValue([
       {
         feedback_body: 'Good Idea',
-        feedback_choice: 4,
+        feedback_rating: 4,
         user: {
           uuid: 'user-uuid',
         },
@@ -37,7 +37,7 @@ describe('FeedBackController', () => {
       const feedbacks = [
         {
           feedback_body: 'Good Idea',
-          feedback_choice: 4,
+          feedback_rating: 4,
           user: {
             uuid: 'user-uuid',
           },
