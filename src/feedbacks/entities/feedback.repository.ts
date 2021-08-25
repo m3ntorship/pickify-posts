@@ -18,11 +18,7 @@ export class FeedbackRepository extends Repository<Feedback> {
   }
   async getAllFeedBacks(): Promise<Feedback[]> {
     return await this.createQueryBuilder('feedback')
-      .select([
-        'feedback.feedback_body',
-        'feedback.feedback_rating',
-        'user.uuid',
-      ])
+      .select(['feedback.feedback_body', 'feedback.feedback_rating', 'user'])
       .leftJoin('feedback.user', 'user')
       .orderBy({
         'feedback.created_at': 'DESC',

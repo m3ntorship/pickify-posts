@@ -6,15 +6,29 @@ import { FeedBackService } from './feedback.service';
 
 describe('FeedBackService', () => {
   let service: FeedBackService;
-  let feedbackRepository: FeedbackRepository;
+
+  const feedbackRepository = {
+    getAllFeedBacks: jest.fn().mockResolvedValueOnce([
+      {
+        feedback_body: 'Good Idea',
+        feedback_rating: 4,
+        user: {
+          uuid: 'user-uuid',
+        },
+      },
+    ]),
+    createFeedback: jest.fn().mockResolvedValue(undefined),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FeedBackService, FeedbackRepository],
+      providers: [
+        { provide: FeedbackRepository, useValue: feedbackRepository },
+        FeedBackService,
+      ],
     }).compile();
 
     service = module.get<FeedBackService>(FeedBackService);
-    feedbackRepository = module.get<FeedbackRepository>(FeedbackRepository);
   });
 
   it('should be defined', () => {
@@ -35,11 +49,6 @@ describe('FeedBackService', () => {
         },
       ];
 
-      // mocks
-      feedbackRepository.getAllFeedBacks = jest
-        .fn()
-        .mockResolvedValueOnce(feedbacks);
-
       //actions
       const result = await service.getAllFeedBacks();
 
@@ -57,13 +66,11 @@ describe('FeedBackService', () => {
       const user = {
         uuid: 'test-user-uuid',
       } as User;
-      //mocks
-      feedbackRepository.createFeedback = jest.fn().mockImplementation();
       //action
       const result = await service.createFeedback(dto, user);
       //assertion
       expect(feedbackRepository.createFeedback).toBeCalledWith(dto, user);
-      expect(feedbackRepository.createFeedback).toBeCalledTimes(1);
+      expect(result).toBeUndefined();
     });
   });
 });
