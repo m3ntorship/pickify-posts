@@ -16,8 +16,8 @@
     },
 
     {
-      "name": "report",
-      "description": "reports and feedbacks endpoints"
+      "name": "feedbacks",
+      "description": "feedbacks endpoints"
     }
   ],
   "paths": {
@@ -337,10 +337,10 @@
         }
       }
     },
-    "/report/feedbacks": {
+    "/feedbacks": {
       "post": {
-        "tags": ["report"],
-        "summary": "Create a new report or feedback",
+        "tags": ["feedbacks"],
+        "summary": "Create a new feedback",
         "operationId": "createReport",
         "requestBody": {
           "required": true,
@@ -367,35 +367,17 @@
         }
       },
       "get": {
-        "tags": ["report"],
+        "tags": ["feedbacks"],
         "summary": "Get all feedbacks",
-        "operationId": "getPosts",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "offset",
-            "schema": {
-              "type": "number"
-            },
-            "description": "The number of items to skip before starting to collect the result set"
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "schema": {
-              "type": "number"
-            },
-            "description": "The numbers of items to return"
-          }
-        ],
+        "operationId": "getFeedBacks",
         "responses": {
           "200": {
             "description": "Get all feedbacks",
             "$ref": "#/components/responses/feedbacks_response"
           },
-          "400": {
-            "description": "Bad request",
-            "$ref": "#/components/responses/error_bad_request"
+          "403": {
+            "description": "Forbidden",
+            "$ref": "#/components/responses/error_forbidden"
           },
           "401": {
             "description": "Unauthorized.",
@@ -552,22 +534,17 @@
       "feedback_creation_request": {
         "type": "object",
         "properties": {
-          "user_id": {
-            "type": "string",
-            "example": "some-id",
-            "x-faker": "random.uuid"
-          },
           "feedback_body": {
             "type": "string",
             "example": "test feedback"
           },
-          "feedback_choice": {
+          "feedback_rating": {
             "type": "number",
             "example": "3"
           }
         },
-        "maxProperties": 3,
-        "required": ["user_id", "feedback_choice"]
+        "maxProperties": 4,
+        "required": ["user_id", "feedback_rating"]
       },
       "single_post_response": {
         "type": "object",
@@ -649,16 +626,31 @@
       "single_feedback_response": {
         "type": "object",
         "properties": {
-          "user_id": {
-            "type": "string",
-            "example": "some-id",
-            "x-faker": "random.uuid"
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "some-id",
+                "x-faker": "random.uuid"
+              },
+              "name": {
+                "type": "string",
+                "example": "John Doe",
+                "x-faker": "name.findName"
+              },
+              "profile_pic": {
+                "type": "string",
+                "example": "URL",
+                "x-faker": "image.imageUrl"
+              }
+            }
           },
           "feedback_body": {
             "type": "string",
             "example": "test feedback"
           },
-          "feedback_choice": {
+          "feedback_rating": {
             "type": "number",
             "example": "3"
           }
@@ -833,6 +825,16 @@
       },
       "error_not_found": {
         "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/generic_error"
+            }
+          }
+        }
+      },
+      "error_forbidden": {
+        "description": "you are not authorized to access this Info.",
         "content": {
           "application/json": {
             "schema": {
