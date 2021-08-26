@@ -11,7 +11,13 @@
       "description": "Posts endpoints"
     },
     {
-      "name": "votes"
+      "name": "votes",
+      "description": "votes endpoints"
+    },
+
+    {
+      "name": "report",
+      "description": "reports and feedbacks endpoints"
     }
   ],
   "paths": {
@@ -71,6 +77,39 @@
           "200": {
             "description": "Get all posts",
             "$ref": "#/components/responses/feed_response"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
+    },
+    "/posts/homepage/{userid}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get all posts of a specific user",
+        "requestBody": {
+          "required": true,
+          "content": {}
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user id",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The current user id"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Posts Got successfully"
           },
           "400": {
             "description": "Bad request",
@@ -297,8 +336,76 @@
           }
         }
       }
+    },
+    "/report/feedbacks": {
+      "post": {
+        "tags": ["report"],
+        "summary": "Create a new report or feedback",
+        "operationId": "createReport",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/feedback_creation_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "feedback Created Successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      },
+      "get": {
+        "tags": ["report"],
+        "summary": "Get all feedbacks",
+        "operationId": "getPosts",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "number"
+            },
+            "description": "The number of items to skip before starting to collect the result set"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number"
+            },
+            "description": "The numbers of items to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all feedbacks",
+            "$ref": "#/components/responses/feedbacks_response"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
     }
   },
+
   "components": {
     "schemas": {
       "options_group_creation": {
@@ -396,9 +503,6 @@
               "required": ["url"]
             },
             "maxItems": 4
-          },
-          "voted": {
-            "type": "boolean"
           }
         },
         "required": ["id"]
@@ -444,6 +548,26 @@
         },
         "maxProperties": 4,
         "required": ["is_hidden", "type", "media_count"]
+      },
+      "feedback_creation_request": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "example": "some-id",
+            "x-faker": "random.uuid"
+          },
+          "feedback_body": {
+            "type": "string",
+            "example": "test feedback"
+          },
+          "feedback_choice": {
+            "type": "number",
+            "example": "3"
+          }
+        },
+        "maxProperties": 3,
+        "required": ["user_id", "feedback_choice"]
       },
       "single_post_response": {
         "type": "object",
@@ -521,6 +645,25 @@
           }
         },
         "required": ["created_at", "is_hidden", "id", "type", "options_groups"]
+      },
+      "single_feedback_response": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "example": "some-id",
+            "x-faker": "random.uuid"
+          },
+          "feedback_body": {
+            "type": "string",
+            "example": "test feedback"
+          },
+          "feedback_choice": {
+            "type": "number",
+            "example": "3"
+          }
+        },
+        "required": ["user_id", "feedback_body"]
       },
       "generic_error": {
         "type": "object",
@@ -618,6 +761,29 @@
                 }
               },
               "required": ["postsCount", "posts"]
+            }
+          }
+        }
+      },
+      "feedbacks_response": {
+        "description": "Get feedbacks",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "feedbacksCount": {
+                  "type": "number",
+                  "x-faker": "random.number"
+                },
+                "feedbacks": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/single_feedback_response"
+                  }
+                }
+              },
+              "required": ["feedbacksCount", "feedbacks"]
             }
           }
         }
