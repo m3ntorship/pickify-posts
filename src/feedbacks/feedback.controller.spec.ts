@@ -7,15 +7,20 @@ import { FeedBackService } from './feedback.service';
 describe('FeedBackController', () => {
   let controller: FeedBackController;
   const service = {
-    getAllFeedBacks: jest.fn().mockResolvedValue([
-      {
-        feedback_body: 'Good Idea',
-        feedback_rating: 4,
-        user: {
-          uuid: 'user-uuid',
+    getAllFeedBacks: jest.fn().mockResolvedValue({
+      feedbacksCount: 1,
+      feedbacks: [
+        {
+          feedback_body: 'Good Idea',
+          feedback_rating: 4,
+          user: {
+            id: 'user-uuid',
+            name: 'user-name',
+            profile_pic: 'user-profile-pic',
+          },
         },
-      },
-    ]),
+      ],
+    }),
     createFeedback: jest.fn().mockResolvedValue(undefined),
   };
 
@@ -34,15 +39,20 @@ describe('FeedBackController', () => {
   describe('getAllFeedBacks function', () => {
     it('it should return array of feedbacks', async () => {
       //data
-      const feedbacks = [
-        {
-          feedback_body: 'Good Idea',
-          feedback_rating: 4,
-          user: {
-            uuid: 'user-uuid',
+      const feedbacks = {
+        feedbacksCount: 1,
+        feedbacks: [
+          {
+            feedback_body: 'Good Idea',
+            feedback_rating: 4,
+            user: {
+              id: 'user-uuid',
+              name: 'user-name',
+              profile_pic: 'user-profile-pic',
+            },
           },
-        },
-      ];
+        ],
+      };
 
       //action
       const result = await controller.getAllFeedbacks();

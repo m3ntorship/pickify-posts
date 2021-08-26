@@ -14,6 +14,8 @@ describe('FeedBackService', () => {
         feedback_rating: 4,
         user: {
           uuid: 'user-uuid',
+          name: 'user-name',
+          profile_pic: 'user-profile-pic',
         },
       },
     ]),
@@ -45,15 +47,31 @@ describe('FeedBackService', () => {
           feedback_rating: 4,
           user: {
             uuid: 'user-uuid',
+            name: 'user-name',
+            profile_pic: 'user-profile-pic',
           },
         },
       ];
+      const modifiedfeedbacks = {
+        feedbacksCount: 1,
+        feedbacks: [
+          {
+            feedback_body: feedbacks[0].feedback_body,
+            feedback_rating: feedbacks[0].feedback_rating,
+            user: {
+              id: feedbacks[0].user.uuid,
+              name: feedbacks[0].user.name,
+              profile_pic: feedbacks[0].user.profile_pic,
+            },
+          },
+        ],
+      };
 
       //actions
       const result = await service.getAllFeedBacks();
 
       //assertions
-      expect(result).toEqual(feedbacks);
+      expect(result).toEqual(modifiedfeedbacks);
     });
   });
   describe('Create feedback function', () => {
