@@ -2,8 +2,8 @@
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
 @userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
-@token = eyJhbGciOiJSUzI1NiIsImtpZCI6IjM2NGU4NTQ1NzI5OWQ5NzIxYjczNDQyZGNiNTQ3Y2U2ZDk4NGRmNTkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoib21hciBzYW15IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdoYlBIaGpFNGpveVZzaGhOSEt2aFdCQ0V4cVYyZWtfenpPNThlTlBRPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3BpY2tpZnktMTM4ZjkiLCJhdWQiOiJwaWNraWZ5LTEzOGY5IiwiYXV0aF90aW1lIjoxNjI5MjIzNTczLCJ1c2VyX2lkIjoiVTBhMTdWdzFVUk5IQXVPMHE3S1hnNkZwbmdpMSIsInN1YiI6IlUwYTE3VncxVVJOSEF1TzBxN0tYZzZGcG5naTEiLCJpYXQiOjE2MjkzMjMxNDksImV4cCI6MTYyOTMyNjc0OSwiZW1haWwiOiJvbWFyc2FteTA5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTAwMzIyNzg1NzkyNzk3NTY4ODY1Il0sImVtYWlsIjpbIm9tYXJzYW15MDlAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.DnqKeuX0XnN12H-YWQ7r0UL54F2Ugf1OjCOSrvrqAH_jr2gffW3RmxDdugCVocUeN4Qeq1garTwuw7tz-g9wxHaWPkApV6yosN-_zVdBK4m3dycY9qnqxmIJwKE3GCXuIv2a5scMtM2wLKeWn9aLRLteGzCfYP1cLzFumr0zfHgqfRKF9fyYfKeOO2HL7P2hnF2Ii8J5DSwyQO4eKy3xMz-sMy3ag4OV02NJ6DPDdfxclnqcxyDjx10FTJDBq2ir8WsWy-7KCNcyPiFYuvNS8Wy2vQYfV0JsQCa39JCR7s0c-slpbuwN2dKoc-BMUK7mb0zqQd89WRPRmFnQqWleDw
 
+@token = token
 // POST /api/posts
 //////////////////
 POST http://localhost:3000/api/posts HTTP/1.1
@@ -183,6 +183,14 @@ Authorization: Bearer {{token}}
 // PUT /api/votes/:optionid
 PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
 Authorization: Bearer {{userId}}
+
+##################
+POST http://localhost:3000/api/report HTTP/1.1
+Authorization: Bearer {{token}}
+content-type: application/json
+
+{"postId":"0af3fbb6-042d-4de2-af75-1de64dc3b70f",
+"reportType":"post"}
 
 ###
 POST  http://localhost:3000/api/users/register
