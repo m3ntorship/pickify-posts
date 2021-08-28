@@ -16,7 +16,7 @@ export class feedbackEntity1629918777150 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "${POSTS_SCHEMA}"."feedback" DROP CONSTRAINT "feedbacks_userId_FKEY" `,
+      `ALTER TABLE "${POSTS_SCHEMA}"."feedbacks" DROP CONSTRAINT "feedbacks_userId_FKEY" `,
     );
     await queryRunner.query(
       `ALTER TABLE "${POSTS_SCHEMA}"."feedbacks" DROP COLUMN IF EXISTS"userId"`,
