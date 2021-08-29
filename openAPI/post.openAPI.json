@@ -331,7 +331,7 @@
         }
       }
     }
-  },"/reports/{postid}/": {
+  },"/reports/posts/{postid}/": {
     "get": {
       "tags": ["reports"],
       "summary": "get reports of a certain post",

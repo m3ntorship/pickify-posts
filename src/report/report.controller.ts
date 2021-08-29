@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ExtendedRequest } from '../shared/interfaces/expressRequest';
 import { CreatePostsReportDTO } from './dto/createReport.dto';
-import { AdminAuthGuard } from './guards/admin.guard';
+import { AdminAuthGuard } from '../shared/Guards/admin.guard';
 import { PostsReports } from './interfaces/getPostsReports.interface';
 import { ReportService } from './report.service';
 
