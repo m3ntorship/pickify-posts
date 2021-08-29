@@ -13,7 +13,7 @@ import { auth } from 'firebase-admin';
 import { ExtendedRequest } from '../shared/interfaces/expressRequest';
 import { FeedbackCreationDto } from './dto/feedback.dto';
 import { Feedback } from './entities/feedback.entity';
-import { AdminAuthGuard } from './Guards/admin.guard';
+import { AdminAuthGuard } from '../shared/Guards/admin.guard';
 import { FeedBackService } from './feedback.service';
 import { Feedbacks } from './interfaces/getFeedbacks.interface';
 
