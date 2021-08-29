@@ -330,27 +330,14 @@
           "$ref": "#/components/responses/error_unauthorized"
         }
       }
-    }
-  },"/reports/posts/{postid}/": {
+    },
     "get": {
       "tags": ["reports"],
-      "summary": "get reports of a certain post",
-      "operationId": "getPostReports",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "postid",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "description": "id of post needed"
-        }
-      ],
+      "summary": "get all posts reports",
+      "operationId": "getPostsReports",
       "responses": {
         "200": {
-          "description": "Get Post Reports",
+          "description": "Get All Posts Reports",
           "$ref": "#/components/responses/post_reports_response"
         },
         "400": {
@@ -538,6 +525,14 @@
                 "type": "string",
                 "example": "John Doe",
                 "x-faker": "name.findName"
+              }
+            }
+          },
+          "post":{
+            "type": "object",
+            "properties": {
+              "items": {
+                "$ref": "#/components/schemas/single_post_response"
               }
             }
           }
