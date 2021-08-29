@@ -3,6 +3,7 @@ import { PostRepository } from '../posts/entities/post.repository';
 import { User } from '../users/entities/user.entity';
 import { CreatePostsReportDTO } from './dto/createReport.dto';
 import { PostsReportRepository } from './entities/report.repository';
+import { PostsReports } from './interfaces/getPostsReports.interface';
 
 @Injectable()
 export class ReportService {
@@ -19,5 +20,13 @@ export class ReportService {
       uuid: createPostsReportDTO.postId,
     });
     await this.postsReportRepository.createPostsReport(post, reporter);
+  }
+
+  async getAllPostsReports(): Promise<PostsReports> {
+    const reports = await this.postsReportRepository.getAllPostsReports();
+    return {
+      postsReportsCount: reports.length,
+      postsReports: reports,
+    };
   }
 }

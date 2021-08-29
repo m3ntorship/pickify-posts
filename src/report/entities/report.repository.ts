@@ -11,4 +11,11 @@ export class PostsReportRepository extends Repository<PostsReport> {
     report.post = post;
     await this.save(report);
   }
+
+  async getAllPostsReports(): Promise<PostsReport[]> {
+    return await this.createQueryBuilder('postsReport')
+      .leftJoinAndSelect('postsReport.reporter', 'user')
+      .leftJoinAndSelect('postsReport.post', 'post')
+      .getMany();
+  }
 }

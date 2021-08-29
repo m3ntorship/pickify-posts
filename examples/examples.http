@@ -192,6 +192,10 @@ content-type: application/json
 {"postId":"0af3fbb6-042d-4de2-af75-1de64dc3b70f",
 "reportType":"post"}
 
+##################
+GET http://localhost:3000/api/report HTTP/1.1
+Authorization: Bearer {{token}}
+
 ###
 POST  http://localhost:3000/api/users/register
 Authorization: Bearer {{token}}
