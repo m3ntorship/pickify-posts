@@ -12,6 +12,10 @@
     },
     {
       "name": "votes"
+    },
+    {
+      "name": "reports",
+      "description": "Reports endpoints"
     }
   ],
   "paths": {
@@ -297,8 +301,70 @@
           }
         }
       }
+    },
+  "/reports": {
+    "post": {
+      "tags": ["reports"],
+      "summary": "Create a new report",
+      "operationId": "createReport",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/report_creation_request"
+            }
+          }
+        }
+      },
+      "responses": {
+        "204": {
+          "description": "Report Created Successfully"
+        },
+        "400": {
+          "description": "Bad request",
+          "$ref": "#/components/responses/error_bad_request"
+        },
+        "401": {
+          "description": "Unauthorized.",
+          "$ref": "#/components/responses/error_unauthorized"
+        }
+      }
     }
-  },
+  },"/reports/{postid}/": {
+    "get": {
+      "tags": ["reports"],
+      "summary": "get reports of a certain post",
+      "operationId": "getPostReports",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "postid",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "id of post needed"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Get Post Reports",
+          "$ref": "#/components/responses/post_reports_response"
+        },
+        "400": {
+          "description": "Bad request",
+          "$ref": "#/components/responses/error_bad_request"
+        },
+        "401": {
+          "description": "Unauthorized.",
+          "$ref": "#/components/responses/error_unauthorized"
+        }
+      }
+    }
+  }
+},
   "components": {
     "schemas": {
       "options_group_creation": {
@@ -396,9 +462,6 @@
               "required": ["url"]
             },
             "maxItems": 4
-          },
-          "voted": {
-            "type": "boolean"
           }
         },
         "required": ["id"]
@@ -444,6 +507,42 @@
         },
         "maxProperties": 4,
         "required": ["is_hidden", "type", "media_count"]
+      },
+      "report_creation_request": {
+        "type": "object",
+        "properties": {
+          "report_type": {
+            "type": "string",
+            "example": "post"
+          },
+          "post_id": {
+            "type": "string",
+            "example":"post-uuid"
+          }
+        },
+        "maxProperties": 2,
+        "required": ["report_type", "post_id"]
+      },  
+       "single_post_reports_response": {
+        "type": "object",
+        "properties": {
+          "reporter": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "some-id",
+                "x-faker": "random.uuid"
+              },
+              "name": {
+                "type": "string",
+                "example": "John Doe",
+                "x-faker": "name.findName"
+              }
+            }
+          }
+        },
+        "required": ["id"]
       },
       "single_post_response": {
         "type": "object",
@@ -618,6 +717,29 @@
                 }
               },
               "required": ["postsCount", "posts"]
+            }
+          }
+        }
+      },
+      "post_reports_response": {
+        "description": "Get Post Reports",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reportsCount": {
+                  "type": "number",
+                  "x-faker": "random.number"
+                },
+                "reports": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/single_post_reports_response"
+                  }
+                }
+              },
+              "required": ["reportsCount", "reports"]
             }
           }
         }
