@@ -25,16 +25,7 @@ export class ReportController {
     @Request() req: ExtendedRequest,
     @Body() createPostsReportDTO: CreatePostsReportDTO,
   ): Promise<void> {
-    await this.reportService
-      .createPostsReport(createPostsReportDTO, req.user)
-      .catch(() => {
-        throw new HttpException(
-          {
-            message: "Reporter cann't report same post twoice",
-          },
-          HttpStatus.CONFLICT,
-        );
-      });
+    await this.reportService.createPostsReport(createPostsReportDTO, req.user);
   }
   @Get('/')
   @UseGuards(AdminAuthGuard)
