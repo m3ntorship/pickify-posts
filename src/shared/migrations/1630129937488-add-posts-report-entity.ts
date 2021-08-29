@@ -18,6 +18,11 @@ export class addReportEntity1630129937488 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "${POSTS_SCHEMA}"."postsReports" ADD CONSTRAINT "postsReports_postId_FKEY" FOREIGN KEY ("postId") REFERENCES "${POSTS_SCHEMA}"."posts"("id") ON DELETE NO ACTION`,
     );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX reporterConstraint ON "${POSTS_SCHEMA}"."postsReports" USING btree
+            ("reporterId" ASC NULLS FIRST,
+              "postId" ASC NULLS FIRST)`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -33,5 +38,7 @@ export class addReportEntity1630129937488 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "${POSTS_SCHEMA}"."postsReports" DROP COLUMN IF EXISTS "postId"`,
     );
+    await queryRunner.query(`DROP INDEX IF EXISTS reporterConstraint`);
+    await queryRunner.query(`DROP TABLE "${POSTS_SCHEMA}"."postsReports"`);
   }
 }

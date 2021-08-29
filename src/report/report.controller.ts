@@ -3,6 +3,8 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Post,
   Request,
   UseGuards,
@@ -23,9 +25,17 @@ export class ReportController {
     @Request() req: ExtendedRequest,
     @Body() createPostsReportDTO: CreatePostsReportDTO,
   ): Promise<void> {
-    await this.reportService.createPostsReport(createPostsReportDTO, req.user);
+    await this.reportService
+      .createPostsReport(createPostsReportDTO, req.user)
+      .catch(() => {
+        throw new HttpException(
+          {
+            message: "Reporter cann't report same post twoice",
+          },
+          HttpStatus.CONFLICT,
+        );
+      });
   }
-
   @Get('/')
   @UseGuards(AdminAuthGuard)
   async getPostsReports(): Promise<PostsReports> {
