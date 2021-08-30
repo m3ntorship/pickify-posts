@@ -15,7 +15,7 @@ export class PostsReportRepository extends Repository<PostsReport> {
   async getAllPostsReports(): Promise<PostsReport[]> {
     return await this.createQueryBuilder('postsReport')
       .leftJoinAndSelect('postsReport.reporter', 'user')
-      .leftJoinAndSelect('postsReport.post', 'post')
+      // .leftJoinAndSelect('postsReport.post', 'post')
       .getMany();
   }
 }

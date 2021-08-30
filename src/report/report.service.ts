@@ -49,9 +49,17 @@ export class ReportService {
 
   async getAllPostsReports(): Promise<PostsReports> {
     const reports = await this.postsReportRepository.getAllPostsReports();
+    const posts = await this.postRepository.find({});
+    const allPostsReports = [];
+    for (let i = 0; i < posts.length; i++) {
+      allPostsReports[i] = {
+        post: posts[i],
+        postReports: await this.postsReportRepository.find({ post: posts[i] }),
+      };
+    }
     return {
       postsReportsCount: reports.length,
-      postsReports: reports,
+      reports: allPostsReports,
     };
   }
 }
