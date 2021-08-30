@@ -12,8 +12,9 @@ import {
 import { ExtendedRequest } from '../shared/interfaces/expressRequest';
 import { CreatePostsReportDTO } from './dto/createReport.dto';
 import { AdminAuthGuard } from '../shared/Guards/admin.guard';
-import { PostsReports } from './interfaces/getPostsReports.interface';
+// import { ReportedPosts } from './interfaces/getPostsReports.interface';
 import { ReportService } from './report.service';
+import { Post as postEntity } from 'src/posts/entities/post.entity';
 
 @Controller('report')
 export class ReportController {
@@ -29,7 +30,7 @@ export class ReportController {
   }
   @Get('/')
   @UseGuards(AdminAuthGuard)
-  async getPostsReports(): Promise<PostsReports> {
+  async getPostsReports(): Promise<postEntity[]> {
     return await this.reportService.getAllPostsReports();
   }
 }

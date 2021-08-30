@@ -1,10 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/users/entities/user.repository';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Post } from '../posts/entities/post.entity';
+import { UserRepository } from '../users/entities/user.repository';
 import { PostRepository } from '../posts/entities/post.repository';
 import { User } from '../users/entities/user.entity';
 import { CreatePostsReportDTO } from './dto/createReport.dto';
 import { PostsReportRepository } from './entities/report.repository';
-import { PostsReports } from './interfaces/getPostsReports.interface';
+import { ReportedPosts } from './interfaces/getPostsReports.interface';
 
 @Injectable()
 export class ReportService {
@@ -21,6 +27,9 @@ export class ReportService {
     const post = await this.postRepository.findOne({
       uuid: createPostsReportDTO.postId,
     });
+
+    if (!post) throw new NotFoundException('Post not found');
+
     //reporter is allowed to report 50 posts only per day
     if (reporter.dailyReportsCount <= 50) {
       await this.postsReportRepository
@@ -29,7 +38,7 @@ export class ReportService {
         .catch(() => {
           throw new HttpException(
             {
-              message: "Reporter cann't report same post twoice",
+              message: "Reporter can't report same post twoice",
             },
             HttpStatus.CONFLICT,
           );
@@ -47,19 +56,7 @@ export class ReportService {
     }
   }
 
-  async getAllPostsReports(): Promise<PostsReports> {
-    const reports = await this.postsReportRepository.getAllPostsReports();
-    const posts = await this.postRepository.find({});
-    const allPostsReports = [];
-    for (let i = 0; i < posts.length; i++) {
-      allPostsReports[i] = {
-        post: posts[i],
-        postReports: await this.postsReportRepository.find({ post: posts[i] }),
-      };
-    }
-    return {
-      postsReportsCount: reports.length,
-      reports: allPostsReports,
-    };
+  async getAllPostsReports(): Promise<Post[]> {
+    return await this.postRepository.getPostsReports();
   }
 }
