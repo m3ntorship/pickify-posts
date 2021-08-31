@@ -15,6 +15,7 @@ import { AdminAuthGuard } from '../shared/Guards/admin.guard';
 // import { ReportedPosts } from './interfaces/getPostsReports.interface';
 import { ReportService } from './report.service';
 import { Post as postEntity } from 'src/posts/entities/post.entity';
+import { ReportedPosts } from './interfaces/getPostsReports.interface';
 
 @Controller('report')
 export class ReportController {
@@ -30,7 +31,7 @@ export class ReportController {
   }
   @Get('/')
   @UseGuards(AdminAuthGuard)
-  async getPostsReports(): Promise<postEntity[]> {
+  async getPostsReports(): Promise<ReportedPosts> {
     return await this.reportService.getAllPostsReports();
   }
 }

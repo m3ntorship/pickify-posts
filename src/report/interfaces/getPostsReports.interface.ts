@@ -9,7 +9,7 @@ export interface Post {
 }
 export interface User {
   id: string;
-  reporter: string;
+  name: string;
 }
 export interface ReportedPost {
   post: Post;

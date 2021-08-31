@@ -10,7 +10,12 @@ import { PostRepository } from '../posts/entities/post.repository';
 import { User } from '../users/entities/user.entity';
 import { CreatePostsReportDTO } from './dto/createReport.dto';
 import { PostsReportRepository } from './entities/report.repository';
-import { ReportedPosts } from './interfaces/getPostsReports.interface';
+import { PostsReport } from './entities/postsReport.entity';
+import {
+  Report,
+  ReportedPost,
+  ReportedPosts,
+} from './interfaces/getPostsReports.interface';
 
 @Injectable()
 export class ReportService {
@@ -19,6 +24,32 @@ export class ReportService {
     private postRepository: PostRepository,
     private userRepositoy: UserRepository,
   ) {}
+
+  private modifyReportedPost(reportedPost: Post): ReportedPost {
+    const currentReports = reportedPost.postsReports;
+    const modifiedReports = currentReports.map((report) => {
+      return this.modifyReturnedReports(report);
+    });
+    const returnedPost = {
+      post: {
+        id: reportedPost.uuid,
+        caption: reportedPost.caption,
+        type: reportedPost.type,
+      },
+      reports: modifiedReports,
+    };
+    return returnedPost;
+  }
+  private modifyReturnedReports(report: PostsReport): Report {
+    const modifiedReport = {
+      id: report.uuid,
+      reporter: {
+        id: report.reporter.uuid,
+        name: report.reporter.name,
+      },
+    };
+    return modifiedReport;
+  }
 
   async createPostsReport(
     createPostsReportDTO: CreatePostsReportDTO,
@@ -56,7 +87,14 @@ export class ReportService {
     }
   }
 
-  async getAllPostsReports(): Promise<Post[]> {
-    return await this.postRepository.getPostsReports();
+  async getAllPostsReports(): Promise<ReportedPosts> {
+    const currentReportedPosts = await this.postRepository.getPostsReports();
+    const modifiedReportedPosts = currentReportedPosts.map((reportedPost) => {
+      return this.modifyReportedPost(reportedPost);
+    });
+    return {
+      reportedPostsCount: modifiedReportedPosts.length,
+      reportedPosts: modifiedReportedPosts,
+    };
   }
 }
