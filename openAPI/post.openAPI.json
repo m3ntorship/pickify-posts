@@ -513,7 +513,7 @@
        "single_post_reports_response": {
         "type": "object",
         "properties": {
-          "reporter": {
+          "post":{
             "type": "object",
             "properties": {
               "id": {
@@ -521,23 +521,44 @@
                 "example": "some-id",
                 "x-faker": "random.uuid"
               },
-              "name": {
+              "caption": {
                 "type": "string",
-                "example": "John Doe",
-                "x-faker": "name.findName"
+                "example": "some-caption",
+                "x-faker": "random.words"
+              },
+              "type": {
+                "type": "string",
+                "example": "text_poll"
               }
             }
-          },
-          "post":{
-            "type": "object",
+          }, 
+          "reports":{
+            "type":"array",
+            "items":{
+              "type": "object",
             "properties": {
-              "items": {
-                "$ref": "#/components/schemas/single_post_response"
+              "id": {
+                "type": "string",
+                "example": "some-id",
+                "x-faker": "random.uuid"
+              },
+              "reporter":{
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "some-id",
+                    "x-faker": "random.uuid"
+                  },"name": {
+                    "type": "string",
+                    "example": "John Doe",
+                    "x-faker": "name.findName"
+                  }
+                }
               }
             }
           }
-        },
-        "required": ["id"]
+          }
+        }
       },
       "single_post_response": {
         "type": "object",
@@ -723,11 +744,11 @@
             "schema": {
               "type": "object",
               "properties": {
-                "reportsCount": {
+                "reportedPostsCount": {
                   "type": "number",
                   "x-faker": "random.number"
                 },
-                "reports": {
+                "reportedPosts": {
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/single_post_reports_response"
