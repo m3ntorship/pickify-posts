@@ -15,6 +15,6 @@ services:
     container_name: rabbitmq
     network_mode: host
     environment:
-      DEFAULT_USER: admin
-      DEFAULT_PASS: admin
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
       RABBITMQ_URL: amqp://admin:admin@localhost:5672

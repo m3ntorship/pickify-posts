@@ -11,7 +11,12 @@
       "description": "Posts endpoints"
     },
     {
-      "name": "votes"
+      "name": "votes",
+      "description": "Votes endpoints"
+    },
+    {
+      "name": "users",
+      "description": "Users endpoints"
     }
   ],
   "paths": {
@@ -71,39 +76,6 @@
           "200": {
             "description": "Get all posts",
             "$ref": "#/components/responses/feed_response"
-          },
-          "400": {
-            "description": "Bad request",
-            "$ref": "#/components/responses/error_bad_request"
-          },
-          "401": {
-            "description": "Unauthorized.",
-            "$ref": "#/components/responses/error_unauthorized"
-          }
-        }
-      }
-    },
-    "/posts/homepage/{userid}": {
-      "get": {
-        "tags": ["posts"],
-        "summary": "Get all posts of a specific user",
-        "requestBody": {
-          "required": true,
-          "content": {}
-        },
-        "parameters": [
-          {
-            "in": "query",
-            "name": "user id",
-            "schema": {
-              "type": "string"
-            },
-            "description": "The current user id"
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Posts Got successfully"
           },
           "400": {
             "description": "Bad request",
@@ -330,6 +302,55 @@
           }
         }
       }
+    },
+    "/users/{userid}/posts": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get user posts",
+        "operationId": "getUserPosts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userid",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "id of post needed"
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "type": "number"
+            },
+            "description": "The number of items to skip before starting to collect the result set"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number"
+            },
+            "description": "The MAX numbers of items to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all user posts",
+            "$ref": "#/components/responses/feed_response"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -429,9 +450,6 @@
               "required": ["url"]
             },
             "maxItems": 4
-          },
-          "voted": {
-            "type": "boolean"
           }
         },
         "required": ["id"]

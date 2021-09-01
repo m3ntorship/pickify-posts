@@ -1,17 +1,9 @@
 @postId = 31c68aa4-89eb-4a29-9fc0-b6ea3fdcc0a0
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
-@userId =e7db6314-f4bb-4eb6-8b6c-5d8178a6059b
+@userId =02e8f7cf-6ac0-4ce1-bb1c-6c33d68bf12f
 
-#  @userId = 02e8f7cf-6ac0-4ce1-bb1c-6c33d68bf12f
-    
-#    @userId = 3ad4e0f5-1787-46fa-851f-d7dddbfaf2c3
-
-
-@token = eyJhbGciOiJSUzI1NiIsImtpZCI6IjM2NGU4NTQ1NzI5OWQ5NzIxYjczNDQyZGNiNTQ3Y2U2ZDk4NGRmNTkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoib21hciBzYW15IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdoYlBIaGpFNGpveVZzaGhOSEt2aFdCQ0V4cVYyZWtfenpPNThlTlBRPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3BpY2tpZnktMTM4ZjkiLCJhdWQiOiJwaWNraWZ5LTEzOGY5IiwiYXV0aF90aW1lIjoxNjI5NTQwMDI2LCJ1c2VyX2lkIjoiVTBhMTdWdzFVUk5IQXVPMHE3S1hnNkZwbmdpMSIsInN1YiI6IlUwYTE3VncxVVJOSEF1TzBxN0tYZzZGcG5naTEiLCJpYXQiOjE2Mjk1NDUyNjAsImV4cCI6MTYyOTU0ODg2MCwiZW1haWwiOiJvbWFyc2FteTA5QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTAwMzIyNzg1NzkyNzk3NTY4ODY1Il0sImVtYWlsIjpbIm9tYXJzYW15MDlAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.JmM1YCr6Ywk0GxKC9qTcixJZHnVpTwjX87hQOEuInorf5fwrQEqlK4zLELk1Jj4gQ0xq6HFfb7LJHFIwRwvwVNsWLCWecLwJPEv0UZzy6O2fP23rRUQwIfkW2vqZkoR3b2rHy3j3-pfCRN09wjhPh0YAm9QgSlEJn8upg0AmvJvBTWP_4-6SqOWx_QN81OMzMB5oq33dwJOKcX0KpsfUyJJfRdGr7d5QXG5C1SEb6oFUJjAQETZnDXmhj6uaMOL1PTGJ3PCATqaxevIi6dbQ403epjZrw7FdAKFAI26HfZwgXYVd3CDDFy2qvfkWdL8sQW9v6-4sA-vpmEEI8q8bFg
-
-
-
+@token = token
 
 ###
 
@@ -115,7 +107,7 @@ Authorization: Bearer {{userId}}
 
 POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{userId}}t
 
 {   
     "groups": [
