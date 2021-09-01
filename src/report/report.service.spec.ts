@@ -10,27 +10,13 @@ import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 
 describe('ReportService', () => {
   const postsReportRepository = {
-    createPostsReport: jest.fn().mockResolvedValue(undefined),
+    createPostsReport: jest.fn(),
+    getUserReportsCount: jest.fn(),
   };
   const postRepository = {
-    findOne: jest.fn().mockResolvedValue({ uuid: 'post-uuid' } as Post),
+    findOne: jest.fn(),
 
-    getPostsReports: jest.fn().mockResolvedValue([
-      {
-        uuid: 'post-uuid',
-        caption: 'post-caption',
-        type: 'post-type',
-        postsReports: [
-          {
-            uuid: 'report-uuid',
-            reporter: {
-              uuid: 'reporter-uuid',
-              name: 'reporter-name',
-            },
-          },
-        ],
-      },
-    ]),
+    getPostsReports: jest.fn(),
   };
   const userRepositoy = {
     save: jest.fn().mockResolvedValue(undefined),
@@ -64,34 +50,36 @@ describe('ReportService', () => {
         postId: 'post-uuid',
         reportType: 'Report-type',
       };
-      const count = 0;
+
       const reporter: User = {
         uuid: 'test-user-uuid',
-        dailyReportsCount: count,
       } as User;
+
       //mocks
+      postRepository.findOne.mockResolvedValue({ uuid: 'post-uuid' } as Post);
+      postsReportRepository.getUserReportsCount.mockResolvedValue(5);
+      postsReportRepository.createPostsReport.mockResolvedValue(undefined);
 
       //actions
       const result = await service.createPostsReport(Dto, reporter);
 
       // assertions
       expect(postRepository.findOne).toBeCalled();
-      expect(reporter.dailyReportsCount).toBe(count + 1);
       expect(result).toBeUndefined();
     });
+
     it('should throw error if reported post not exist', async () => {
       //data
       const Dto: CreatePostsReportDTO = {
         postId: 'post-uuid',
         reportType: 'Report-type',
       };
-      const count = 0;
+
       const reporter: User = {
         uuid: 'test-user-uuid',
-        dailyReportsCount: count,
       } as User;
       //mocks
-      postRepository.findOne = jest.fn().mockResolvedValue(undefined); // undo later
+      postRepository.findOne = jest.fn().mockResolvedValue(undefined);
 
       //actions
 
@@ -99,25 +87,25 @@ describe('ReportService', () => {
       await expect(
         service.createPostsReport(Dto, reporter),
       ).rejects.toThrowError(new NotFoundException('Post not found'));
-
-      expect(reporter.dailyReportsCount).toBe(count);
     });
+
     it('should throw error if user reports count reached 50', async () => {
       //data
       const Dto: CreatePostsReportDTO = {
         postId: 'post-uuid',
         reportType: 'Report-type',
       };
-      const count = 50;
+
       const reporter: User = {
         uuid: 'test-user-uuid',
-        dailyReportsCount: count,
       } as User;
+
       //mocks
+
       postRepository.findOne = jest
         .fn()
         .mockResolvedValue({ uuid: 'post-uuid' } as Post);
-      //actions
+      postsReportRepository.getUserReportsCount.mockResolvedValue(50);
 
       // assertions
       await expect(
@@ -130,8 +118,6 @@ describe('ReportService', () => {
           HttpStatus.TOO_MANY_REQUESTS,
         ),
       );
-
-      expect(reporter.dailyReportsCount).toBe(count);
     });
     it('shoud throw error if reporting post twice', async () => {
       //data
@@ -139,16 +125,16 @@ describe('ReportService', () => {
         postId: 'post-uuid',
         reportType: 'Report-type',
       };
-      const count = 0;
+
       const reporter: User = {
         uuid: 'test-user-uuid',
-        dailyReportsCount: count,
       } as User;
       //mocks
+      postsReportRepository.getUserReportsCount.mockResolvedValue(5);
       postsReportRepository.createPostsReport = jest.fn().mockRejectedValue(
         new HttpException(
           {
-            message: "Reporter can't report same post twoice",
+            message: "Reporter can't report same post twice",
           },
           HttpStatus.CONFLICT,
         ),
@@ -161,7 +147,7 @@ describe('ReportService', () => {
       ).rejects.toThrowError(
         new HttpException(
           {
-            message: "Reporter can't report same post twoice",
+            message: "Reporter can't report same post twice",
           },
           HttpStatus.CONFLICT,
         ),
@@ -171,7 +157,22 @@ describe('ReportService', () => {
   describe('Get All posts reports', () => {
     it('should return each reported posts, each post with its reports', async () => {
       //data
-
+      const dbResult = [
+        {
+          uuid: 'post-uuid',
+          caption: 'post-caption',
+          type: 'post-type',
+          postsReports: [
+            {
+              uuid: 'report-uuid',
+              reporter: {
+                uuid: 'reporter-uuid',
+                name: 'reporter-name',
+              },
+            },
+          ],
+        },
+      ];
       const reportedPosts = [
         {
           post: {
@@ -196,6 +197,7 @@ describe('ReportService', () => {
       };
 
       //mocks
+      postRepository.getPostsReports.mockResolvedValue(dbResult);
       //actions
       const result = await service.getAllPostsReports();
       // assertions

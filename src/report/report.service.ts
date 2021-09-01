@@ -16,13 +16,13 @@ import {
   ReportedPost,
   ReportedPosts,
 } from './interfaces/getPostsReports.interface';
+import { getNow } from 'src/shared/utils/datetime';
 
 @Injectable()
 export class ReportService {
   constructor(
     private postsReportRepository: PostsReportRepository,
     private postRepository: PostRepository,
-    private userRepositoy: UserRepository,
   ) {}
 
   private modifyReportedPost(reportedPost: Post): ReportedPost {
@@ -60,22 +60,22 @@ export class ReportService {
     });
 
     if (!post) throw new NotFoundException('Post not found');
-
     //reporter is allowed to report 50 posts only per day
-    if (reporter.dailyReportsCount < 50) {
+    const userReportsCount = await this.postsReportRepository.getUserReportsCount(
+      reporter.uuid,
+    );
+    if (userReportsCount < 50) {
       await this.postsReportRepository
         .createPostsReport(post, reporter)
         //if reporter is tring to report the same post twoice throw an error
         .catch(() => {
           throw new HttpException(
             {
-              message: "Reporter can't report same post twoice",
+              message: "Reporter can't report same post twice",
             },
             HttpStatus.CONFLICT,
           );
         });
-      reporter.dailyReportsCount++;
-      await this.userRepositoy.save(reporter);
       //throw an error if the daily report count is exceeded
     } else {
       throw new HttpException(

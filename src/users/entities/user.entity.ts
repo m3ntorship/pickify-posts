@@ -15,9 +15,6 @@ export class User extends Model {
   @Column({ default: '0' })
   google_id: string;
 
-  @Column()
-  dailyReportsCount: number;
-
   // one to many relation with posts entity
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];

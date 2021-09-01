@@ -11,4 +11,16 @@ export class PostsReportRepository extends Repository<PostsReport> {
     report.post = post;
     await this.save(report);
   }
+  async getUserReportsCount(userId: string) {
+    return (
+      this.createQueryBuilder('postsReport')
+        .leftJoin('postsReport.reporter', 'user')
+        .where('user.uuid = :Id', { Id: userId })
+        .andWhere('DATE(postsReport.created_at) = :date', {
+          date: new Date().toISOString().slice(0, 10),
+        })
+        //  .andWhere(`DATE_TRUNC('day','postsReport.created_at') =:date`,{date:new Date().toISOString().slice(0, 10);})
+        .getCount()
+    );
+  }
 }

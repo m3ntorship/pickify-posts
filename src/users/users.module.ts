@@ -6,7 +6,6 @@ import { UserRepository } from './entities/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { FirebaseAuthGuard } from '../shared/Guards/firebase-auth.guard';
-import { UsersService } from './users.service';
 
 @Module({
   imports: [
@@ -20,7 +19,6 @@ import { UsersService } from './users.service';
       provide: APP_GUARD,
       useClass: FirebaseAuthGuard,
     },
-    UsersService,
   ],
   exports: [PassportModule, FirebaseAuthStrategy],
 })
