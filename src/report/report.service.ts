@@ -62,7 +62,7 @@ export class ReportService {
     if (!post) throw new NotFoundException('Post not found');
 
     //reporter is allowed to report 50 posts only per day
-    if (reporter.dailyReportsCount <= 50) {
+    if (reporter.dailyReportsCount < 50) {
       await this.postsReportRepository
         .createPostsReport(post, reporter)
         //if reporter is tring to report the same post twoice throw an error

@@ -42,6 +42,8 @@ describe('ReportsController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+    expect(controller).toHaveProperty('createPostsReport');
+    expect(controller).toHaveProperty('getPostsReports');
   });
   describe('Create Report function', () => {
     it('should create report', async () => {
