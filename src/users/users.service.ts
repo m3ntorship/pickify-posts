@@ -7,6 +7,8 @@ import { PostsService } from '../posts/posts.service';
 import { QueryParameters } from '../shared/validations/query.validator';
 import { UserRepository } from './entities/user.repository';
 import { User } from './entities/user.entity';
+import { User as Iuser } from './interfaces/userPosts.interface';
+import { UserPosts } from './interfaces/userPosts.interface';
 @Injectable()
 export class UsersService {
   constructor(
@@ -14,12 +16,18 @@ export class UsersService {
     private postService: PostsService,
     private userRepository: UserRepository,
   ) {}
-
+  private modifyUser(user: User): Iuser {
+    return {
+      id: user.uuid,
+      name: user.name,
+      profile_pic: user.profile_pic,
+    };
+  }
   async getUserPosts(
     userid: string,
     queries: QueryParameters,
     user: User,
-  ): Promise<Posts> {
+  ): Promise<UserPosts> {
     //check if user exist or not
     const userToFind = await this.userRepository.getUser(userid);
 
@@ -38,8 +46,8 @@ export class UsersService {
       currentPosts = await this.postsRepository.getUserPosts(userid, queries);
     }
     return {
+      user: this.modifyUser(userToFind),
       postsCount: currentPosts.length,
-      // is this part can be modified as all the current posts relate to the same user?
       posts: currentPosts.map((post) => {
         return this.postService.handlePostFeatures(post, userid);
       }),

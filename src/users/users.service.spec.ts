@@ -12,25 +12,27 @@ import { Post } from '../posts/interfaces/getPosts.interface';
 
 describe('UserService', () => {
   let service: UsersService;
-  let postRepo: PostRepository;
-  let postService: PostsService;
-  let userRepo: UserRepository;
+  const postRepo = {
+    getCurrentUserPosts: jest.fn(),
+    getUserPosts: jest.fn(),
+  };
+  const postService = {
+    handlePostFeatures: jest.fn(),
+  };
+  const userRepo = {
+    getUser: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: PostRepository, useValue: postRepo },
+        { provide: PostsService, useValue: postService },
+        { provide: UserRepository, useValue: userRepo },
         UsersService,
-        UserRepository,
-        PostRepository,
-        PostsService,
-        OptionsGroupRepository,
-        OptionRepository,
       ],
     }).compile();
     service = module.get<UsersService>(UsersService);
-    postRepo = module.get<PostRepository>(PostRepository);
-    postService = module.get<PostsService>(PostsService);
-    userRepo = module.get<UserRepository>(UserRepository);
   });
 
   it('should be defined', () => {
@@ -44,7 +46,17 @@ describe('UserService', () => {
       const userid = 'user-id';
       const query = { limit: 10, offset: 0 } as QueryParameters;
       const currentUser = { uuid: 'user2-uuid' } as User;
-      const returnedUser = { uuid: 'user-id' } as User;
+      const userToFind = {
+        uuid: 'user-id',
+        name: 'user-name',
+        profile_pic: 'user-pic',
+      } as User;
+
+      const modifiedUser = {
+        id: userToFind.uuid,
+        name: userToFind.name,
+        profile_pic: userToFind.profile_pic,
+      };
 
       const post = {
         uuid: 'test-post-uuid',
@@ -105,18 +117,20 @@ describe('UserService', () => {
         },
       };
       const returnedPosts = {
+        user: modifiedUser,
         postsCount: postsInDB.length,
         posts: [modifiedPost],
       };
 
       //mocks
 
-      userRepo.getUser = jest.fn().mockResolvedValue(returnedUser);
+      userRepo.getUser.mockResolvedValue(userToFind);
       if (userid === currentUser.uuid) {
-        postRepo.getCurrentUserPosts = jest.fn().mockResolvedValue(postsInDB);
+        postRepo.getCurrentUserPosts.mockResolvedValue(postsInDB);
       } else {
-        postRepo.getUserPosts = jest.fn().mockResolvedValue(postsInDB);
+        postRepo.getUserPosts.mockResolvedValue(postsInDB);
       }
+      postService.handlePostFeatures.mockReturnValue(modifiedPost);
       //action
       const result = await service.getUserPosts(userid, query, currentUser);
 

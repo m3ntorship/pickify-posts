@@ -13,22 +13,16 @@ import { getNow } from '../shared/utils/datetime';
 
 describe('UsersController', () => {
   let controller: UsersController;
-  let userService: UsersService;
+  const userService = {
+    getUserPosts: jest.fn(),
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [
-        UsersService,
-        PostRepository,
-        PostsService,
-        UserRepository,
-        OptionsGroupRepository,
-        OptionRepository,
-      ],
+      providers: [{ provide: UsersService, useValue: userService }],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
-    userService = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
@@ -43,7 +37,6 @@ describe('UsersController', () => {
       const req = {
         user: 'test',
       };
-
       // actions
       const res = controller.createUser(req);
       // assertion
@@ -57,6 +50,11 @@ describe('UsersController', () => {
       const param = { userId: 'user-uuid' } as UserIdParam;
       const query = { limit: 10, offset: 0 } as QueryParameters;
       const req: any = { user: { uuid: 'user-uuid' } };
+      const returnedUser = {
+        id: 'user-id',
+        name: 'user-name',
+        profile_pic: 'user-pic',
+      };
       const post = {
         uuid: 'test-post-uuid',
         ready: true,
@@ -116,12 +114,13 @@ describe('UsersController', () => {
         },
       };
       const returnedPosts = {
+        user: returnedUser,
         postsCount: postsInDB.length,
         posts: [modifiedPost],
       };
 
       //mocks
-      userService.getUserPosts = jest.fn().mockResolvedValue(returnedPosts);
+      userService.getUserPosts.mockResolvedValue(returnedPosts);
       //actions
       const result = await controller.getPosts(param, query, req);
       //assertions

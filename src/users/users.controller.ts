@@ -5,6 +5,7 @@ import { Post as Ipost, Posts } from '../posts/interfaces/getPosts.interface';
 import { QueryParameters } from '../shared/validations/query.validator';
 import { UserIdParam } from '../shared/validations/uuid.validator';
 import { UsersService } from './users.service';
+import { UserPosts } from './interfaces/userPosts.interface';
 
 @Controller('users')
 export class UsersController {
@@ -19,7 +20,7 @@ export class UsersController {
     @Param() params: UserIdParam,
     @Query() queries: QueryParameters,
     @Request() req: ExtendedRequest,
-  ): Promise<Posts> {
+  ): Promise<UserPosts> {
     return await this.userService.getUserPosts(
       params.userId,
       queries,
