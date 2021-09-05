@@ -339,7 +339,7 @@
         "responses": {
           "200": {
             "description": "Get all user posts",
-            "$ref": "#/components/responses/feed_response"
+            "$ref": "#/components/responses/user_posts_response"
           },
           "400": {
             "description": "Bad request",
@@ -657,6 +657,49 @@
             "schema": {
               "type": "object",
               "properties": {
+                "postsCount": {
+                  "type": "number",
+                  "x-faker": "random.number"
+                },
+                "posts": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/single_post_response"
+                  }
+                }
+              },
+              "required": ["postsCount", "posts"]
+            }
+          }
+        }
+      },
+      "user_posts_response": {
+        "description": "Get user posts",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "some-id",
+                      "x-faker": "random.uuid"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe",
+                      "x-faker": "name.findName"
+                    },
+                    "profile_pic": {
+                      "type": "string",
+                      "example": "URL",
+                      "x-faker": "image.imageUrl"
+                    }
+                  }
+                },
                 "postsCount": {
                   "type": "number",
                   "x-faker": "random.number"
