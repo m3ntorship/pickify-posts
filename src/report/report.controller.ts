@@ -3,8 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpException,
-  HttpStatus,
   Post,
   Request,
   UseGuards,
@@ -12,9 +10,7 @@ import {
 import { ExtendedRequest } from '../shared/interfaces/expressRequest';
 import { CreatePostsReportDTO } from './dto/createReport.dto';
 import { AdminAuthGuard } from '../shared/Guards/admin.guard';
-// import { ReportedPosts } from './interfaces/getPostsReports.interface';
 import { ReportService } from './report.service';
-import { Post as postEntity } from 'src/posts/entities/post.entity';
 import { ReportedPosts } from './interfaces/getPostsReports.interface';
 
 @Controller('report')

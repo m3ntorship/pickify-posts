@@ -1,11 +1,11 @@
 import {
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Post } from '../posts/entities/post.entity';
-import { UserRepository } from '../users/entities/user.repository';
 import { PostRepository } from '../posts/entities/post.repository';
 import { User } from '../users/entities/user.entity';
 import { CreatePostsReportDTO } from './dto/createReport.dto';
@@ -16,13 +16,14 @@ import {
   ReportedPost,
   ReportedPosts,
 } from './interfaces/getPostsReports.interface';
-import { getNow } from 'src/shared/utils/datetime';
+import { PostsService } from '../posts/posts.service';
 
 @Injectable()
 export class ReportService {
   constructor(
     private postsReportRepository: PostsReportRepository,
     private postRepository: PostRepository,
+    private postService: PostsService,
   ) {}
 
   private modifyReportedPost(reportedPost: Post): ReportedPost {
@@ -33,8 +34,19 @@ export class ReportService {
     const returnedPost = {
       post: {
         id: reportedPost.uuid,
+        user: {
+          id: reportedPost.user.uuid,
+          name: reportedPost.user.name,
+          profile_pic: reportedPost.user.profile_pic,
+        },
         caption: reportedPost.caption,
+        media: reportedPost.media,
+        is_hidden: reportedPost.is_hidden,
+        created_at: reportedPost.created_at,
         type: reportedPost.type,
+        options_groups: {
+          groups: this.postService.modifyGroupsData(reportedPost.groups),
+        },
       },
       reports: modifiedReports,
     };
@@ -55,11 +67,16 @@ export class ReportService {
     createPostsReportDTO: CreatePostsReportDTO,
     reporter: User,
   ): Promise<void> {
-    const post = await this.postRepository.findOne({
-      uuid: createPostsReportDTO.postId,
-    });
+    const post = await this.postRepository.getDetailedPostById(
+      createPostsReportDTO.postId,
+    );
 
     if (!post) throw new NotFoundException('Post not found');
+
+    //user can't report his own post
+    if (post.user.uuid === reporter.uuid)
+      throw new ForbiddenException('Cannot report your own post');
+
     //reporter is allowed to report 50 posts only per day
     const userReportsCount = await this.postsReportRepository.getUserReportsCount(
       reporter.uuid,

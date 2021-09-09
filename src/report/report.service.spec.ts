@@ -5,8 +5,10 @@ import { UserRepository } from '../users/entities/user.repository';
 import { CreatePostsReportDTO } from './dto/createReport.dto';
 import { PostsReportRepository } from './entities/report.repository';
 import { ReportService } from './report.service';
-import { Post } from 'src/posts/entities/post.entity';
+import { Post } from '../posts/entities/post.entity';
 import { HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { PostsService } from '../posts/posts.service';
+import { getNow } from '../shared/utils/datetime';
 
 describe('ReportService', () => {
   const postsReportRepository = {
@@ -14,12 +16,14 @@ describe('ReportService', () => {
     getUserReportsCount: jest.fn(),
   };
   const postRepository = {
-    findOne: jest.fn(),
-
+    getDetailedPostById: jest.fn(),
     getPostsReports: jest.fn(),
   };
   const userRepositoy = {
     save: jest.fn().mockResolvedValue(undefined),
+  };
+  const postService = {
+    modifyGroupsData: jest.fn(),
   };
   let service: ReportService;
 
@@ -29,6 +33,7 @@ describe('ReportService', () => {
         { provide: PostsReportRepository, useValue: postsReportRepository },
         { provide: PostRepository, useValue: postRepository },
         { provide: UserRepository, useValue: userRepositoy },
+        { provide: PostsService, useValue: postService },
         ReportService,
       ],
     }).compile();
@@ -43,6 +48,7 @@ describe('ReportService', () => {
     expect(service).toHaveProperty('createPostsReport');
     expect(service).toHaveProperty('getAllPostsReports');
   });
+
   describe('Create Report', () => {
     it('should create Report', async () => {
       //data
@@ -56,7 +62,10 @@ describe('ReportService', () => {
       } as User;
 
       //mocks
-      postRepository.findOne.mockResolvedValue({ uuid: 'post-uuid' } as Post);
+      postRepository.getDetailedPostById.mockResolvedValue({
+        uuid: 'post-uuid',
+        user: { uuid: 'user-uuid' },
+      } as Post);
       postsReportRepository.getUserReportsCount.mockResolvedValue(5);
       postsReportRepository.createPostsReport.mockResolvedValue(undefined);
 
@@ -64,7 +73,6 @@ describe('ReportService', () => {
       const result = await service.createPostsReport(Dto, reporter);
 
       // assertions
-      expect(postRepository.findOne).toBeCalled();
       expect(result).toBeUndefined();
     });
 
@@ -79,7 +87,9 @@ describe('ReportService', () => {
         uuid: 'test-user-uuid',
       } as User;
       //mocks
-      postRepository.findOne = jest.fn().mockResolvedValue(undefined);
+      postRepository.getDetailedPostById = jest
+        .fn()
+        .mockResolvedValue(undefined);
 
       //actions
 
@@ -102,9 +112,10 @@ describe('ReportService', () => {
 
       //mocks
 
-      postRepository.findOne = jest
-        .fn()
-        .mockResolvedValue({ uuid: 'post-uuid' } as Post);
+      postRepository.getDetailedPostById = jest.fn().mockResolvedValue({
+        uuid: 'post-uuid',
+        user: { uuid: 'user-uuid' },
+      } as Post);
       postsReportRepository.getUserReportsCount.mockResolvedValue(50);
 
       // assertions
@@ -119,6 +130,7 @@ describe('ReportService', () => {
         ),
       );
     });
+
     it('shoud throw error if reporting post twice', async () => {
       //data
       const Dto: CreatePostsReportDTO = {
@@ -157,28 +169,76 @@ describe('ReportService', () => {
   describe('Get All posts reports', () => {
     it('should return each reported posts, each post with its reports', async () => {
       //data
-      const dbResult = [
-        {
-          uuid: 'post-uuid',
-          caption: 'post-caption',
-          type: 'post-type',
-          postsReports: [
-            {
-              uuid: 'report-uuid',
-              reporter: {
-                uuid: 'reporter-uuid',
-                name: 'reporter-name',
-              },
-            },
-          ],
+      const dbResult = {
+        uuid: 'post-uuid',
+        caption: 'post-caption',
+        is_hidden: false,
+        created_at: getNow().toDate(),
+        type: 'text poll',
+        user: {
+          uuid: 'user-uuid',
+          name: 'test',
+          profile_pic: 'test-url',
         },
-      ];
-      const reportedPosts = [
+        media: [{ url: 'test-media-url' }],
+        groups: [
+          {
+            uuid: 'test-group-uuid',
+            name: 'test-group-name',
+            media: [],
+            options: [
+              {
+                vote_count: 2,
+                body: 'test-option-body',
+                uuid: 'test-option32-uuid',
+                media: [],
+                voted: false,
+              },
+            ],
+          },
+        ],
+        postsReports: [
+          {
+            uuid: 'report-uuid',
+            reporter: {
+              uuid: 'reporter-uuid',
+              name: 'reporter-name',
+            },
+          },
+        ],
+      };
+      const modifiedreportedPosts = [
         {
           post: {
-            id: 'post-uuid',
-            caption: 'post-caption',
-            type: 'post-type',
+            id: dbResult.uuid,
+            user: {
+              id: dbResult.user.uuid,
+              name: dbResult.user.name,
+              profile_pic: dbResult.user.profile_pic,
+            },
+            caption: dbResult.caption,
+            media: dbResult.media,
+            is_hidden: dbResult.is_hidden,
+            created_at: dbResult.created_at,
+            type: dbResult.type,
+            options_groups: {
+              groups: [
+                {
+                  id: dbResult.groups[0].uuid,
+                  name: dbResult.groups[0].name,
+                  media: dbResult.groups[0].media,
+                  options: [
+                    {
+                      id: dbResult.groups[0].options[0].vote_count,
+                      body: dbResult.groups[0].options[0].body,
+                      vote_count: dbResult.groups[0].options[0].vote_count,
+                      media: dbResult.groups[0].options[0].media,
+                      voted: dbResult.groups[0].options[0].voted,
+                    },
+                  ],
+                },
+              ],
+            },
           },
           reports: [
             {
@@ -191,17 +251,21 @@ describe('ReportService', () => {
           ],
         },
       ];
-      const ModifiedReportedPosts = {
+      const returnedReportedPosts = {
         reportedPostsCount: 1,
-        reportedPosts: reportedPosts,
+        reportedPosts: modifiedreportedPosts,
       };
 
       //mocks
-      postRepository.getPostsReports.mockResolvedValue(dbResult);
+      postRepository.getPostsReports.mockResolvedValue([dbResult]);
+      postService.modifyGroupsData.mockReturnValue(
+        modifiedreportedPosts[0].post.options_groups.groups,
+      );
       //actions
       const result = await service.getAllPostsReports();
+      console.log(result);
       // assertions
-      expect(result).toEqual(ModifiedReportedPosts);
+      expect(result).toEqual(returnedReportedPosts);
     });
   });
 });
