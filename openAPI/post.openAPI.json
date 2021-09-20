@@ -10,11 +10,17 @@
       "name": "posts",
       "description": "Posts endpoints"
     },
+    
     {
       "name": "votes",
       "description": "votes endpoints"
     },
-
+    
+    {
+      "name": "reports",
+      "description": "Reports endpoints"
+    },
+    
     {
       "name": "feedbacks",
       "description": "feedbacks endpoints"
@@ -337,6 +343,56 @@
         }
       }
     },
+
+  "/reports": {
+    "post": {
+      "tags": ["reports"],
+      "summary": "Create a new report",
+      "operationId": "createReport",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/report_creation_request"
+            }
+          }
+        }
+      },
+      "responses": {
+        "204": {
+          "description": "Report Created Successfully"
+        },
+        "400": {
+          "description": "Bad request",
+          "$ref": "#/components/responses/error_bad_request"
+        },
+        "401": {
+          "description": "Unauthorized.",
+          "$ref": "#/components/responses/error_unauthorized"
+        }
+      }
+    },
+    "get": {
+      "tags": ["reports"],
+      "summary": "get all posts reports",
+      "operationId": "getPostsReports",
+      "responses": {
+        "200": {
+          "description": "Get All Posts Reports",
+          "$ref": "#/components/responses/post_reports_response"
+        },
+        "400": {
+          "description": "Bad request",
+          "$ref": "#/components/responses/error_bad_request"
+        },
+        "401": {
+          "description": "Unauthorized.",
+          "$ref": "#/components/responses/error_unauthorized"
+        }
+      }
+    }
+  },
     "/feedbacks": {
       "post": {
         "tags": ["feedbacks"],
@@ -387,7 +443,6 @@
       }
     }
   },
-
   "components": {
     "schemas": {
       "options_group_creation": {
@@ -530,6 +585,72 @@
         },
         "maxProperties": 4,
         "required": ["is_hidden", "type", "media_count"]
+      },
+      
+      "report_creation_request": {
+        "type": "object",
+        "properties": {
+          "report_type": {
+            "type": "string",
+            "example": "post"
+          },
+          "post_id": {
+            "type": "string",
+            "example":"post-uuid"
+          }
+        },
+        "maxProperties": 2,
+        "required": ["report_type", "post_id"]
+      },  
+       "single_post_reports_response": {
+        "type": "object",
+        "properties": {
+          "post":{
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "some-id",
+                "x-faker": "random.uuid"
+              },
+              "caption": {
+                "type": "string",
+                "example": "some-caption",
+                "x-faker": "random.words"
+              },
+              "type": {
+                "type": "string",
+                "example": "text_poll"
+              }
+            }
+          }, 
+          "reports":{
+            "type":"array",
+            "items":{
+              "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "some-id",
+                "x-faker": "random.uuid"
+              },
+              "reporter":{
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "some-id",
+                    "x-faker": "random.uuid"
+                  },"name": {
+                    "type": "string",
+                    "example": "John Doe",
+                    "x-faker": "name.findName"
+                  }
+                }
+              }
+            }
+          }
+          }
+        }
       },
       "feedback_creation_request": {
         "type": "object",
@@ -757,6 +878,29 @@
           }
         }
       },
+"post_reports_response": {
+        "description": "Get Post Reports",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reportedPostsCount": {
+                  "type": "number",
+                  "x-faker": "random.number"
+                },
+                "reportedPosts": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/single_post_reports_response"
+                  }
+                }
+              },
+              "required": ["reportsCount", "reports"]
+            }
+          }
+        }
+      },
       "feedbacks_response": {
         "description": "Get feedbacks",
         "content": {
@@ -780,6 +924,7 @@
           }
         }
       },
+  
       "single_post_deletion_response": {
         "description": "Post deleted"
       },

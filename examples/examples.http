@@ -4,6 +4,8 @@
 @userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
 @token = token
 
+
+@token = token
 // POST /api/posts
 //////////////////
 POST http://localhost:3000/api/posts HTTP/1.1
@@ -200,6 +202,18 @@ Authorization: Bearer {{token}}
 // PUT /api/votes/:optionid
 PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
 Authorization: Bearer {{userId}}
+
+##################
+POST http://localhost:3000/api/report HTTP/1.1
+Authorization: Bearer {{token}}
+content-type: application/json
+
+{"postId":"",
+"reportType":"post"}
+
+##################
+GET http://localhost:3000/api/report HTTP/1.1
+Authorization: Bearer {{token}}
 
 ###
 POST  http://localhost:3000/api/users/register

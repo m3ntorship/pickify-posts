@@ -1,7 +1,7 @@
 import {
   ExecutionContext,
+  ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -32,7 +32,7 @@ export class AdminAuthGuard extends AuthGuard('firebase-jwt') {
     const result = emails.find((email) => email === user.email);
 
     if (result == null) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
   }
 }
