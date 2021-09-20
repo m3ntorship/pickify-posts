@@ -10,12 +10,20 @@
       "name": "posts",
       "description": "Posts endpoints"
     },
+    
     {
-      "name": "votes"
+      "name": "votes",
+      "description": "votes endpoints"
     },
+    
     {
       "name": "reports",
       "description": "Reports endpoints"
+    },
+    
+    {
+      "name": "feedbacks",
+      "description": "feedbacks endpoints"
     }
   ],
   "paths": {
@@ -75,6 +83,39 @@
           "200": {
             "description": "Get all posts",
             "$ref": "#/components/responses/feed_response"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
+    },
+    "/posts/homepage/{userid}": {
+      "get": {
+        "tags": ["posts"],
+        "summary": "Get all posts of a specific user",
+        "requestBody": {
+          "required": true,
+          "content": {}
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user id",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The current user id"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Posts Got successfully"
           },
           "400": {
             "description": "Bad request",
@@ -302,6 +343,7 @@
         }
       }
     },
+
   "/reports": {
     "post": {
       "tags": ["reports"],
@@ -352,6 +394,57 @@
     }
   }
 },
+  
+    "/feedbacks": {
+      "post": {
+        "tags": ["feedbacks"],
+        "summary": "Create a new feedback",
+        "operationId": "createReport",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/feedback_creation_request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "feedback Created Successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      },
+      "get": {
+        "tags": ["feedbacks"],
+        "summary": "Get all feedbacks",
+        "operationId": "getFeedBacks",
+        "responses": {
+          "200": {
+            "description": "Get all feedbacks",
+            "$ref": "#/components/responses/feedbacks_response"
+          },
+          "403": {
+            "description": "Forbidden",
+            "$ref": "#/components/responses/error_forbidden"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
+        }
+      }
+    }
+  },
   "components": {
     "schemas": {
       "options_group_creation": {
@@ -495,6 +588,7 @@
         "maxProperties": 4,
         "required": ["is_hidden", "type", "media_count"]
       },
+      
       "report_creation_request": {
         "type": "object",
         "properties": {
@@ -559,6 +653,21 @@
           }
           }
         }
+         
+      "feedback_creation_request": {
+        "type": "object",
+        "properties": {
+          "feedback_body": {
+            "type": "string",
+            "example": "test feedback"
+          },
+          "feedback_rating": {
+            "type": "number",
+            "example": "3"
+          }
+        },
+        "maxProperties": 4,
+        "required": ["user_id", "feedback_rating"]
       },
       "single_post_response": {
         "type": "object",
@@ -636,6 +745,40 @@
           }
         },
         "required": ["created_at", "is_hidden", "id", "type", "options_groups"]
+      },
+      "single_feedback_response": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "some-id",
+                "x-faker": "random.uuid"
+              },
+              "name": {
+                "type": "string",
+                "example": "John Doe",
+                "x-faker": "name.findName"
+              },
+              "profile_pic": {
+                "type": "string",
+                "example": "URL",
+                "x-faker": "image.imageUrl"
+              }
+            }
+          },
+          "feedback_body": {
+            "type": "string",
+            "example": "test feedback"
+          },
+          "feedback_rating": {
+            "type": "number",
+            "example": "3"
+          }
+        },
+        "required": ["user_id", "feedback_body"]
       },
       "generic_error": {
         "type": "object",
@@ -737,7 +880,7 @@
           }
         }
       },
-      "post_reports_response": {
+"post_reports_response": {
         "description": "Get Post Reports",
         "content": {
           "application/json": {
@@ -760,6 +903,30 @@
           }
         }
       },
+      "feedbacks_response": {
+        "description": "Get feedbacks",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "feedbacksCount": {
+                  "type": "number",
+                  "x-faker": "random.number"
+                },
+                "feedbacks": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/single_feedback_response"
+                  }
+                }
+              },
+              "required": ["feedbacksCount", "feedbacks"]
+            }
+          }
+        }
+      },
+  
       "single_post_deletion_response": {
         "description": "Post deleted"
       },
@@ -805,6 +972,16 @@
       },
       "error_not_found": {
         "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/generic_error"
+            }
+          }
+        }
+      },
+      "error_forbidden": {
+        "description": "you are not authorized to access this Info.",
         "content": {
           "application/json": {
             "schema": {

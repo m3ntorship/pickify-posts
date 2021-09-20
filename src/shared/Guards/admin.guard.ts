@@ -11,6 +11,7 @@ export class AdminAuthGuard extends AuthGuard('firebase-jwt') {
     // whenever the below line runs, it calls validate method inside firebase-auth.strategy
     return await super.canActivate(context);
   }
+
   handleRequest(
     err: any,
     user: any,
