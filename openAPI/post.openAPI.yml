@@ -8,6 +8,9 @@ tags:
   - name: posts
     description: Posts endpoints
   - name: votes
+    description: Votes endpoints
+  - name: users
+    description: Users endpoints
 paths:
   /posts:
     post:
@@ -209,6 +212,32 @@ paths:
         409:
           description: Conflict when user votes twice on same option
           $ref: "#/components/responses/error_conflict"
+  /users/{userid}/posts:
+    get:
+      tags:
+        - "users"
+      summary: Get all posts of a user
+      operationId: getUserPosts
+      parameters:
+        - in: path
+          name: userid
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: user id
+      responses:
+        200:
+          description: Get all posts
+          $ref: "#/components/responses/feed_response"
+        400:
+          description: Bad request
+          $ref: "#/components/responses/error_bad_request"
+        401:
+          description: Unauthorized.
+          $ref: "#/components/responses/error_unauthorized"
+        
+
 components:
   schemas:
     options_group_creation:
@@ -286,8 +315,6 @@ components:
             required:
               - "url"
           maxItems: 4
-        voted: 
-          type: boolean
       required:
         - "id"
     options_creation_request:

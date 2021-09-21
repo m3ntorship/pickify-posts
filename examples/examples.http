@@ -1,4 +1,4 @@
-@postId = 81cc93e6-aee7-4175-878a-6775fed64098
+@postId = 4f9ad19a-0416-4ec0-8149-387acf5f8727
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
 @userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
@@ -7,7 +7,7 @@
 
 @token = token
 // POST /api/posts
-//////////////////
+
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
 Authorization: Bearer {{token}}
@@ -22,20 +22,20 @@ Authorization: Bearer {{token}}
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {   
     "caption": "post 2 caption",
     "type": "image_poll",
     "is_hidden": true,
-    "media_count": 3
+    "media_count": 0
 }
 
 ###
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {   
     "caption": "post caption",
@@ -47,12 +47,12 @@ Authorization: Bearer {{userId}}
 
 POST http://localhost:3000/api/posts HTTP/1.1
 content-type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {   
     "caption": "post caption",
     "type": "text_poll",
-    "is_hidden": false,
+    "is_hidden": true,
     "media_count": 0
 }
 
@@ -60,7 +60,7 @@ Authorization: Bearer {{userId}}
 // POST /api/posts/:postid/groups
 POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {   
     "groups": [
@@ -88,7 +88,7 @@ Authorization: Bearer {{userId}}
 
 POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {   
     "groups": [
@@ -106,7 +106,7 @@ Authorization: Bearer {{userId}}
 
 POST http://localhost:3000/api/posts/{{postId}}/groups HTTP/1.1
 content-type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {   
     "groups": [
@@ -145,7 +145,7 @@ Authorization: Bearer {{userId}}
 // PATCH /api/posts/:postid
 PATCH http://localhost:3000/api/posts/{{postId}}
 Content-Type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {
     "finished": true
@@ -154,14 +154,14 @@ Authorization: Bearer {{userId}}
 // DELETE /api/posts/:postid
 DELETE http://localhost:3000/api/posts/{{postId}} HTTP/1.1
 content-type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 
 ##################
 // PATCH /api/posts/:postid
 PATCH  http://localhost:3000/api/posts/{{postId}} HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
 
 {
     "finished": true
@@ -171,10 +171,6 @@ Authorization: Bearer {{userId}}
 // GET /api/posts
 GET http://localhost:3000/api/posts?limit=10&offset=0
 Authorization: Bearer {{token}}
-
-GET http://localhost:3000/api/posts
-Authorization: Bearer {{token}}
-
 
 ##################
 // GET /api/posts/:postid
@@ -201,7 +197,12 @@ Authorization: Bearer {{token}}
 ##################
 // PUT /api/votes/:optionid
 PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
-Authorization: Bearer {{userId}}
+Authorization: Bearer {{token}}
+
+##################
+// GET /api/users/:userid/posts
+GET http://localhost:3000/api/users/{{userId}}/posts?limit=10&0ffset=0
+Authorization: Bearer {{token}}
 
 ##################
 POST http://localhost:3000/api/report HTTP/1.1

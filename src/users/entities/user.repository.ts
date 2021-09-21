@@ -21,4 +21,9 @@ export class UserRepository extends Repository<User> {
     newUser.google_id = user.user_id;
     return await this.save(newUser);
   }
+  public async getUser(userId: string): Promise<User> {
+    return await this.createQueryBuilder('user')
+      .where('user.uuid = :userId', { userId: userId })
+      .getOne();
+  }
 }

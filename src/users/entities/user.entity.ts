@@ -5,7 +5,6 @@ import { Vote } from '../../votes/entities/vote.entity';
 import { PostsReport } from '../../report/entities/postsReport.entity';
 import { Feedback } from '../../feedbacks/entities/feedback.entity';
 
-
 @Entity({ name: 'users', schema: POSTS_SCHEMA })
 export class User extends Model {
   @Column()

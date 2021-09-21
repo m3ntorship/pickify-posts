@@ -16,7 +16,7 @@ import { QueryParameters } from '../shared/validations/query.validator';
 import * as winston from 'winston';
 import { winstonLoggerOptions } from '../logging/winston.options';
 import { ValidationExceptionFilter } from '../shared/exception-filters/validation-exception.filter';
-import { PostIdParam } from '../shared/validations/uuid.validator';
+import { PostIdParam, UserIdParam } from '../shared/validations/uuid.validator';
 import { FlagPostFinishedDto } from './dto/flag-post-finished';
 import { OptionsGroupCreationDto } from './dto/optionGroupCreation.dto';
 import { PostCreationDto } from './dto/postCreation.dto';

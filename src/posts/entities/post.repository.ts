@@ -6,6 +6,10 @@ import { QueryParameters } from '../../shared/validations/query.validator';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
+  //declaring pagination default constants
+  readonly LIMIT: number = 10;
+  readonly OFFSET: number = 0;
+
   // check whether all media in post were received and stored or not
   private mediaReadiness(post: Post): boolean {
     const postMedia = [...post.media];
@@ -86,8 +90,112 @@ export class PostRepository extends Repository<Post> {
       .orderBy({
         'post.created_at': 'DESC',
       })
-      .take(queries.limit || 10)
-      .skip(queries.offset || 0)
+      .take(queries.limit || this.LIMIT)
+      .skip(queries.offset || this.OFFSET)
+      .getMany();
+  }
+  public async getUserPosts(
+    userId: string,
+    queries: QueryParameters,
+  ): Promise<Post[]> {
+    return await this.createQueryBuilder('post')
+      .select([
+        'post.id',
+        'post.uuid',
+        'post.created',
+        'post.ready',
+        'post.caption',
+        'post.is_hidden',
+        'post.created_at',
+        'post.type',
+        'post_media.url',
+        'user.id',
+        'user.uuid',
+        'user.name',
+        'user.profile_pic',
+        'group.id',
+        'group.uuid',
+        'group.name',
+        'group_media.url',
+        'group.order',
+        'option.id',
+        'option.uuid',
+        'option.vote_count',
+        'option.body',
+        'option_media.url',
+        'option.order',
+        'vote.id',
+        'vote.uuid',
+        'vote_user.uuid',
+      ])
+      .leftJoin('post.groups', 'group')
+      .leftJoin('group.options', 'option')
+      .leftJoin('post.user', 'user')
+      .leftJoin('option.votes', 'vote')
+      .leftJoin('vote.user', 'vote_user')
+      .leftJoin('post.media', 'post_media')
+      .leftJoin('option.media', 'option_media')
+      .leftJoin('group.media', 'group_media')
+      .where('post.ready = :ready', { ready: true })
+      .andWhere('user.uuid= :userId', { userId: userId })
+      .andWhere('post.is_hidden= :hidden', { hidden: false })
+      .orderBy({
+        'post.created_at': 'DESC',
+      })
+      .take(queries.limit || this.LIMIT)
+      .skip(queries.offset || this.OFFSET)
+      .getMany();
+  }
+  //getting current user's posts
+  public async getCurrentUserPosts(
+    userId: string,
+    queries: QueryParameters,
+  ): Promise<Post[]> {
+    return await this.createQueryBuilder('post')
+      .select([
+        'post.id',
+        'post.uuid',
+        'post.created',
+        'post.ready',
+        'post.caption',
+        'post.is_hidden',
+        'post.created_at',
+        'post.type',
+        'post_media.url',
+        'user.id',
+        'user.uuid',
+        'user.name',
+        'user.profile_pic',
+        'group.id',
+        'group.uuid',
+        'group.name',
+        'group_media.url',
+        'group.order',
+        'option.id',
+        'option.uuid',
+        'option.vote_count',
+        'option.body',
+        'option_media.url',
+        'option.order',
+        'vote.id',
+        'vote.uuid',
+        'vote_user.uuid',
+      ])
+      .leftJoin('post.groups', 'group')
+      .leftJoin('group.options', 'option')
+      .leftJoin('post.user', 'user')
+      .leftJoin('option.votes', 'vote')
+      .leftJoin('vote.user', 'vote_user')
+      .leftJoin('post.media', 'post_media')
+      .leftJoin('option.media', 'option_media')
+      .leftJoin('group.media', 'group_media')
+      .where('post.ready = :ready', { ready: true })
+      .andWhere('user.uuid= :userId', { userId: userId })
+      .orderBy({
+        'post.created_at': 'DESC',
+      })
+      .take(queries.limit || this.LIMIT)
+      .skip(queries.offset || this.OFFSET)
       .getMany();
   }
 

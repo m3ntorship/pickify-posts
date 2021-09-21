@@ -106,7 +106,7 @@ export class PostsService {
     return groups;
   }
 
-  private handlePostFeatures(post: PostEntity, userId: string): Post {
+  handlePostFeatures(post: PostEntity, userId: string): Post {
     let returnedPost: Post;
 
     //sorting groups ASC
@@ -281,7 +281,6 @@ export class PostsService {
       }),
     };
   }
-
   async getSinglePost(postId: string, user: User): Promise<Post> {
     const post = await this.postRepository.getDetailedPostById(postId);
     // check whether post is found
