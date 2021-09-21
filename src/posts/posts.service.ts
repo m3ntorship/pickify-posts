@@ -84,7 +84,7 @@ export class PostsService {
     });
   }
 
-  private modifyGroupsData(currGroups: OptionGroupEntity[]): Group[] {
+  public modifyGroupsData(currGroups: OptionGroupEntity[]): Group[] {
     const groups: Group[] = currGroups.map((group: OptionGroupEntity) => {
       // Loop through all options in each group and return a new option as found in the interface
       const options: Option[] = group.options.map((option: OptionEntity) => ({

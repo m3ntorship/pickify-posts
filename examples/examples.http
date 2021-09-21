@@ -1,12 +1,11 @@
 @postId = 4f9ad19a-0416-4ec0-8149-387acf5f8727
 @groupId = 6ffb799f-a017-483c-b364-dd10a6e95252
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
-@userId = 937029d1-995d-4da1-aba2-a90330570c75
-
+@userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
 @token = token
 
-###
 
+@token = token
 // POST /api/posts
 
 POST http://localhost:3000/api/posts HTTP/1.1
@@ -179,6 +178,23 @@ GET http://localhost:3000/api/posts/{{postId}}
 Authorization: Bearer {{token}}
 
 ##################
+GET http://localhost:3000/api/feedbacks
+Authorization: Bearer {{token}}
+
+###############
+
+POST http://localhost:3000/api/feedbacks HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{token}}
+
+{   
+   "feedback_body": "good Idea",
+    "feedback_rating":4
+}
+
+
+
+##################
 // PUT /api/votes/:optionid
 PUT http://localhost:3000/api/votes/{{optionId}} HTTP/1.1
 Authorization: Bearer {{token}}
@@ -186,6 +202,18 @@ Authorization: Bearer {{token}}
 ##################
 // GET /api/users/:userid/posts
 GET http://localhost:3000/api/users/{{userId}}/posts?limit=10&0ffset=0
+Authorization: Bearer {{token}}
+
+##################
+POST http://localhost:3000/api/report HTTP/1.1
+Authorization: Bearer {{token}}
+content-type: application/json
+
+{"postId":"",
+"reportType":"post"}
+
+##################
+GET http://localhost:3000/api/report HTTP/1.1
 Authorization: Bearer {{token}}
 
 ###

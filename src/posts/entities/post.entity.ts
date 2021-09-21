@@ -4,6 +4,7 @@ import { Entity, Column, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 import Model, { POSTS_SCHEMA } from '../../shared/entity.model';
 import { OptiosnGroup } from './optionsGroup.entity';
 import { User } from '../../users/entities/user.entity';
+import { PostsReport } from '../../report/entities/postsReport.entity';
 
 @Entity({ name: 'posts', schema: POSTS_SCHEMA })
 export class Post extends Model {
@@ -40,4 +41,8 @@ export class Post extends Model {
   })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  // one to many relation with PostsReport entity
+  @OneToMany(() => PostsReport, (postsReport) => postsReport.post)
+  postsReports: PostsReport[];
 }

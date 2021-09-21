@@ -282,4 +282,56 @@ export class PostRepository extends Repository<Post> {
         .execute();
     }
   }
+  public async getPostsReports(): Promise<Post[]> {
+    return await this.createQueryBuilder('post')
+      .select([
+        'post.id',
+        'post.uuid',
+        'post.created',
+        'post.ready',
+        'post.caption',
+        'post.is_hidden',
+        'post.created_at',
+        'post.type',
+        'reports.uuid',
+        'reporter.name',
+        'reporter.uuid',
+        'post_media.url',
+        'user.id',
+        'user.uuid',
+        'user.name',
+        'user.profile_pic',
+        'group.id',
+        'group.uuid',
+        'group.name',
+        'group_media.url',
+        'group.order',
+        'option.id',
+        'option.uuid',
+        'option.vote_count',
+        'option.body',
+        'option_media.url',
+        'option.order',
+      ])
+      .leftJoin('post.groups', 'group')
+      .leftJoin('group.options', 'option')
+      .leftJoin('post.user', 'user')
+      .leftJoin('post.media', 'post_media')
+      .leftJoin('group.media', 'group_media')
+      .leftJoin('option.media', 'option_media')
+      .leftJoin('post.postsReports', 'reports')
+      .leftJoin('reports.reporter', 'reporter')
+      .where('post.ready = :ready', { ready: true })
+      .groupBy('post.id')
+      .addGroupBy('reports.id')
+      .addGroupBy('reporter.id')
+      .addGroupBy('group.id')
+      .addGroupBy('option.id')
+      .addGroupBy('user.id')
+      .addGroupBy('post_media.id')
+      .addGroupBy('group_media.id')
+      .addGroupBy('option_media.id')
+      .having('COUNT(reports) > :count', { count: 0 })
+      .getMany();
+  }
 }

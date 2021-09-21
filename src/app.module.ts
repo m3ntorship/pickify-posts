@@ -13,6 +13,8 @@ import { PassportModule } from '@nestjs/passport';
 import { WinstonModule } from 'nest-winston';
 import { winstonLoggerOptions } from './logging/winston.options';
 import { UsersModule } from './users/users.module';
+import { ReportModule } from './report/report.module';
+import { FeedBackMoudle } from './feedbacks/feedback.module';
 
 const evnVariable = process.env.NODE_ENV;
 @Module({
@@ -35,6 +37,8 @@ const evnVariable = process.env.NODE_ENV;
     PostsModule,
     PassportModule,
     UsersModule,
+    ReportModule,
+    FeedBackMoudle,
   ],
   controllers: [],
   providers: [],
