@@ -13,7 +13,7 @@ import { AdminAuthGuard } from '../shared/Guards/admin.guard';
 import { ReportService } from './report.service';
 import { ReportedPosts } from './interfaces/getPostsReports.interface';
 
-@Controller('report')
+@Controller('reports')
 export class ReportController {
   constructor(private reportService: ReportService) {}
 

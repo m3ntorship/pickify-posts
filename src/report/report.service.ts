@@ -68,7 +68,7 @@ export class ReportService {
     reporter: User,
   ): Promise<void> {
     const post = await this.postRepository.getDetailedPostById(
-      createPostsReportDTO.postId,
+      createPostsReportDTO.post_id,
     );
 
     if (!post) throw new NotFoundException('Post not found');

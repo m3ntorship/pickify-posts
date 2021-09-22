@@ -53,8 +53,8 @@ describe('ReportService', () => {
     it('should create Report', async () => {
       //data
       const Dto: CreatePostsReportDTO = {
-        postId: 'post-uuid',
-        reportType: 'Report-type',
+        post_id: 'post-uuid',
+        report_type: 'Report-type',
       };
 
       const reporter: User = {
@@ -79,8 +79,8 @@ describe('ReportService', () => {
     it('should throw error if reported post not exist', async () => {
       //data
       const Dto: CreatePostsReportDTO = {
-        postId: 'post-uuid',
-        reportType: 'Report-type',
+        post_id: 'post-uuid',
+        report_type: 'Report-type',
       };
 
       const reporter: User = {
@@ -102,8 +102,8 @@ describe('ReportService', () => {
     it('should throw error if user reports count reached 50', async () => {
       //data
       const Dto: CreatePostsReportDTO = {
-        postId: 'post-uuid',
-        reportType: 'Report-type',
+        post_id: 'post-uuid',
+        report_type: 'Report-type',
       };
 
       const reporter: User = {
@@ -134,8 +134,8 @@ describe('ReportService', () => {
     it('shoud throw error if reporting post twice', async () => {
       //data
       const Dto: CreatePostsReportDTO = {
-        postId: 'post-uuid',
-        reportType: 'Report-type',
+        post_id: 'post-uuid',
+        report_type: 'Report-type',
       };
 
       const reporter: User = {

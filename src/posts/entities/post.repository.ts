@@ -215,6 +215,7 @@ export class PostRepository extends Repository<Post> {
   public async getDetailedPostById(postid: string): Promise<Post> {
     const post = await this.createQueryBuilder('post')
       .select([
+        'post.id',
         'post.uuid',
         'post.created',
         'post.ready',

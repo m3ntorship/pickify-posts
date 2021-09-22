@@ -10,7 +10,7 @@
       "name": "posts",
       "description": "Posts endpoints"
     },
-    
+
     {
       "name": "votes",
       "description": "Votes endpoints"
@@ -19,12 +19,12 @@
       "name": "users",
       "description": "Users endpoints"
     },
-    
+
     {
       "name": "reports",
       "description": "Reports endpoints"
     },
-    
+
     {
       "name": "feedbacks",
       "description": "feedbacks endpoints"
@@ -380,71 +380,83 @@
             "description": "The MAX numbers of items to return"
           }
         ],
-      "responses": {
-        "200": {
-          "description": "Get all user posts",
-          "$ref": "#/components/responses/user_posts_response"
-        },
-        "400": {
-          "description": "Bad request",
-          "$ref": "#/components/responses/error_bad_request"
-        },
-        "401": {
-          "description": "Unauthorized.",
-          "$ref": "#/components/responses/error_unauthorized"
-        }
-      }
-    }
-  },
-  "/reports": {
-    "post": {
-      "tags": ["reports"],
-      "summary": "Create a new report",
-      "operationId": "createReport",
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/report_creation_request"
-            }
+        "responses": {
+          "200": {
+            "description": "Get all user posts",
+            "$ref": "#/components/responses/user_posts_response"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
           }
-        }
-      },
-      "responses": {
-        "204": {
-          "description": "Report Created Successfully"
-        },
-        "400": {
-          "description": "Bad request",
-          "$ref": "#/components/responses/error_bad_request"
-        },
-        "401": {
-          "description": "Unauthorized.",
-          "$ref": "#/components/responses/error_unauthorized"
         }
       }
     },
-    "get": {
-      "tags": ["reports"],
-      "summary": "get all posts reports",
-      "operationId": "getPostsReports",
-      "responses": {
-        "200": {
-          "description": "Get All Posts Reports",
-          "$ref": "#/components/responses/post_reports_response"
+    "/reports": {
+      "post": {
+        "tags": ["reports"],
+        "summary": "Create a new report",
+        "operationId": "createReport",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/report_creation_request"
+              }
+            }
+          }
         },
-        "400": {
-          "description": "Bad request",
-          "$ref": "#/components/responses/error_bad_request"
-        },
-        "401": {
-          "description": "Unauthorized.",
-          "$ref": "#/components/responses/error_unauthorized"
+        "responses": {
+          "204": {
+            "description": "Report Created Successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          },
+          "403": {
+            "description": "Forbidden, you can't report your own post",
+            "$ref": "#/components/responses/error_forbidden"
+          },
+          "409": {
+            "description": "can't report post twice",
+            "$ref": "#/components/responses/error_conflict"
+          },
+          "429": {
+            "description": "Too many requests",
+            "$ref": "#/components/responses/error_too_many_requests"
+          }
+        }
+      },
+      "get": {
+        "tags": ["reports"],
+        "summary": "get all posts reports",
+        "operationId": "getPostsReports",
+        "responses": {
+          "200": {
+            "description": "Get All Posts Reports",
+            "$ref": "#/components/responses/post_reports_response"
+          },
+          "400": {
+            "description": "Bad request",
+            "$ref": "#/components/responses/error_bad_request"
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "$ref": "#/components/responses/error_unauthorized"
+          }
         }
       }
-    }
-  },
+    },
     "/feedbacks": {
       "post": {
         "tags": ["feedbacks"],
@@ -638,7 +650,7 @@
         "maxProperties": 4,
         "required": ["is_hidden", "type", "media_count"]
       },
-      
+
       "report_creation_request": {
         "type": "object",
         "properties": {
@@ -648,16 +660,16 @@
           },
           "post_id": {
             "type": "string",
-            "example":"post-uuid"
+            "example": "post-uuid"
           }
         },
         "maxProperties": 2,
         "required": ["report_type", "post_id"]
-      },  
-       "single_post_reports_response": {
+      },
+      "single_post_reports_response": {
         "type": "object",
         "properties": {
-          "post":{
+          "post": {
             "type": "object",
             "properties": {
               "id": {
@@ -675,32 +687,33 @@
                 "example": "text_poll"
               }
             }
-          }, 
-          "reports":{
-            "type":"array",
-            "items":{
+          },
+          "reports": {
+            "type": "array",
+            "items": {
               "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "example": "some-id",
-                "x-faker": "random.uuid"
-              },
-              "reporter":{
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "example": "some-id",
-                    "x-faker": "random.uuid"
-                  },"name": {
-                    "type": "string",
-                    "example": "John Doe",
-                    "x-faker": "name.findName"
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "some-id",
+                  "x-faker": "random.uuid"
+                },
+                "reporter": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "some-id",
+                      "x-faker": "random.uuid"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe",
+                      "x-faker": "name.findName"
+                    }
                   }
                 }
               }
             }
-          }
           }
         }
       },
@@ -930,7 +943,7 @@
           }
         }
       },
-"post_reports_response": {
+      "post_reports_response": {
         "description": "Get Post Reports",
         "content": {
           "application/json": {
@@ -1019,7 +1032,7 @@
           }
         }
       },
-  
+
       "single_post_deletion_response": {
         "description": "Post deleted"
       },
@@ -1044,7 +1057,7 @@
         }
       },
       "error_conflict": {
-        "description": "Conflict when user votes twice on same option.",
+        "description": "Conflict",
         "content": {
           "application/json": {
             "schema": {
@@ -1074,7 +1087,17 @@
         }
       },
       "error_forbidden": {
-        "description": "you are not authorized to access this Info.",
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/generic_error"
+            }
+          }
+        }
+      },
+      "error_too_many_requests": {
+        "description": "too many requests",
         "content": {
           "application/json": {
             "schema": {
