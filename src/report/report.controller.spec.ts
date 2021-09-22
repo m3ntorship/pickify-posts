@@ -49,8 +49,8 @@ describe('ReportsController', () => {
     it('should create report', async () => {
       //mocks
       const createPostsReportDTO: CreatePostsReportDTO = {
-        postId: 'reported-post-id',
-        reportType: 'post',
+        post_id: 'reported-post-id',
+        report_type: 'post',
       };
       const req: any = { user: { uuid: 'user-uuid' } };
       const result = await controller.createPostsReport(

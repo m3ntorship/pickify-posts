@@ -3,9 +3,6 @@
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
 @userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
 @token = token
-
-
-@token = token
 // POST /api/posts
 
 POST http://localhost:3000/api/posts HTTP/1.1
@@ -205,15 +202,15 @@ GET http://localhost:3000/api/users/{{userId}}/posts?limit=10&0ffset=0
 Authorization: Bearer {{token}}
 
 ##################
-POST http://localhost:3000/api/report HTTP/1.1
+POST http://localhost:3000/api/reports HTTP/1.1
 Authorization: Bearer {{token}}
 content-type: application/json
 
-{"postId":"",
-"reportType":"post"}
+{"post_id":"f63e33ae-b718-4e0f-8450-6b6b5deb3276",
+"report_type":"post"}
 
 ##################
-GET http://localhost:3000/api/report HTTP/1.1
+GET http://localhost:3000/api/reports HTTP/1.1
 Authorization: Bearer {{token}}
 
 ###
