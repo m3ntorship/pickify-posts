@@ -206,8 +206,9 @@ POST http://localhost:3000/api/reports HTTP/1.1
 Authorization: Bearer {{token}}
 content-type: application/json
 
-{"post_id":"f63e33ae-b718-4e0f-8450-6b6b5deb3276",
-"report_type":"post"}
+{"post_id": "8dd7fdf1-edea-4efa-8530-4d7401f56fcf",
+"report_type":"post"
+}
 
 ##################
 GET http://localhost:3000/api/reports HTTP/1.1
