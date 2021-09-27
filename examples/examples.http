@@ -3,9 +3,6 @@
 @optionId = ec8d4b30-ad98-44fc-a51d-d57b28ec4a2b
 @userId = 6c1f812c-2fca-4c05-8cec-2a9eb56c35d0
 @token = token
-
-
-@token = token
 // POST /api/posts
 
 POST http://localhost:3000/api/posts HTTP/1.1

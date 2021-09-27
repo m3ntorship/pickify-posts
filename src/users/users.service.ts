@@ -21,6 +21,7 @@ export class UsersService {
       id: user.uuid,
       name: user.name,
       profile_pic: user.profile_pic,
+      created_at: user.created_at,
     };
   }
   async getUserPosts(

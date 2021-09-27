@@ -50,12 +50,13 @@ describe('UserService', () => {
         uuid: 'user-id',
         name: 'user-name',
         profile_pic: 'user-pic',
+        created_at: getNow().toDate(),
       } as User;
-
       const modifiedUser = {
         id: userToFind.uuid,
         name: userToFind.name,
         profile_pic: userToFind.profile_pic,
+        created_at: userToFind.created_at,
       };
 
       const post = {
