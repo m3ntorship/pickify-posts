@@ -1013,6 +1013,11 @@
                       "type": "string",
                       "example": "URL",
                       "x-faker": "image.imageUrl"
+                    },
+                    "created_at":{
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2021-01-30T08:30:00Z"
                     }
                   }
                 },

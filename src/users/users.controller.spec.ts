@@ -54,6 +54,7 @@ describe('UsersController', () => {
         id: 'user-id',
         name: 'user-name',
         profile_pic: 'user-pic',
+        created_at: getNow().toDate(),
       };
       const post = {
         uuid: 'test-post-uuid',
