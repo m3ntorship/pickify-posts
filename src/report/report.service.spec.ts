@@ -263,7 +263,6 @@ describe('ReportService', () => {
       );
       //actions
       const result = await service.getAllPostsReports();
-      console.log(result);
       // assertions
       expect(result).toEqual(returnedReportedPosts);
     });
