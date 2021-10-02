@@ -1021,6 +1021,10 @@
                     }
                   }
                 },
+                "totalPostsCount":{
+                  "type": "number",
+                  "x-faker": "random.number"
+                },
                 "postsCount": {
                   "type": "number",
                   "x-faker": "random.number"

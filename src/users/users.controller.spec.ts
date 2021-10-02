@@ -50,6 +50,7 @@ describe('UsersController', () => {
       const param = { userId: 'user-uuid' } as UserIdParam;
       const query = { limit: 10, offset: 0 } as QueryParameters;
       const req: any = { user: { uuid: 'user-uuid' } };
+      const totalPostsCount = 10;
       const returnedUser = {
         id: 'user-id',
         name: 'user-name',
@@ -116,6 +117,7 @@ describe('UsersController', () => {
       };
       const returnedPosts = {
         user: returnedUser,
+        totalPostsCount: 10,
         postsCount: postsInDB.length,
         posts: [modifiedPost],
       };
