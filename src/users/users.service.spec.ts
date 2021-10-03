@@ -87,7 +87,10 @@ describe('UserService', () => {
           },
         ],
       };
-      const postsInDB = [post];
+      const userPostsInfo = {
+        posts: [post],
+        totalPostsCount: 10,
+      };
       const modifiedPost: Post = {
         id: post.uuid,
         caption: post.caption,
@@ -119,7 +122,8 @@ describe('UserService', () => {
       };
       const returnedPosts = {
         user: modifiedUser,
-        postsCount: postsInDB.length,
+        totalPostsCount: userPostsInfo.totalPostsCount,
+        postsCount: userPostsInfo.posts.length,
         posts: [modifiedPost],
       };
 
@@ -127,9 +131,9 @@ describe('UserService', () => {
 
       userRepo.getUser.mockResolvedValue(userToFind);
       if (userid === currentUser.uuid) {
-        postRepo.getCurrentUserPosts.mockResolvedValue(postsInDB);
+        postRepo.getCurrentUserPosts.mockResolvedValue(userPostsInfo);
       } else {
-        postRepo.getUserPosts.mockResolvedValue(postsInDB);
+        postRepo.getUserPosts.mockResolvedValue(userPostsInfo);
       }
       postService.handlePostFeatures.mockReturnValue(modifiedPost);
       //action

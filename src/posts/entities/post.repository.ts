@@ -3,6 +3,7 @@ import { PostCreationDto } from '../dto/postCreation.dto';
 import { Post } from './post.entity';
 import { User } from '../../users/entities/user.entity';
 import { QueryParameters } from '../../shared/validations/query.validator';
+import { UserPostsInfo } from '../interfaces/getUserPosts.interface';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -97,8 +98,8 @@ export class PostRepository extends Repository<Post> {
   public async getUserPosts(
     userId: string,
     queries: QueryParameters,
-  ): Promise<Post[]> {
-    return await this.createQueryBuilder('post')
+  ): Promise<UserPostsInfo> {
+    const posts = await this.createQueryBuilder('post')
       .select([
         'post.id',
         'post.uuid',
@@ -145,13 +146,24 @@ export class PostRepository extends Repository<Post> {
       .take(queries.limit || this.LIMIT)
       .skip(queries.offset || this.OFFSET)
       .getMany();
+
+    const totalPostsCount = await this.createQueryBuilder('post')
+      .leftJoin('post.user', 'user')
+      .where('post.ready = :ready', { ready: true })
+      .andWhere('user.uuid= :userId', { userId: userId })
+      .andWhere('post.is_hidden= :hidden', { hidden: false })
+      .getCount();
+    return {
+      totalPostsCount: totalPostsCount,
+      posts: posts,
+    };
   }
   //getting current user's posts
   public async getCurrentUserPosts(
     userId: string,
     queries: QueryParameters,
-  ): Promise<Post[]> {
-    return await this.createQueryBuilder('post')
+  ): Promise<UserPostsInfo> {
+    const posts = await this.createQueryBuilder('post')
       .select([
         'post.id',
         'post.uuid',
@@ -197,6 +209,15 @@ export class PostRepository extends Repository<Post> {
       .take(queries.limit || this.LIMIT)
       .skip(queries.offset || this.OFFSET)
       .getMany();
+    const totalPostsCount = await this.createQueryBuilder('post')
+      .leftJoin('post.user', 'user')
+      .where('post.ready = :ready', { ready: true })
+      .andWhere('user.uuid= :userId', { userId: userId })
+      .getCount();
+    return {
+      totalPostsCount: totalPostsCount,
+      posts: posts,
+    };
   }
 
   /**

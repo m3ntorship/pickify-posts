@@ -8,6 +8,7 @@ export interface User {
 }
 export interface UserPosts {
   postsCount: number;
+  totalPostsCount: number;
   user: User;
   posts: Post[];
 }

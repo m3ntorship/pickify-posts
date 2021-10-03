@@ -9,6 +9,7 @@ import { UserRepository } from './entities/user.repository';
 import { User } from './entities/user.entity';
 import { User as Iuser } from './interfaces/userPosts.interface';
 import { UserPosts } from './interfaces/userPosts.interface';
+import { UserPostsInfo } from '../posts/interfaces/getUserPosts.interface';
 @Injectable()
 export class UsersService {
   constructor(
@@ -36,20 +37,21 @@ export class UsersService {
     if (!userToFind)
       throw new NotFoundException(`User with id: ${userid} not found`);
 
-    let currentPosts: PostEntity[];
+    let userPostsInfo: UserPostsInfo;
 
     if (userid === user.uuid) {
-      currentPosts = await this.postsRepository.getCurrentUserPosts(
+      userPostsInfo = await this.postsRepository.getCurrentUserPosts(
         userid,
         queries,
       );
     } else {
-      currentPosts = await this.postsRepository.getUserPosts(userid, queries);
+      userPostsInfo = await this.postsRepository.getUserPosts(userid, queries);
     }
     return {
       user: this.modifyUser(userToFind),
-      postsCount: currentPosts.length,
-      posts: currentPosts.map((post) => {
+      totalPostsCount: userPostsInfo.totalPostsCount,
+      postsCount: userPostsInfo.posts.length,
+      posts: userPostsInfo.posts.map((post) => {
         return this.postService.handlePostFeatures(post, userid);
       }),
     };
