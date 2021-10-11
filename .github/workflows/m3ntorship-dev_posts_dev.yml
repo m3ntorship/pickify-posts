@@ -1,0 +1,117 @@
+name: deploy posts service to dev
+on:
+  push:
+    branches:
+      - development
+
+env:
+  M3_PROJECT: pickify
+  M3_COMPONENT: posts
+  M3_ENVIRONMENT: 'be-dev'
+  M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-dev'
+  M3_DEPLOYMENT_PATH: deploy
+  M3_TEMP_DIR: temp
+  M3_TEMP_SECRETS_DIR: temp-secrets
+  M3_REPLICAS: '1'
+  M3_MAIN_APP_PORT: 3000
+  M3_PORT_BACKEND: 80
+  M3_DOCKER_FILE: Dockerfile
+  M3_IMAGE: m3ntorshipci/posts-service
+  M3_HOST: pickify-posts-be-dev.m3ntorship.net
+  M3_SERVICE_OPENAPI_SPECIFICATION: https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml
+  M3_NODE_ENV: production
+  M3_MEDIA_QUEUE: lazy-queue-pickify-media-dev
+  M3_MEDIA_RABBITMQ_VHOST: 'pickify-dev'
+  
+  # db
+  M3_DB_INSTANCES: 1
+  M3_DB_STORAGE: 10Gi
+  M3_DB_MEMORY: 500Mi
+  M3_DB_MEMORY_LIMIT: 1000Mi
+  M3_DB_CPU: 100m
+  M3_DB_CPU_LIMIT: 500m
+  M3_APP_USER: pickify
+  
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: prepare
+        run: |
+          echo "::set-output name=version::${GITHUB_REF##*/}-$(git rev-parse --short=4 HEAD)"
+  build:
+    needs:
+      - prepare
+    runs-on: ubuntu-latest
+    env:
+      M3_VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          yarn
+          yarn build
+          yarn test
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          tags: ${{env.M3_IMAGE}}:${{env.M3_VERSION}}
+          file: ${{env.M3_DOCKER_FILE}}
+          context: .
+          push: true
+
+  deploy-dev:
+    needs:
+      - prepare
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/setup-kubectl@v1
+
+      - name: Kubectl configuration
+        shell: bash
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d -i > ~/.kube/config
+
+      - name: install moustache
+        run: |
+          curl -sSL https://git.io/get-mo -o mo
+          chmod +x mo
+          sudo mv mo /usr/local/bin/
+          echo "works" | mo
+      
+      # prepare deployment
+      - name: deployment-preparation
+        run: |
+          echo $M3_NAMESPACE
+          mkdir -p $M3_TEMP_DIR $M3_TEMP_SECRETS_DIR
+
+      # decrypt secrets
+      - name: decrypt-and-create-secrets
+        env:
+          M3_ENCRYPTION_PHRASE: ${{secrets.M3NTORSHIP_ENCRYPTION_PHRASE}}
+          M3_ENCRYPTED_SECRETS_DIR: secrets
+          
+        run: |
+          for f in $(find $M3_DEPLOYMENT_PATH/$M3_ENCRYPTED_SECRETS_DIR -maxdepth 1 -type f); do gpg --quiet --batch --yes --decrypt --passphrase="$M3_ENCRYPTION_PHRASE" "$f" > "$M3_TEMP_SECRETS_DIR/$(basename -s .gpg $f)"; done
+          kubectl create configmap $M3_PROJECT-$M3_COMPONENT-$M3_ENVIRONMENT --from-file=$M3_TEMP_SECRETS_DIR/ -o yaml -n $M3_NAMESPACE --dry-run=client > $M3_TEMP_DIR/configmap.yaml
+
+      - name: deploy-dev
+        env:
+          M3_VERSION: ${{needs.prepare.outputs.version}}
+        run: |
+          echo $M3_VERSION
+          for f in $M3_DEPLOYMENT_PATH/apply/*; do mo -u "$f" > $M3_TEMP_DIR/"$(basename $f)"; done
+          kubectl apply -f $M3_TEMP_DIR

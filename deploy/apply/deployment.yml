@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}"
+  namespace: {{{M3_NAMESPACE}}}
+  labels:
+    application: "{{{M3_PROJECT}}}"
+    component: "{{{M3_COMPONENT}}}"
+    environment: "{{{M3_ENVIRONMENT}}}"
+spec:
+  replicas: {{{M3_REPLICAS}}}
+  selector:
+    matchLabels:
+      application: "{{{M3_PROJECT}}}"
+      component: "{{{M3_COMPONENT}}}"
+      environment: "{{{M3_ENVIRONMENT}}}"
+  template:
+    metadata:
+      labels:
+        application: "{{{M3_PROJECT}}}"
+        component: "{{{M3_COMPONENT}}}"
+        environment: "{{{M3_ENVIRONMENT}}}"
+    spec:
+      containers:
+        - name: "{{{M3_COMPONENT}}}-main-container"
+          image: "{{{M3_IMAGE}}}:{{{M3_VERSION}}}"
+          env:
+            - name: APP_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{{M3_APP_USER}}}.{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}-db.credentials.postgresql.acid.zalan.do"
+                  key: username
+            - name: APP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{{M3_APP_USER}}}.{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}-db.credentials.postgresql.acid.zalan.do"
+                  key: password
+            - name: APP_DB_HOST
+              value: "{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}-db.{{{M3_NAMESPACE}}}.svc.cluster.local"
+
+            - name: NODE_ENV
+              value: {{{M3_NODE_ENV}}}
+            - name: RABBITMQ_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: password
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: username
+            - name: RABBITMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: host
+            - name: MEDIA_QUEUE
+              value: "{{{M3_MEDIA_QUEUE}}}"
+            - name: RABBITMQ_VHOST
+              value: "{{{M3_MEDIA_RABBITMQ_VHOST}}}"
+          ports:
+            - name: web
+              containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - name: pickify-firebase-service-account
+              mountPath: /firebase_service_account.json
+              subPath: firebase_service_account.json
+              readOnly: true
+      volumes:  
+        - name: pickify-firebase-service-account
+          configMap:
+            name: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}'

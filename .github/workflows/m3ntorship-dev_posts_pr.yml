@@ -1,0 +1,47 @@
+name: build post service PR
+on:
+  pull_request:
+    branches:
+      - development
+
+env:
+  M3_PROJECT: pickify
+  M3_COMPONENT: posts
+  M3_ENVIRONMENT: 'pr-${{ github.event.number }}'
+  M3_VERSION: 'pr-${{ github.event.number }}-${{ github.run_number}}'
+  M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-pr-${{ github.event.number }}'
+  M3_DEPLOYMENT_PATH: deploy/apply
+  M3_TEMP_DIR: temp
+  M3_REPLICAS: '1'
+  M3_MAIN_APP_PORT: 3000
+  M3_PORT_BACKEND: 80
+  M3_DOCKER_FILE: Dockerfile
+  M3_IMAGE: m3ntorshipci/posts-service
+  M3_HOST_NAME: m3ntorship.net
+  M3_SERVICE_OPENAPI_SPECIFICATION: https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml
+  M3_NODE_ENV: production
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: yarn
+      - run: yarn build
+      - run: yarn test
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build without pushing
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          tags: ${{env.M3_IMAGE}}:${{env.M3_VERSION}}
+          file: ${{env.M3_DOCKER_FILE}}
+          context: .
+          push: false
