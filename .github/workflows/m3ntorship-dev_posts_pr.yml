@@ -18,7 +18,6 @@ env:
   M3_DOCKER_FILE: Dockerfile
   M3_IMAGE: m3ntorshipci/posts-service
   M3_HOST_NAME: m3ntorship.net
-  M3_POSTS_DB_URL: ${{secrets.ELEPHANTSQL_URL_PR}}
   M3_SERVICE_OPENAPI_SPECIFICATION: https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml
   M3_NODE_ENV: production
   

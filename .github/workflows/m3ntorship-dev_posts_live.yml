@@ -1,14 +1,14 @@
-name: deploy posts service to dev
+name: deploy posts service to live
 on:
   push:
     branches:
-      - development
+      - main
 
 env:
   M3_PROJECT: pickify
   M3_COMPONENT: posts
-  M3_ENVIRONMENT: 'be-dev'
-  M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-dev'
+  M3_ENVIRONMENT: 'be-live'
+  M3_NAMESPACE: '${{github.event.organization.login}}-${{github.event.repository.name}}-live'
   M3_DEPLOYMENT_PATH: deploy
   M3_TEMP_DIR: temp
   M3_TEMP_SECRETS_DIR: temp-secrets
@@ -17,10 +17,10 @@ env:
   M3_PORT_BACKEND: 80
   M3_DOCKER_FILE: Dockerfile
   M3_IMAGE: m3ntorshipci/posts-service
-  M3_HOST: pickify-posts-be-dev.m3ntorship.net
+  M3_HOST: pickify-posts-be-live.m3ntorship.net
   M3_SERVICE_OPENAPI_SPECIFICATION: https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml
   M3_NODE_ENV: production
-  M3_MEDIA_QUEUE: lazy-queue-pickify-media-dev
+  M3_MEDIA_QUEUE: lazy-queue-pickify-media-live
   M3_MEDIA_RABBITMQ_VHOST: 'pickify-dev'
   
   # db
@@ -70,7 +70,7 @@ jobs:
           context: .
           push: true
 
-  deploy-dev:
+  deploy-live:
     needs:
       - prepare
       - build
@@ -108,7 +108,7 @@ jobs:
           for f in $(find $M3_DEPLOYMENT_PATH/$M3_ENCRYPTED_SECRETS_DIR -maxdepth 1 -type f); do gpg --quiet --batch --yes --decrypt --passphrase="$M3_ENCRYPTION_PHRASE" "$f" > "$M3_TEMP_SECRETS_DIR/$(basename -s .gpg $f)"; done
           kubectl create configmap $M3_PROJECT-$M3_COMPONENT-$M3_ENVIRONMENT --from-file=$M3_TEMP_SECRETS_DIR/ -o yaml -n $M3_NAMESPACE --dry-run=client > $M3_TEMP_DIR/configmap.yaml
 
-      - name: deploy-dev
+      - name: deploy-live
         env:
           M3_VERSION: ${{needs.prepare.outputs.version}}
         run: |

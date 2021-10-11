@@ -4,8 +4,11 @@ metadata:
   name: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}-db'
   # pickify.pickify-posts-db.credentials.postgresql.acid.zalan.do
   # M3_APP_USER
-
   namespace: '{{{M3_NAMESPACE}}}'
+  labels:
+    application: "{{{M3_PROJECT}}}"
+    component: "{{{M3_COMPONENT}}}"
+    environment: "{{{M3_ENVIRONMENT}}}"
 spec:
   teamId: "{{{M3_PROJECT}}}"
   volume:
