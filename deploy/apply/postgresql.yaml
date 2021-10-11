@@ -1,7 +1,7 @@
 apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
-  name: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db'
+  name: '{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}-db'
   # pickify.pickify-posts-db.credentials.postgresql.acid.zalan.do
   # M3_APP_USER
 

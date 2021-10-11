@@ -27,10 +27,10 @@ spec:
             - name: APP_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: "{{{M3_APP_USER}}}.{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db.credentials.postgresql.acid.zalan.do"
+                  name: "{{{M3_APP_USER}}}.{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}-db.credentials.postgresql.acid.zalan.do"
                   key: password
             - name: APP_DB_HOST
-              value: "{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-db.{{{M3_NAMESPACE}}}.svc.cluster.local"
+              value: "{{{M3_PROJECT}}}-{{{M3_COMPONENT}}}-{{{M3_ENVIRONMENT}}}-db.{{{M3_NAMESPACE}}}.svc.cluster.local"
 
             - name: DB_URL
               value: {{{M3_POSTS_DB_URL}}}
@@ -38,10 +38,25 @@ spec:
               value: {{{M3_NODE_ENV}}}
             - name: RABBITMQ_URL
               value: {{{M3_RABBITMQ_URL}}}
+            - name: RABBITMQ_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: password
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: username
+            - name: RABBITMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: "rabbitmq-dev-default-user"
+                  key: host
             - name: MEDIA_QUEUE
-              value: {{{M3_MEDIA_QUEUE}}}    
-            - name: BROKER_QUEUE_PATTERN
-              value: {{{M3_BROKER_QUEUE_PATTERN}}}
+              value: "{{{M3_MEDIA_QUEUE}}}"
+            - name: RABBITMQ_VHOST
+              value: "{{{M3_MEDIA_RABBITMQ_VHOST}}}"
           ports:
             - name: web
               containerPort: 3000
