@@ -23,6 +23,7 @@ env:
   M3_SERVICE_OPENAPI_SPECIFICATION: https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml
   M3_NODE_ENV: production
   M3_MEDIA_QUEUE: media_queue_dev
+  M3_MEDIA_RABBITMQ_VHOST: 'pickify-dev'
   
   # db
   M3_DB_INSTANCES: 1
