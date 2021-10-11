@@ -284,6 +284,8 @@ components:
           type: string
         options:
           type: array
+          minItems: 2
+          maxItems: 4
           items:
             $ref: "#/components/schemas/options_creation_request"
       required:
@@ -322,7 +324,7 @@ components:
       properties:
         body:
           type: string
-          minLength: 1
+          nullable: true
       required:
         - "body"
       maxProperties: 1
