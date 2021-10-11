@@ -9,98 +9,117 @@
 - Nodejs version >= 10.13.0, except for v13, must be installed.
 - Installation: https://nodejs.org/en/.
 
-### Postgresql Setup:
-
-- Installation: https://www.postgresql.org/download/.
-- [Necessary enviroment variables](#Postgresql) for database connection.
-
 ### Docker & Docker-Compose Setup:
 
 - Docker installation: https://docs.docker.com/get-docker/.
 - Docker-compose installation: https://docs.docker.com/compose/install/.
 
+### postgresql
+
+- There are 2 ways to use postgres:
+  - local install: downlaod from [postgres website](https://www.postgresql.org/download/)
+  - docker image: use [postgres image](https://hub.docker.com/_/postgres).
+
 ## Getting Started
 
-```
-# 1. Clone the repository.
-git clone https://github.com/m3ntorship/backend-nestjs-template.git my-new-project
+- Clone the repository:
 
-# You can also use "Use this template" button to create new repository from this remplate.
+  ```bash
+  git clone https://github.com/m3ntorship/pickify-v2-posts.git
+  ```
 
-# 2. If you decided to clone, enter your folder.
-cd my-new-project
+- Install dependencies:
 
-# 3. Install dependencies.
-yarn
+  ```bash
+  yarn
+  ```
 
-# 4. Run development server and open http://localhost:3000
-yarn start:dev
-```
+- Make sure postgres up & running using the defaults
+
+  - port: 5432
+  - username: postgres
+  - password: postgres
+  - database: postgres
+
+  If you need to run postgres with different setup, [configure the application with different postgres setup](##Configuration)
+
+- Run development server and open http://localhost:3000
+
+  ```bash
+  yarn start:dev
+  ```
+- Run docker-compose file to have both db service and rabbitMQ broker service running locally and open http://localhost:5672 for viewing rabbitMQ dashboard locally.
+
+  ```bash
+  yarn prestart:dev
+  ```
+
 
 ## Test
 
 ```bash
 # unit tests
-$ yarn test
+yarn test
 
 # e2e tests
-$ yarn test:e2e
+yarn test:e2e
 
 # test coverage
-$ yarn test:cov
+yarn test:cov
 ```
 
 ## Debug
 
-#### Use vscode integrated debug mode to run the following commands in debug mode:
+#### Use vscode integrated debug mode as follow:
 
-```bash
-- yarn start:dev
-- yarn start
-- yarn start:prod
-- yarn test
-- yarn test:e2e
-```
+- create launch.json file inside .vscode folder in project root dir
+- add the following configuration to run yarn start:dev in debug mode:
 
-## Configurations
+  ```javascript
+  {
 
-We use Postgresql, you can install it here: https://www.postgresql.org/download/.<br/>
-If you are comfortable with Docker, skip to [Docker](#Docker) section and use Postgresql image.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "command": "yarn start:dev",
+            "name": "Run yarn start:dev",
+            "request": "launch",
+            "type": "node-terminal"
+        },
 
-### Necessary Environment Variables
+    ]
+  }
+  ```
 
-### Postgresql
+- You can add any script to run it in debug mode, by replacing "command" field with the script found in package.json
 
-- If you are using local Postgresql server, fill `.development.env` file with the following configurations:
+## Configuration
 
-```
-DB_HOST =
-DB_PORT =
-DB_USERNAME =
-DB_PASSWORD =
-DB_DATABASE =
-DB_ENTITIES =
-```
+- The application can be configured by creating **.development.env** file in project's root diretory,then add any of the following environment variables.
 
-If any of the preceding properties were not filled in `.development.env` file, the following values are made
+  ```
+  PORT=
+  DB_HOST=
+  DB_PORT=
+  DB_USERNAME=
+  DB_PASSWORD=
+  DB_DATABASE=
+  DB_SYNC=
+  DB_LOGGING=
+  ```
 
-```
-DB_HOST = localhost
-DB_PORT = 5432
-DB_USERNAME = postgres
-DB_PASSWORD = postgres
-DB_DATABASE = postgresql_database
-DB_ENTITIES = ["dist/**/*.entity.{ts,js}"]
-```
+- the following values will be used as default:
 
-### Services URL's
-
-- Also, add other services URL's
-
-```
-POSTS_SERVICE_URL = http://localhost:3000
-UPLOAD_SERVICE_URL = http://localhost:3001
-```
+  ```
+  PORT=3000
+  DB_HOST=localhost
+  DB_PORT=5432
+  DB_USERNAME=postgres
+  DB_PASSWORD=postgres
+  DB_DATABASE=postgres
+  DB_SYNC=false
+  DB_LOGGING=false
+  ```
 
 ## Use Docker to start the application
 
@@ -108,35 +127,15 @@ UPLOAD_SERVICE_URL = http://localhost:3001
 
 - Open terminal and navigate to project directory and run the following command
 
-  - `$ yarn`
-  - `$ yarn build`
-  - `$ docker build -t microservice-template .`
-  - `$ docker-compose up -d`
-
-- Now the database is ready to be used using:
   ```bash
-  port = 5432
-  host = localhost
-  username = postgres
-  database = postgres
-  password = postgres
+  yarn
+  yarn build
+  docker build -t pickify-posts .
+  docker-compose up -d
   ```
 
-## Template Components
+## OpenAPI specifications
 
-- Logging
-  - Request Logger
-  - Exception Logger
-- Tests
-- Configuration
-- Modules
-  - [Clients Module](#Clients-Module)
-  - [Example Module](#Example-Module)
+- [Check it online](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/m3ntorship/pickify-v2-posts/development/openAPI/post.openAPI.yml)
 
-### Clients Module:
-
-- Module for all other services API endpoints.
-
-### Example Module
-
-- A typical module to be replaced with the actual module(s). It includes database implementation.
+- Or, <ins>**/api**</ins> if the app is running
